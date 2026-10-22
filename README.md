@@ -1,0 +1,203 @@
+# TechPulse AI Digest Bot
+
+> **Autonomous Multi-Source Technical Intelligence Agent**  
+> Ingests trending open-source projects, research preprints, and developer discussions across **6 high-signal tech sources**, filters out marketing noise using Groq's high-speed LLM inference, enforces a 30-day SQLite sliding deduplication window, and delivers executive-ready Markdown digests.
+
+[![Daily Tech Digest](https://img.shields.io/badge/schedule-daily%208AM%20UTC-blue?style=flat-square)](.github/workflows/digest.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue?style=flat-square&logo=python)](https://python.org)
+[![Tests Passing](https://img.shields.io/badge/pytest-22%20passed-brightgreen?style=flat-square)](tests/)
+[![Playwright E2E](https://img.shields.io/badge/playwright-e2e%20verified-brightgreen?style=flat-square)](tests/test_ui_playwright.py)
+[![Cost](https://img.shields.io/badge/cost-%240%2Fmonth-green?style=flat-square)](https://console.groq.com)
+
+---
+
+## Web Observatory & Intelligence Cockpit
+
+TechPulse includes a local observatory web UI inspired by modern engineering cockpits (Linear, Raycast, Vercel design aesthetic):
+
+- **Zero-Scroll Cockpit Flight Mode**: Viewport-contained master-detail layout with keyboard flight controls (`↑`/`↓` or `J`/`K` navigation, `↵` to launch source).
+- **Responsive Auto-Fill Bento Cards**: High-density 3-column card grid with glowing category accents and executive takeaways.
+- **High-Signal Filtering & Noise Audit**: Keeps rejected noise quarantined in an audit tab while presenting only high-conviction signals by default.
+- **Historical Date Switcher**: Browse historical digest editions directly through an integrated dropdown.
+- **Markdown Export**: Direct one-click download of `TechPulse-Digest-YYYY-MM-DD.md`.
+- **On-Demand Live Harvesting**: Trigger a real-time multi-source crawl and Groq curation cycle with live progress toasts.
+
+Launch the cockpit:
+```bash
+python -m uvicorn api:app --host 127.0.0.1 --port 8000 --reload
+```
+Navigate to `http://127.0.0.1:8000`.
+
+---
+
+## Testing & Quality Assurance
+
+TechPulse maintains strict test coverage across unit collectors, database deduplication, and browser end-to-end automation:
+
+```bash
+# Run unit & integration tests
+pytest tests/test_models.py tests/test_database.py tests/test_collectors.py tests/test_pipeline.py -v
+
+# Run Playwright visual end-to-end tests (Chromium headless)
+pytest tests/test_ui_playwright.py -v
+
+# Run entire test suite (22/22 tests)
+pytest tests/ -v
+```
+
+---
+
+## Zero-Cost Infrastructure
+
+- **LLM Inference**: $0 (Groq Cloud API free tier, using `openai/gpt-oss-120b` and `qwen/qwen3.8-27b`)
+- **Automated Scheduling**: $0 (GitHub Actions scheduled cron at 8:00 AM UTC)
+- **Database & State**: $0 (Local SQLite file with WAL mode, committed or cached)
+- **Feed Ingestion**: $0 (All public APIs & RSS feeds)
+- **Web UI & Dashboard**: $0 (FastAPI + Vanilla CSS/JS glassmorphism)
+
+## Architecture
+
+TechPulse operates as a modular, decoupled **3-Agent Autonomous Pipeline**:
+
+```
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                        6 High-Signal Data Sources                      │
+ │   GitHub Trending · GitHub Search · Hacker News · HF Papers · Dev.to · ArXiv AI │
+ └───────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                   Agent 1: Harvester (harvester.py)                    │
+ │    - Concurrent harvesting via ThreadPoolExecutor (<7s total)          │
+ │    - In-batch URL deduplication                                        │
+ │    - 30-day SQLite sliding window filter (eliminates repeat items)    │
+ └───────────────────────────────────┬────────────────────────────────────┘
+                                     │ (Novel RawItems)
+                                     ▼
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                   Agent 2: Processor (processor.py)                    │
+ │    - Groq Cloud API: Primary (openai/gpt-oss-120b)                     │
+ │    - Automatic fallback (qwen/qwen3.8-27b)                             │
+ │    - Pydantic schema validation & Markdown fence stripping            │
+ │    - "Must Read" vs "Inspiration" vs "Skip" categorization             │
+ └───────────────────────────────────┬────────────────────────────────────┘
+                                     │ (Curated TechDigest)
+                                     ▼
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                   Agent 3: Publisher (publisher.py)                    │
+ │    - Compiles structured Markdown report with source badges & tags     │
+ │    - Idempotent export to `digests/YYYY-MM-DD.md`                      │
+ │    - Persists digest summary & items to SQLite historical database     │
+ │    - Windows-safe encoding (cp1252 & UTF-8 resilient)                  │
+ └────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 6 High-Signal Sources
+
+| Source | Collector | Content Type |
+|---|---|---|
+| **GitHub Trending** | `GitHubTrendingCollector` | Top trending repos across Python and all languages |
+| **GitHub Search API** | `GitHubSearchCollector` | Newly active high-star repositories in AI agents & tooling |
+| **Hacker News** | `HackerNewsCollector` | Front-page tech discussions and announcements via Algolia API |
+| **Hugging Face Papers**| `HuggingFacePapersCollector` | Top daily AI/ML research papers with community upvotes |
+| **Dev.to Articles** | `DevToCollector` | Top engineering deep dives in AI, Python, and open-source |
+| **ArXiv AI** | `ArXivCollector` | Cutting-edge preprints in `cs.AI` and `cs.LG` via official Atom API |
+
+---
+
+## Project Structure
+
+```
+AIAgentInitiative/
+├── config/
+│   ├── __init__.py
+│   └── settings.py          # Centralized configuration & user interest profile
+├── src/
+│   ├── __init__.py
+│   ├── models.py            # Pydantic v2 data models (RawItem, DigestItem, TechDigest)
+│   ├── storage/
+│   │   ├── __init__.py
+│   │   └── database.py      # SQLite WAL database & 30-day deduplication engine
+│   ├── collectors/          # Decoupled data collectors with isolated error handling
+│   │   ├── __init__.py
+│   │   ├── base.py          # Abstract BaseCollector with telemetry
+│   │   ├── github_trending.py
+│   │   ├── github_search.py
+│   │   ├── hacker_news.py
+│   │   ├── huggingface.py
+│   │   ├── devto.py
+│   │   └── arxiv_ai.py
+│   ├── agents/
+│   │   ├── __init__.py
+│   │   ├── harvester.py     # Agent 1: Parallel harvesting & deduplication
+│   │   ├── processor.py     # Agent 2: Groq LLM filter & categorizer with fallback
+│   │   └── publisher.py     # Agent 3: Markdown compiler & exporter
+│   └── orchestrator.py      # End-to-end pipeline coordinator
+├── tests/                   # Comprehensive pytest test suite (13/13 passing)
+│   ├── __init__.py
+│   ├── test_models.py       # Pydantic validation tests
+│   ├── test_database.py     # SQLite deduplication & window tests
+│   ├── test_collectors.py   # Collector parsing & error isolation tests
+│   └── test_pipeline.py     # End-to-end integration tests
+├── digests/                 # Generated daily Markdown reports (YYYY-MM-DD.md)
+├── data/                    # SQLite database storage (tech_digest.db)
+├── .github/workflows/
+│   └── digest.yml           # GitHub Actions automated daily cron job (8 AM UTC)
+├── main.py                  # CLI entry point (--dry-run, --stats, --date)
+├── requirements.txt         # Dependencies
+├── pytest.ini               # Pytest configuration
+├── .env.example             # Template for API credentials
+└── README.md
+```
+
+---
+
+## Quick Start
+
+### 1. Installation
+
+```bash
+git clone https://github.com/YOUR_USERNAME/tech-digest-bot.git
+cd tech-digest-bot
+pip install -r requirements.txt
+```
+
+### 2. Configure Environment
+
+Create `.env` using `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+Add your free Groq API key:
+```ini
+GROQ_API_KEY=gsk_your_groq_api_key_here
+```
+
+### 3. Run Pipeline
+
+```bash
+# Standard daily run
+python main.py
+
+# Preview items without persisting to database or file
+python main.py --dry-run
+
+# Inspect historical deduplication database stats
+python main.py --stats
+
+# Run full test suite
+pytest
+```
+
+---
+
+## Zero-Cost Infrastructure
+
+- **LLM Inference**: $0 (Groq Cloud API free tier, using `openai/gpt-oss-120b` and `qwen/qwen3.8-27b`)
+- **Automated Scheduling**: $0 (GitHub Actions scheduled cron at 8:00 AM UTC)
+- **Database & State**: $0 (Local SQLite file with WAL mode, committed or cached)
+- **Feed Ingestion**: $0 (All public APIs & RSS feeds)
