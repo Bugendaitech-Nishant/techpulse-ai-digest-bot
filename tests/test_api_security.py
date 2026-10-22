@@ -157,3 +157,16 @@ def test_background_harvest_submission(client, monkeypatch):
     data = res.json()
     assert data["status"] == "accepted"
     assert "background" in data["message"].lower()
+
+
+def test_dashboard_and_curated_digests_endpoints(client):
+    """Verify both / and /curated-digests return status 200 with HTML content."""
+    res_home = client.get("/")
+    assert res_home.status_code == 200
+    assert "text/html" in res_home.headers.get("content-type", "")
+    assert "TechPulse" in res_home.text
+
+    res_archive = client.get("/curated-digests")
+    assert res_archive.status_code == 200
+    assert "text/html" in res_archive.headers.get("content-type", "")
+    assert "Curated" in res_archive.text or "Digest" in res_archive.text

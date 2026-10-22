@@ -89,6 +89,15 @@ def get_dashboard(request: Request):
     return FileResponse(index_file)
 
 
+@app.get("/curated-digests")
+def get_curated_digests(request: Request):
+    """Serve the Curated Digests Archive web UI."""
+    archive_file = WEB_DIR / "curated_digests.html"
+    if not archive_file.exists():
+        raise HTTPException(status_code=404, detail="Curated Digests UI not compiled.")
+    return FileResponse(archive_file)
+
+
 @app.get("/api/health")
 @limiter.limit("120/minute")
 def get_health(request: Request) -> Dict[str, Any]:

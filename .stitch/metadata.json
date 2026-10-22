@@ -1,0 +1,33 @@
+{
+  "name": "projects/17792133599145232927",
+  "projectId": "17792133599145232927",
+  "title": "TechPulse AI Design System",
+  "visibility": "PRIVATE",
+  "projectType": "PROJECT_DESIGN",
+  "origin": "STITCH",
+  "deviceType": "DESKTOP",
+  "designTheme": {
+    "name": "Obsidian Telemetry",
+    "colorMode": "DARK",
+    "font": "Outfit / JetBrains Mono",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#10b981",
+    "saturation": 3
+  },
+  "screens": {
+    "live-feed": {
+      "id": "a938963a0db04a9ba84883e49be6e2b8",
+      "sourceScreen": "projects/17792133599145232927/screens/a938963a0db04a9ba84883e49be6e2b8",
+      "title": "TechPulse AI Digest Live Feed Dashboard",
+      "localHtml": ".stitch/designs/live_feed_dashboard.html",
+      "localScreenshot": ".stitch/designs/live_feed_dashboard.png"
+    },
+    "curated-digests": {
+      "id": "a227f794d9e54398b33bae9f6851aca8",
+      "sourceScreen": "projects/17792133599145232927/screens/a227f794d9e54398b33bae9f6851aca8",
+      "title": "TechPulse AI Digest Curated Digests Archive",
+      "localHtml": ".stitch/designs/curated_digests_archive.html",
+      "localScreenshot": ".stitch/designs/curated_digests_archive.png"
+    }
+  }
+}

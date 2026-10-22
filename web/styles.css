@@ -154,6 +154,46 @@ body {
   font-weight: 600;
 }
 
+/* Stitch Navigation Pill Rail */
+.nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-input);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+}
+
+.nav-pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-body);
+  text-decoration: none;
+  transition: all 0.2s var(--ease-spring);
+}
+
+.nav-pill:hover {
+  color: var(--text-title);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-pill.active {
+  background: var(--emerald);
+  color: #003824;
+  font-weight: 600;
+  box-shadow: 0 0 16px rgba(var(--emerald-rgb), 0.3);
+}
+
+@media (max-width: 900px) {
+  .nav-pills {
+    display: none;
+  }
+}
+
 .header-actions {
   display: flex;
   align-items: center;
