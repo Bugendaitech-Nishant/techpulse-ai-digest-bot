@@ -206,3 +206,18 @@ def test_keyboard_flight_navigation(browser_page):
     browser_page.wait_for_timeout(300)
     returned_title = browser_page.locator("#sticky-inspector .inspector-title").inner_text()
     assert returned_title == initial_title
+
+
+def test_quota_and_cooldown_indicator(browser_page):
+    """Verify that quota pill in header displays rate limit and cooldown metrics."""
+    quota_pill = browser_page.locator("#quota-pill")
+    quota_dot = browser_page.locator("#quota-dot")
+    quota_text = browser_page.locator("#quota-text")
+
+    expect(quota_pill).to_be_visible()
+    expect(quota_dot).to_be_visible()
+    expect(quota_text).to_be_visible()
+
+    text_content = quota_text.inner_text().strip()
+    assert ("left/hr" in text_content or "Ready" in text_content or "Cooldown" in text_content)
+

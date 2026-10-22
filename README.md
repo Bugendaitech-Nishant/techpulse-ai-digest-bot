@@ -120,6 +120,10 @@ AIAgentInitiative/
 │   ├── storage/
 │   │   ├── __init__.py
 │   │   └── database.py      # SQLite WAL database & 30-day deduplication engine
+│   ├── security/            # Rate limiting, hourly caps, & in-memory caching
+│   │   ├── __init__.py
+│   │   ├── quota_manager.py # Concurrency lock, harvest cooldown, & sliding-window hourly caps
+│   │   └── cache_manager.py # In-memory TTL cache with instant invalidation
 │   ├── collectors/          # Decoupled data collectors with isolated error handling
 │   │   ├── __init__.py
 │   │   ├── base.py          # Abstract BaseCollector with telemetry
@@ -135,21 +139,62 @@ AIAgentInitiative/
 │   │   ├── processor.py     # Agent 2: Groq LLM filter & categorizer with fallback
 │   │   └── publisher.py     # Agent 3: Markdown compiler & exporter
 │   └── orchestrator.py      # End-to-end pipeline coordinator
-├── tests/                   # Comprehensive pytest test suite (13/13 passing)
+├── tests/                   # Complete test suite (30/30 passing)
 │   ├── __init__.py
 │   ├── test_models.py       # Pydantic validation tests
 │   ├── test_database.py     # SQLite deduplication & window tests
 │   ├── test_collectors.py   # Collector parsing & error isolation tests
-│   └── test_pipeline.py     # End-to-end integration tests
+│   ├── test_pipeline.py     # End-to-end integration tests
+│   ├── test_api_security.py # Rate limits, cooldowns, caps, and caching tests
+│   └── test_ui_playwright.py# Playwright browser E2E test suite (10/10)
 ├── digests/                 # Generated daily Markdown reports (YYYY-MM-DD.md)
 ├── data/                    # SQLite database storage (tech_digest.db)
-├── .github/workflows/
-│   └── digest.yml           # GitHub Actions automated daily cron job (8 AM UTC)
+├── Dockerfile               # Production container definition with health check
+├── fly.toml                 # Free-tier Fly.io config with persistent volume mount
 ├── main.py                  # CLI entry point (--dry-run, --stats, --date)
+├── api.py                   # Hardened FastAPI server with slowapi & telemetry
 ├── requirements.txt         # Dependencies
 ├── pytest.ini               # Pytest configuration
-├── .env.example             # Template for API credentials
+├── .env.example             # Template for API credentials & security controls
 └── README.md
+```
+
+---
+
+## Production Security & Rate Limiting
+
+The application includes built-in protection against API abuse and quota exhaustion:
+
+| Security Layer | Policy | Action on Breach |
+|---|---|---|
+| **Read Rate Limit** | 60 requests / minute per IP | Returns `429 Too Many Requests` |
+| **Harvest Rate Limit** | 5 requests / hour per IP | Returns `429 Too Many Requests` |
+| **Global Harvest Cooldown** | 10 minutes mandatory minimum gap | Returns `429` with remaining seconds |
+| **Hourly Global Cap** | Max 4 harvests / hour (sliding window) | Returns `429` with slot reset countdown |
+| **Concurrency Lock** | Only 1 harvest executes at any given time | Returns `409 Conflict` |
+| **Response Caching** | 5-min in-memory cache for digests & stats | `X-Cache: HIT`, `Cache-Control` |
+| **Optional API Key** | `X-API-Key` header authentication | Returns `401 Unauthorized` |
+| **Health Check** | `GET /api/health` cloud health monitoring | Returns 200 with DB & quota telemetry |
+
+---
+
+## Free-Tier Cloud Deployment (Fly.io)
+
+### Why Fly.io for Free Tier?
+Standard free PaaS (like Render or Railway) use **ephemeral disks** — your SQLite database is deleted on every deploy or idle restart. Fly.io supports **persistent volume mounts on free tiers**, ensuring zero data loss.
+
+### Deploy in 3 Commands:
+
+```bash
+# 1. Install Fly CLI and launch app
+fly launch --no-deploy
+
+# 2. Create a persistent 1GB volume for SQLite database
+fly volumes create techpulse_data --region iad --size 1
+
+# 3. Set your Groq API secret and deploy
+fly secrets set GROQ_API_KEY="gsk_your_groq_key_here"
+fly deploy
 ```
 
 ---
@@ -159,8 +204,8 @@ AIAgentInitiative/
 ### 1. Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/tech-digest-bot.git
-cd tech-digest-bot
+git clone https://github.com/Bugendaitech-Nishant/techpulse-ai-digest-bot.git
+cd techpulse-ai-digest-bot
 pip install -r requirements.txt
 ```
 
@@ -177,20 +222,17 @@ Add your free Groq API key:
 GROQ_API_KEY=gsk_your_groq_api_key_here
 ```
 
-### 3. Run Pipeline
+### 3. Run Web Observatory Server
 
 ```bash
-# Standard daily run
-python main.py
+python -m uvicorn api:app --host 127.0.0.1 --port 8000 --reload
+```
+Navigate to `http://localhost:8000` to access the Cockpit interface.
 
-# Preview items without persisting to database or file
-python main.py --dry-run
+### 4. Run Full Test Suite
 
-# Inspect historical deduplication database stats
-python main.py --stats
-
-# Run full test suite
-pytest
+```bash
+pytest tests/ -v
 ```
 
 ---
@@ -198,6 +240,7 @@ pytest
 ## Zero-Cost Infrastructure
 
 - **LLM Inference**: $0 (Groq Cloud API free tier, using `openai/gpt-oss-120b` and `qwen/qwen3.8-27b`)
-- **Automated Scheduling**: $0 (GitHub Actions scheduled cron at 8:00 AM UTC)
-- **Database & State**: $0 (Local SQLite file with WAL mode, committed or cached)
+- **Web & API Host**: $0 (Fly.io free tier or Render)
+- **Database & State**: $0 (Persistent SQLite volume with WAL mode)
+- **Rate-Limiting & Caching**: $0 (In-memory token bucket + SlowAPI)
 - **Feed Ingestion**: $0 (All public APIs & RSS feeds)

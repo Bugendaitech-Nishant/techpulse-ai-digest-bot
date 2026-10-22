@@ -273,6 +273,14 @@ function renderKPIs() {
         : state.stats.llm_model;
       document.getElementById('kpi-engine').textContent = modelShort;
     }
+    if (state.stats.quota) {
+      renderQuota(state.stats.quota);
+      if (state.stats.quota.cooldown_active) {
+        document.getElementById('kpi-latency').textContent = 'Cooldown Active';
+      } else {
+        document.getElementById('kpi-latency').textContent = `${state.stats.quota.hourly_harvests_remaining}/${state.stats.quota.hourly_harvests_max} Quota`;
+      }
+    }
   }
 
   if (state.digest && state.digest.items) {
@@ -281,6 +289,41 @@ function renderKPIs() {
 
     document.getElementById('kpi-must-read').textContent = mustReads;
     document.getElementById('kpi-inspiration').textContent = inspirations;
+  }
+}
+
+function renderQuota(quota) {
+  const dot = document.getElementById('quota-dot');
+  const text = document.getElementById('quota-text');
+  const btn = document.getElementById('btn-harvest');
+  if (!dot || !text || !quota) return;
+
+  dot.classList.remove('warning', 'danger');
+  if (btn) btn.classList.remove('is-cooldown');
+
+  if (quota.is_harvesting) {
+    dot.classList.add('warning');
+    text.textContent = 'Harvest Active';
+  } else if (quota.cooldown_active) {
+    dot.classList.add('warning');
+    const mins = Math.ceil(quota.cooldown_remaining_seconds / 60);
+    text.textContent = `Cooldown (${mins}m)`;
+    if (btn) {
+      btn.classList.add('is-cooldown');
+      btn.title = `Harvest on cooldown: wait ${quota.cooldown_remaining_seconds}s`;
+    }
+  } else if (quota.hourly_harvests_remaining <= 0) {
+    dot.classList.add('danger');
+    text.textContent = `Cap Reached (0/${quota.hourly_harvests_max})`;
+    if (btn) {
+      btn.classList.add('is-cooldown');
+      btn.title = `Hourly harvest cap reached (${quota.hourly_harvests_max}/hr)`;
+    }
+  } else {
+    text.textContent = `${quota.hourly_harvests_remaining}/${quota.hourly_harvests_max} left/hr`;
+    if (btn) {
+      btn.title = 'Trigger on-demand multi-source harvest';
+    }
   }
 }
 
@@ -708,16 +751,21 @@ async function handleHarvestClick() {
     const res = await fetch('/api/harvest', { method: 'POST' });
     const data = await res.json();
 
-    if (data.success) {
+    if (res.ok && data.success) {
       state.digest = data.digest;
       await loadData();
       showToast(`Harvest complete in ${data.execution.duration_seconds}s! (${data.execution.must_reads} Must Read)`);
     } else {
-      showToast('Harvest completed with no new updates.');
+      // 429 Cooldown / Rate Limit or 409 In Progress
+      const errMsg = data.error || data.detail || 'Harvest request rejected.';
+      showToast(errMsg);
+      if (data.quota) {
+        renderQuota(data.quota);
+      }
     }
   } catch (err) {
     console.error('Harvest trigger error:', err);
-    showToast('Harvest failed. Check API server logs.');
+    showToast('Harvest request failed. Check server connection.');
   } finally {
     state.isHarvesting = false;
     btn.classList.remove('is-loading');

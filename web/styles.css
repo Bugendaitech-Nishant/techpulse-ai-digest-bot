@@ -221,6 +221,52 @@ body {
   transform: scale(0.98);
 }
 
+.quota-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-hairline);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  user-select: none;
+  transition: all 0.2s var(--ease-spring);
+}
+
+.quota-pill:hover {
+  border-color: var(--border-hover);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.quota-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 8px rgba(var(--emerald-rgb), 0.5);
+  transition: all 0.2s ease;
+}
+
+.quota-indicator-dot.warning {
+  background: var(--amber);
+  box-shadow: 0 0 8px rgba(var(--amber-rgb), 0.5);
+}
+
+.quota-indicator-dot.danger {
+  background: #f87171;
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
+}
+
+.btn-primary.is-cooldown {
+  opacity: 0.65;
+  cursor: not-allowed;
+  border-color: rgba(var(--amber-rgb), 0.4);
+  color: var(--amber);
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;

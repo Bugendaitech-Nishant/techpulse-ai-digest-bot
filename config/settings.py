@@ -6,7 +6,7 @@ and storage paths.
 
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from dotenv import load_dotenv
 
 # Load local environment variables from .env
@@ -70,6 +70,15 @@ class Settings:
     LIMIT_HUGGINGFACE_PAPERS: int = 15
     LIMIT_DEVTO: int = 15
     LIMIT_ARXIV: int = 15
+
+    # ─── Production Security & Rate Limiting ────────────────────────────
+    APP_VERSION: str = "2.1.0"
+    RATE_LIMIT_READ: str = os.getenv("RATE_LIMIT_READ", "60/minute")
+    RATE_LIMIT_HARVEST: str = os.getenv("RATE_LIMIT_HARVEST", "5/hour")
+    HARVEST_COOLDOWN_SECONDS: int = int(os.getenv("HARVEST_COOLDOWN_SECONDS", "600"))  # 10 min
+    MAX_HARVESTS_PER_HOUR: int = int(os.getenv("MAX_HARVESTS_PER_HOUR", "4"))
+    HARVEST_API_KEY: Optional[str] = os.getenv("HARVEST_API_KEY", None)
+    CACHE_TTL_SECONDS: int = int(os.getenv("CACHE_TTL_SECONDS", "300"))  # 5 min
 
 
 settings = Settings()
