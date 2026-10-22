@@ -40,3 +40,7 @@ data/*.db
 data/*.db-wal
 data/*.db-shm
 
+# Presentation generator scripts
+generate_deck.py
+
+
