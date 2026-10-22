@@ -12,7 +12,7 @@ def test_database_initialization():
     """Verify that database tables and indexes are created properly."""
     with tempfile.TemporaryDirectory() as tmpdir:
         db_path = Path(tmpdir) / "test.db"
-        db = DigestDatabase(db_path)
+        db = DigestDatabase(db_path, auto_hydrate=False)
         assert db_path.exists()
         stats = db.get_stats()
         assert stats["total_seen_urls"] == 0
@@ -100,3 +100,21 @@ def test_record_digest():
         stats = db.get_stats()
         assert stats["total_digests_generated"] == 1
         assert stats["total_must_reads"] == 1
+
+
+def test_auto_hydration_from_markdown():
+    """Verify that a brand new empty database auto-hydrates from committed markdown files."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        db_path = Path(tmpdir) / "fresh_autohydrate.db"
+        # Initializing the database will trigger auto-hydration from digests/*.md
+        db = DigestDatabase(db_path)
+
+        digests = db.list_digests()
+        assert len(digests) >= 1  # Should find 2026-10-22.md or other committed digests
+        latest = db.get_latest_digest()
+        assert latest is not None
+        assert len(latest["items"]) > 0
+
+        # Verify seen_items deduplication table was also hydrated
+        stats = db.get_stats()
+        assert stats["total_seen_urls"] > 0

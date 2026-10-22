@@ -4,6 +4,7 @@ Maintains a 30-day sliding deduplication window to ensure recurring items
 are not recommended repeatedly across daily digests.
 """
 
+import re
 import sqlite3
 import hashlib
 import logging
@@ -21,8 +22,9 @@ logger = logging.getLogger(__name__)
 class DigestDatabase:
     """Manages SQLite persistence for deduplication and historical metrics."""
 
-    def __init__(self, db_path: Path):
+    def __init__(self, db_path: Path, auto_hydrate: bool = True):
         self.db_path = Path(db_path)
+        self.auto_hydrate = auto_hydrate
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
@@ -81,7 +83,103 @@ class DigestDatabase:
                 );
             """)
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_digest_items_date ON digest_items(digest_date);")
+
+            # Auto-hydrate database if newly created / empty (critical for ephemeral servers like Render)
+            if self.auto_hydrate:
+                cursor.execute("SELECT COUNT(*) FROM digests;")
+                if cursor.fetchone()[0] == 0:
+                    self._auto_hydrate_from_markdown(cursor)
+
             conn.commit()
+
+    def _auto_hydrate_from_markdown(self, cursor: sqlite3.Cursor) -> None:
+        """
+        Auto-hydrate SQLite database from committed Markdown files in digests/.
+        Ensures historical digests and deduplication state survive ephemeral server restarts (e.g. Render).
+        """
+        from config.settings import settings
+        digests_dir = settings.DIGESTS_DIR
+        if not digests_dir.exists():
+            return
+
+        md_files = sorted(digests_dir.glob("*.md"))
+        now = datetime.now(timezone.utc).isoformat()
+        total_digests = 0
+        total_items = 0
+
+        for md_file in md_files:
+            date_str = md_file.stem
+            if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
+                continue
+
+            try:
+                content = md_file.read_text(encoding="utf-8", errors="replace")
+            except Exception as e:
+                logger.warning(f"Could not read {md_file} for auto-hydration: {e}")
+                continue
+
+            parsed_items = []
+            for section in content.split("\n## "):
+                sec_title = section.split("\n")[0].strip()
+                if "Must Read" in sec_title:
+                    current_cat = "Must Read"
+                elif "Inspiration" in sec_title:
+                    current_cat = "Inspiration"
+                else:
+                    continue
+
+                item_blocks = re.split(r"\n### \d+\. ", "\n" + section)
+                for block in item_blocks[1:]:
+                    m_link = re.search(r"\[(.*?)\]\((.*?)\)", block)
+                    if not m_link:
+                        continue
+                    title = m_link.group(1).strip()
+                    url = m_link.group(2).strip()
+
+                    m_source = re.search(r"\*\*Source\*\*:\s*([^\n`·]+)", block)
+                    source = m_source.group(1).strip() if m_source else "Feed"
+
+                    m_summary = re.search(r"\*\*Summary\*\*:\s*(.*?)(?=\n\n\*\*Why|\Z)", block, re.DOTALL)
+                    summary = m_summary.group(1).strip() if m_summary else ""
+
+                    m_why = re.search(r"\*\*Why It Matters\*\*:\s*(.*?)(?=\n\n---|\n---|\Z)", block, re.DOTALL)
+                    why = m_why.group(1).strip() if m_why else ""
+
+                    parsed_items.append({
+                        "title": title,
+                        "url": url,
+                        "source": source,
+                        "category": current_cat,
+                        "summary": summary,
+                        "why_it_matters": why,
+                    })
+
+            if parsed_items:
+                cursor.execute("""
+                    INSERT OR IGNORE INTO digests (date, total_harvested, total_curated, created_at)
+                    VALUES (?, ?, ?, ?)
+                """, (date_str, len(parsed_items), len(parsed_items), now))
+
+                for item in parsed_items:
+                    cursor.execute("""
+                        INSERT INTO digest_items (
+                            digest_date, title, url, source, category, summary, why_it_matters, created_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        date_str, item["title"], item["url"], item["source"],
+                        item["category"], item["summary"], item["why_it_matters"], now
+                    ))
+                    h = self.hash_url(item["url"])
+                    cursor.execute("""
+                        INSERT OR IGNORE INTO seen_items (url_hash, url, title, source, first_seen_at, last_seen_at)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    """, (h, item["url"], item["title"], item["source"], now, now))
+
+                total_digests += 1
+                total_items += len(parsed_items)
+
+        if total_digests > 0:
+            logger.info(f"Auto-hydrated database with {total_items} items across {total_digests} digests from markdown.")
 
     @staticmethod
     def hash_url(url: str) -> str:

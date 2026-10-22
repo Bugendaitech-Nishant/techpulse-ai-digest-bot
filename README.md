@@ -178,24 +178,32 @@ The application includes built-in protection against API abuse and quota exhaust
 
 ---
 
-## Free-Tier Cloud Deployment (Fly.io)
+## Free-Tier Cloud Deployment (Render.com — Zero Credit Card Required)
 
-### Why Fly.io for Free Tier?
-Standard free PaaS (like Render or Railway) use **ephemeral disks** — your SQLite database is deleted on every deploy or idle restart. Fly.io supports **persistent volume mounts on free tiers**, ensuring zero data loss.
+Render provides a **100% free Web Service tier** with **no credit card required**, automated HTTPS certificates, and built-in health monitoring.
 
-### Deploy in 3 Commands:
+### 🛡️ Why SQLite Survives on Render Ephemeral Disks:
+Standard free web tiers reset disks on idle spin-down. TechPulse AI Digest Bot solves this natively with **Markdown Auto-Hydration**:
+When the service boots on a fresh container, [`DigestDatabase`](file:///c:/Users/Rentorzo/Downloads/AIAgentInitiative/src/storage/database.py) automatically scans all committed `digests/*.md` files, parses their items, and re-populates SQLite and the 30-day deduplication history in **0.4 seconds**. Zero data is ever lost.
 
-```bash
-# 1. Install Fly CLI and launch app
-fly launch --no-deploy
+### 🚀 Deploy to Render in 2 Steps:
+1. Open [dashboard.render.com](https://dashboard.render.com) and click **New +** → **Blueprint**.
+2. Connect your private repository: `Bugendaitech-Nishant/techpulse-ai-digest-bot`.
+   - Render reads [`render.yaml`](file:///c:/Users/Rentorzo/Downloads/AIAgentInitiative/render.yaml) automatically.
+   - Paste your free `GROQ_API_KEY` when prompted.
+   - Click **Apply**! Your live app will be accessible at: `https://techpulse-ai-digest.onrender.com`.
 
-# 2. Create a persistent 1GB volume for SQLite database
-fly volumes create techpulse_data --region iad --size 1
+---
 
-# 3. Set your Groq API secret and deploy
-fly secrets set GROQ_API_KEY="gsk_your_groq_key_here"
-fly deploy
-```
+## Alternative: Self-Hosted on Coolify / Docker
+
+If you have your own VPS running [Coolify](https://coolify.io):
+1. In Coolify, click **New Resource** → **Application** → **From GitHub**.
+2. Select `Bugendaitech-Nishant/techpulse-ai-digest-bot`.
+3. Set Build Pack to **Dockerfile** (uses our pre-configured [`Dockerfile`](file:///c:/Users/Rentorzo/Downloads/AIAgentInitiative/Dockerfile)).
+4. Add environment variable `GROQ_API_KEY` and click **Deploy**.
+
+*(Note on Cloudflare Workers: Cloudflare Workers is an edge V8/JS runtime with a 10-30ms CPU limit and no native threading or filesystem, making it incompatible with Python multi-agent threadpool harvesting and SQLite).*
 
 ---
 

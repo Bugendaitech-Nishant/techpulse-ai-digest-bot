@@ -1,0 +1,30 @@
+# render.yaml — Render.com Blueprint specification for TechPulse AI Digest Bot
+# Free-tier Web Service (100% Free, NO Credit Card Required)
+
+services:
+  - type: web
+    name: techpulse-ai-digest
+    env: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: GROQ_API_KEY
+        sync: false # Render will ask you to paste this key when creating the service
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: RATE_LIMIT_READ
+        value: 60/minute
+      - key: RATE_LIMIT_HARVEST
+        value: 5/hour
+      - key: HARVEST_COOLDOWN_SECONDS
+        value: 600
+      - key: MAX_HARVESTS_PER_HOUR
+        value: 4
+      - key: CACHE_TTL_SECONDS
+        value: 300
