@@ -9,7 +9,7 @@ import json
 import logging
 import re
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Callable, Dict, List, Optional
 
 from groq import Groq
 
@@ -29,6 +29,9 @@ TARGET PROFILE:
 FOCUS AREAS:
 {interest_keywords}
 
+PUSH DOWN, EVEN IF POPULAR:
+{avoid_keywords}
+{feedback_block}
 CATEGORIZATION RULES:
 1. "Must Read": Highest priority. Directly relevant to AI agents, LLM architectures, Python dev tooling, or high-impact open source. Write a clear technical summary and why it matters.
 2. "Inspiration": Interesting architectures, side-project ideas, or emerging tech trends.
@@ -71,7 +74,9 @@ class ProcessorAgent:
         self,
         api_key: Optional[str] = None,
         ranking_backend: Optional[RankingBackend] = None,
+        feedback_provider: Optional[Callable[[], Dict[str, List[Dict[str, str]]]]] = None,
     ):
+        self.feedback_provider = feedback_provider
         self.api_key = api_key or settings.GROQ_API_KEY
         self.ranking_backend = ranking_backend or DeterministicV1Backend()
         if not self.api_key:
@@ -126,6 +131,36 @@ class ProcessorAgent:
             ranking_version=self.ranking_backend.metadata.version,
         )
 
+    def _build_system_prompt(self) -> str:
+        """Profile, anti-interests and the reader's own recent ratings as calibration examples."""
+        examples: Dict[str, List[Dict[str, str]]] = {"up": [], "down": []}
+        if self.feedback_provider:
+            try:
+                examples = self.feedback_provider() or examples
+            except Exception as error:  # a broken feedback store must never stop curation
+                logger.warning(f"Agent 2 (Processor): feedback examples unavailable: {error}")
+        return SYSTEM_PROMPT.format(
+            user_profile=settings.USER_PROFILE,
+            interest_keywords="; ".join(settings.USER_INTERESTS),
+            avoid_keywords="; ".join(settings.USER_AVOID) or "nothing specific",
+            feedback_block=self._format_feedback(examples),
+        )
+
+    @staticmethod
+    def _format_feedback(examples: Dict[str, List[Dict[str, str]]]) -> str:
+        """Render the reader's recent verdicts; empty when there are none yet."""
+        def lines(rows: List[Dict[str, str]]) -> str:
+            return "\n".join(f"- {r['title']} ({r.get('source', '')}): {r.get('summary', '')[:140]}" for r in rows)
+
+        parts = []
+        if examples.get("up"):
+            parts.append("The reader found these USEFUL (score items like them higher):\n" + lines(examples["up"]))
+        if examples.get("down"):
+            parts.append("The reader found these NOT USEFUL (score items like them lower):\n" + lines(examples["down"]))
+        if not parts:
+            return ""
+        return "\nREADER FEEDBACK, recent real verdicts. Calibrate to them:\n" + "\n\n".join(parts) + "\n"
+
     @staticmethod
     def _select_for_curation(raw_items: List[RawItem]) -> List[RawItem]:
         """Cap the run at LLM_MAX_ITEMS, taking the best of each source in turn so none is starved."""
@@ -152,10 +187,7 @@ class ProcessorAgent:
             }
             for item in chunk
         ]
-        system_msg = SYSTEM_PROMPT.format(
-            user_profile=settings.USER_PROFILE,
-            interest_keywords=", ".join(settings.USER_INTERESTS),
-        )
+        system_msg = self._build_system_prompt()
         user_msg = "Please curate and categorize these items:\n\n" + json.dumps(payload, indent=2)
 
         for model in models_to_try:

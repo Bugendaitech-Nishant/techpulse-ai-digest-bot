@@ -75,3 +75,20 @@ def test_end_to_end_pipeline_with_mock_data():
         # Verify database persisted the digest
         stats = db.get_stats()
         assert stats["total_digests_generated"] == 1
+
+
+def test_second_run_on_the_same_day_adds_to_the_digest_instead_of_replacing_it():
+    from src.models import DigestItem, TechDigest
+    from src.orchestrator import DigestOrchestrator
+
+    def item(n, category="Must Read", score=0.0):
+        return DigestItem(title=f"T{n}", url=f"https://e.com/{n}", source="s", category=category,
+                          summary="s", why_it_matters="w", priority_score=score)
+
+    existing = {"total_harvested": 80, "items": [item(1, score=50).model_dump(), item(2, "Inspiration").model_dump()]}
+    new = TechDigest(date="2026-10-23", items=[item(3, score=70), item(1, score=90)], total_harvested=38)
+    merged = DigestOrchestrator.merge_same_day(existing, new)
+    assert [i.url for i in merged.items] == ["https://e.com/1", "https://e.com/3", "https://e.com/2"]
+    assert merged.items[0].priority_score == 90  # the fresh copy of a repeated URL wins
+    assert merged.total_harvested == 118 and merged.total_curated == 3
+    assert [i.rank for i in merged.items] == [1, 2, 3]

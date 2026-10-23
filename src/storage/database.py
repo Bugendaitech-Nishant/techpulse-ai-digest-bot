@@ -27,6 +27,10 @@ class DigestDatabase:
         self.auto_hydrate = auto_hydrate
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
+        if auto_hydrate:
+            # The rating log (local file, or the feedback branch checked out by CI) is replayed on every start.
+            from src.feedback import read_events
+            self.load_feedback_events(read_events())
 
     @contextmanager
     def _connection(self):
@@ -82,6 +86,20 @@ class DigestDatabase:
                     why_it_matters TEXT NOT NULL,
                     created_at TEXT NOT NULL,
                     FOREIGN KEY(digest_date) REFERENCES digests(date)
+                );
+            """)
+
+            # Table 4: Reader ratings (thumbs up / down) per URL
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS feedback (
+                    url TEXT PRIMARY KEY,
+                    url_hash TEXT NOT NULL,
+                    rating INTEGER NOT NULL,
+                    title TEXT NOT NULL DEFAULT '',
+                    source TEXT NOT NULL DEFAULT '',
+                    summary TEXT NOT NULL DEFAULT '',
+                    category TEXT NOT NULL DEFAULT '',
+                    rated_at TEXT NOT NULL
                 );
             """)
             for column in (
@@ -316,6 +334,72 @@ class DigestDatabase:
                     ))
 
             conn.commit()
+
+    # ─── Reader feedback ────────────────────────────────────────────────
+
+    def record_feedback(self, event: Dict[str, Any]) -> bool:
+        """Store a rating event; an older event never overwrites a newer one. Returns True if stored."""
+        with self._connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT rated_at FROM feedback WHERE url = ?;", (event["url"],))
+            row = cursor.fetchone()
+            if row and row["rated_at"] > event["at"]:
+                return False
+            cursor.execute(
+                """
+                INSERT INTO feedback (url, url_hash, rating, title, source, summary, category, rated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(url) DO UPDATE SET
+                    rating = excluded.rating, title = excluded.title, source = excluded.source,
+                    summary = excluded.summary, category = excluded.category, rated_at = excluded.rated_at;
+                """,
+                (
+                    event["url"], self.hash_url(event["url"]), event["rating"], event.get("title", ""),
+                    event.get("source", ""), event.get("summary", ""), event.get("category", ""), event["at"],
+                ),
+            )
+            conn.commit()
+            return True
+
+    def load_feedback_events(self, events: List[Dict[str, Any]]) -> int:
+        """Replay a durable log into the table (used at start-up). Returns how many were applied."""
+        return sum(1 for event in events if self.record_feedback(event))
+
+    def get_feedback_map(self) -> Dict[str, int]:
+        """Current rating per URL, cleared ratings (0) excluded."""
+        with self._connection() as conn:
+            rows = conn.execute("SELECT url, rating FROM feedback WHERE rating != 0;").fetchall()
+        return {row["url"]: row["rating"] for row in rows}
+
+    def get_feedback_examples(self, limit: int = 8) -> Dict[str, List[Dict[str, Any]]]:
+        """Most recent liked and disliked items, for calibrating the curator."""
+        out: Dict[str, List[Dict[str, Any]]] = {"up": [], "down": []}
+        with self._connection() as conn:
+            for key, rating in (("up", 1), ("down", -1)):
+                rows = conn.execute(
+                    "SELECT title, source, summary FROM feedback WHERE rating = ? AND title != '' "
+                    "ORDER BY rated_at DESC LIMIT ?;",
+                    (rating, limit),
+                ).fetchall()
+                out[key] = [dict(r) for r in rows]
+        return out
+
+    def get_feedback_counts(self) -> Dict[str, int]:
+        with self._connection() as conn:
+            rows = conn.execute("SELECT rating, COUNT(*) AS n FROM feedback WHERE rating != 0 GROUP BY rating;").fetchall()
+        counts = {row["rating"]: row["n"] for row in rows}
+        return {"up": counts.get(1, 0), "down": counts.get(-1, 0)}
+
+    def find_item_by_hash(self, url_hash: str) -> Optional[Dict[str, Any]]:
+        """Look a digest item up by the hash of its URL (email links carry the hash, not the URL)."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT title, url, source, category, summary FROM digest_items ORDER BY id DESC;"
+            ).fetchall()
+        for row in rows:
+            if self.hash_url(row["url"]) == url_hash:
+                return dict(row)
+        return None
 
     def get_stats(self) -> Dict[str, Any]:
         """Fetch summary statistics from the database."""

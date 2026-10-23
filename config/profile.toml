@@ -1,0 +1,29 @@
+# Who the digest is for. Edit this file; the curator reads it on every run.
+# Changes take effect at the next harvest. Keep each line short and concrete.
+
+summary = """
+Staff Software Engineer and AI architect who builds autonomous agent workflows in Python,
+runs open-source AI models, and ships production cloud infrastructure.
+"""
+
+# What is worth surfacing. The first lines weigh most.
+interests = [
+  "Security incidents and advisories in tools an engineer runs (LLM libraries, Python packages, runtimes)",
+  "AI agents and multi-agent systems that can be built on today",
+  "Open-source AI infrastructure: inference serving, RAG, routing, evaluation",
+  "Local LLMs and model optimization",
+  "Python developer tooling and frameworks",
+  "Cloud automation and serverless architectures",
+  "High-performance backend systems",
+]
+
+# What to push down even when it is popular.
+avoid = [
+  "Entertainment, gaming and consumer-product business news",
+  "Cryptocurrency and trading hype",
+  "Pure benchmark or robotics and 3D-vision research with no path to agent or tooling work",
+  "Marketing posts, launch announcements without technical detail, tutorials for beginners",
+]
+
+# Tools and packages you run; used to rank security items first (Phase 3).
+tools = ["python", "litellm", "langchain", "fastapi", "pydantic", "postgresql", "docker"]

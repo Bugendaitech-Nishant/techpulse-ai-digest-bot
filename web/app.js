@@ -14,6 +14,8 @@ const state = {
   selectedDate: 'latest',
   stats: null,
   insights: null,
+  ratings: {}, // url -> 1 useful, -1 not useful
+  feedback: { persistent: false, write_requires_key: false },
   viewMode: 'grid', // 'grid' (ranked list) | 'cockpit' (split view)
   activeCategory: 'curated',
   activeSource: 'all',
@@ -154,12 +156,17 @@ async function loadData() {
   setBusy(true);
 
   try {
-    const [stats, digests, insights] = await Promise.all([
+    const [stats, digests, insights, feedback] = await Promise.all([
       refreshQuota(),
       getJson('/api/digests').catch(() => []),
       getJson('/api/insights').catch(() => null),
+      getJson('/api/feedback').catch(() => null),
     ]);
     state.stats = stats;
+    if (feedback) {
+      state.ratings = feedback.ratings || {};
+      state.feedback = feedback;
+    }
     state.availableDigests = Array.isArray(digests) ? digests : [];
     state.insights = insights;
     await loadDigest();
@@ -229,6 +236,7 @@ function renderReadings() {
   const version = state.digest && state.digest.ranking_version;
   document.getElementById('kpi-latency').textContent = backend ? `ranked by ${backend} ${version || ''}`.trim() : 'ranking backend';
 
+  renderFeedbackNote();
   const sub = document.getElementById('page-sub');
   if (state.digest) {
     const kept = state.digest.total_harvested ? ` from ${state.digest.total_harvested} harvested` : '';
@@ -399,6 +407,7 @@ function buildSignalCard(item, index) {
     <div class="card-foot">
       <span class="badge-source">${escapeHtml(sourceName(item.source))}</span>
       <span class="score-badge ${badgeClass(item.category)}">${escapeHtml(categoryLabel(item.category))}</span>
+      ${rateButtons(item.url)}
       <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="action-link">Open</a>
     </div>`;
 
@@ -415,7 +424,10 @@ function buildSignalCard(item, index) {
       openModal(item, card);
     }
   };
-  card.addEventListener('click', activate);
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.rate')) return; // rating a row must not also open it
+    activate();
+  });
   card.addEventListener('keydown', (e) => {
     if (e.target !== card) return;
     if (e.key === 'Enter' || e.key === ' ') {
@@ -441,6 +453,7 @@ function buildInspectorHtml(item) {
         <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open source</a>
         <button type="button" class="btn" data-copy="${escapeHtml(item.url)}">Copy link</button>
       </div>
+      ${rateButtons(item.url)}
     </div>
 
     <div class="inspector-section">
@@ -462,7 +475,76 @@ function buildInspectorHtml(item) {
     </dl>`;
 }
 
+// ─── Ratings ───────────────────────────────────────────────────────────────
+
+function rateButtons(url) {
+  const current = state.ratings[url] || 0;
+  const u = escapeHtml(url);
+  return `<span class="rate" role="group" aria-label="Rate this item">
+    <button type="button" class="rate-btn" data-rate="1" data-url="${u}" aria-pressed="${current === 1}">Useful</button>
+    <button type="button" class="rate-btn" data-rate="-1" data-url="${u}" aria-pressed="${current === -1}">Not useful</button>
+  </span>`;
+}
+
+function paintRatings(url) {
+  const current = state.ratings[url] || 0;
+  document.querySelectorAll('.rate-btn').forEach((b) => {
+    if (b.dataset.url === url) b.setAttribute('aria-pressed', String(Number(b.dataset.rate) === current));
+  });
+  renderFeedbackNote();
+}
+
+function renderFeedbackNote() {
+  const values = Object.values(state.ratings);
+  const up = values.filter((v) => v === 1).length;
+  const down = values.filter((v) => v === -1).length;
+  const note = document.getElementById('feedback-note');
+  if (!note) return;
+  note.textContent = values.length
+    ? `Your ratings: ${up} useful, ${down} not useful. They steer the next harvest.`
+    : 'Rate items as useful or not useful and the next harvest learns from them.';
+}
+
+async function submitRating(url, rating) {
+  const previous = state.ratings[url] || 0;
+  let key = storedHarvestKey();
+  if (state.feedback.write_requires_key && !key) {
+    key = await askHarvestKey();
+    if (!key) return;
+    storeHarvestKey(key);
+  }
+  state.ratings[url] = rating; // optimistic; rolled back below on failure
+  paintRatings(url);
+  try {
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(key ? { 'X-API-Key': key } : {}) },
+      body: JSON.stringify({ url, rating }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 401) storeHarvestKey('');
+      throw new Error(data.error || data.detail || `Rating failed (${res.status})`);
+    }
+    if (rating === 0) delete state.ratings[url];
+    showToast(data.persisted ? 'Saved.' : 'Saved on this server only. It resets if the server restarts.');
+  } catch (err) {
+    if (previous) state.ratings[url] = previous;
+    else delete state.ratings[url];
+    paintRatings(url);
+    showToast(err.message || 'Could not save the rating.');
+  }
+  renderFeedbackNote();
+}
+
 document.addEventListener('click', (e) => {
+  const rate = e.target.closest('.rate-btn');
+  if (rate) {
+    e.stopPropagation();
+    const next = Number(rate.dataset.rate);
+    submitRating(rate.dataset.url, (state.ratings[rate.dataset.url] || 0) === next ? 0 : next);
+    return;
+  }
   const btn = e.target.closest('[data-copy]');
   if (!btn) return;
   navigator.clipboard.writeText(btn.dataset.copy).then(

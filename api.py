@@ -13,6 +13,8 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 
 import os
+import threading
+from html import escape
 
 # Windows console encoding safety (only when running standalone server, not under pytest)
 if sys.platform == "win32" and "pytest" not in sys.modules and not os.environ.get("PYTEST_CURRENT_TEST"):
@@ -27,7 +29,7 @@ if sys.platform == "win32" and "pytest" not in sys.modules and not os.environ.ge
 from fastapi import FastAPI, HTTPException, Request, Header, BackgroundTasks, Response
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -39,6 +41,7 @@ from src.orchestrator import DigestOrchestrator
 from src.storage.database import DigestDatabase
 from src.security.quota_manager import quota_manager
 from src.security.cache_manager import cache_manager
+from src import feedback as feedback_store
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -80,6 +83,19 @@ app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
 db = DigestDatabase(settings.DB_PATH)
 orchestrator = DigestOrchestrator(db=db)
 APP_START_TIME = time.time()
+
+
+def _hydrate_feedback_from_remote() -> None:
+    """Load ratings stored on the feedback branch so a freshly started server shows them."""
+    try:
+        applied = db.load_feedback_events(feedback_store.fetch_remote_events())
+        if applied:
+            logger.info(f"Loaded {applied} ratings from the feedback branch.")
+    except Exception as error:  # never block start-up on this
+        logger.warning(f"Feedback hydration failed: {error}")
+
+
+threading.Thread(target=_hydrate_feedback_from_remote, daemon=True).start()
 
 
 # ─── Public Web & Health Endpoints ───────────────────────────────────────────
@@ -355,6 +371,101 @@ def get_digest_markdown(target_date: str, request: Request):
         )
         content = PublisherAgent()._render_markdown(d)
     return {"date": target_date, "markdown": content}
+
+
+# ─── Reader Feedback (thumbs up / down) ──────────────────────────────────────
+
+class FeedbackIn(BaseModel):
+    url: str = Field(..., max_length=2000)
+    rating: int = Field(..., ge=-1, le=1)  # 1 useful, -1 not useful, 0 clear
+
+
+class SignedFeedbackIn(BaseModel):
+    u: str = Field(..., min_length=64, max_length=64)  # sha256 of the item URL
+    r: str = Field(..., pattern="^(up|down)$")
+    sig: str = Field(..., max_length=64)
+
+
+def _store_rating(item: Dict[str, Any], rating: int) -> Dict[str, Any]:
+    """Save one rating locally, in the durable log and, when configured, on GitHub."""
+    current = db.get_feedback_map().get(item["url"], 0)
+    if current == rating:
+        return {"ok": True, "rating": rating, "persisted": feedback_store.github_sync_enabled(), "changed": False}
+    event = feedback_store.make_event(
+        item["url"], rating, item["title"], item["source"], item.get("summary", ""), item.get("category", "")
+    )
+    db.record_feedback(event)
+    feedback_store.append_event(event)
+    persisted = feedback_store.push_event(event)
+    return {"ok": True, "rating": rating, "persisted": persisted, "changed": True}
+
+
+@app.get("/api/feedback")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def get_feedback(request: Request) -> Dict[str, Any]:
+    """Current ratings per URL, totals, and whether ratings survive a server restart."""
+    return {
+        "ratings": db.get_feedback_map(),
+        "counts": db.get_feedback_counts(),
+        "persistent": feedback_store.github_sync_enabled(),
+        "write_requires_key": bool(quota_manager.api_key),
+    }
+
+
+@app.post("/api/feedback")
+@limiter.limit("60/minute")
+def post_feedback(
+    request: Request,
+    payload: FeedbackIn,
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+):
+    """Rate an item. Needs the API key when one is configured, so strangers cannot skew the ratings."""
+    if not quota_manager.check_auth(x_api_key):
+        return JSONResponse(status_code=401, content={"ok": False, "error": "Unauthorized: invalid or missing X-API-Key."})
+    item = db.find_item_by_hash(db.hash_url(payload.url))
+    if item is None:
+        raise HTTPException(status_code=404, detail="That item is not in any digest.")
+    return _store_rating(item, payload.rating)
+
+
+@app.post("/api/feedback/signed")
+@limiter.limit("30/minute")
+def post_signed_feedback(request: Request, payload: SignedFeedbackIn):
+    """Apply a rating from a signed email link (confirmed on the page, so link scanners cannot vote)."""
+    if not feedback_store.verify(payload.u, payload.r, payload.sig):
+        raise HTTPException(status_code=403, detail="This link is not valid.")
+    item = db.find_item_by_hash(payload.u)
+    if item is None:
+        raise HTTPException(status_code=404, detail="That item is not in any digest.")
+    return _store_rating(item, feedback_store.RATINGS[payload.r])
+
+
+@app.get("/feedback", response_class=HTMLResponse)
+@limiter.limit("60/minute")
+def feedback_confirm_page(request: Request, u: str = "", r: str = "", sig: str = ""):
+    """One-click landing page from the email: shows the item and asks to confirm the rating."""
+    if not feedback_store.verify(u, r, sig):
+        return HTMLResponse("<p>This link is not valid.</p>", status_code=403)
+    item = db.find_item_by_hash(u)
+    if item is None:
+        return HTMLResponse("<p>That item is no longer in the archive.</p>", status_code=404)
+    verdict = "Useful" if r == "up" else "Not useful"
+    body = f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Rate this item</title>
+<style>body{{font-family:system-ui,sans-serif;max-width:32rem;margin:4rem auto;padding:0 1rem;line-height:1.5}}
+button{{font:inherit;padding:.6rem 1.2rem;border-radius:6px;border:1px solid #333;background:#f5b942;cursor:pointer}}
+button:disabled{{opacity:.6;cursor:default}}</style></head><body>
+<h1>Mark as: {escape(verdict)}</h1><p>{escape(item["title"])}</p>
+<button id="go" type="button">Confirm</button><p id="msg" role="status"></p>
+<script>
+document.getElementById('go').addEventListener('click', async (e) => {{
+  e.target.disabled = true;
+  const res = await fetch('/api/feedback/signed', {{method: 'POST', headers: {{'Content-Type': 'application/json'}},
+    body: JSON.stringify({{u: {u!r}, r: {r!r}, sig: {sig!r}}})}});
+  document.getElementById('msg').textContent = res.ok ? 'Saved. This improves tomorrow's brief.' : 'Could not save this rating.';
+}});
+</script></body></html>"""
+    return HTMLResponse(body)
 
 
 # ─── Harvest Pipeline Execution (Governed by Rate Limits & Quotas) ────────────

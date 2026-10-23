@@ -5,6 +5,7 @@ and storage paths.
 """
 
 import os
+import tomllib
 from pathlib import Path
 from typing import List, Optional
 from dotenv import load_dotenv
@@ -20,6 +21,18 @@ DATA_DIR: Path = PROJECT_ROOT / "data"
 # Ensure directories exist
 DIGESTS_DIR.mkdir(parents=True, exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _load_profile() -> dict:
+    """Read the reader profile; a missing or broken file falls back to the built-in defaults."""
+    path = Path(os.getenv("PROFILE_FILE", PROJECT_ROOT / "config" / "profile.toml"))
+    try:
+        return tomllib.loads(path.read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return {}
+
+
+_PROFILE = _load_profile()
 
 
 class Settings:
@@ -45,7 +58,7 @@ class Settings:
     DEDUP_WINDOW_DAYS: int = 30  # Don't resurface items seen in the last 30 days
 
     # ─── User Technical Profile ──────────────────────────────────────────
-    USER_INTERESTS: List[str] = [
+    USER_INTERESTS: List[str] = _PROFILE.get("interests") or [
         "AI agents and multi-agent systems",
         "Local LLMs and model optimization",
         "Python developer tooling & frameworks",
@@ -53,12 +66,20 @@ class Settings:
         "Open-source AI infrastructure",
         "High-performance backend systems",
     ]
-
-    USER_PROFILE: str = (
+    USER_AVOID: List[str] = _PROFILE.get("avoid") or []
+    USER_TOOLS: List[str] = _PROFILE.get("tools") or []
+    USER_PROFILE: str = " ".join((_PROFILE.get("summary") or (
         "Staff Software Engineer & AI Architect specializing in autonomous agent workflows, "
         "Python ecosystems, open-source AI models, developer productivity tools, "
         "and production-grade cloud infrastructure."
-    )
+    )).split())
+
+    # ─── Reader feedback (thumbs up / down) ──────────────────────────────
+    FEEDBACK_FILE: Path = Path(os.getenv("FEEDBACK_FILE", str(DATA_DIR / "feedback.jsonl")))
+    FEEDBACK_SECRET: str = os.getenv("FEEDBACK_SECRET", "")  # signs the one-click email links
+    FEEDBACK_GITHUB_TOKEN: str = os.getenv("FEEDBACK_GITHUB_TOKEN", "")  # fine-grained token, Contents read/write
+    GITHUB_REPO: str = os.getenv("GITHUB_REPO", "Bugendaitech-Nishant/techpulse-ai-digest-bot")
+    FEEDBACK_EXAMPLES: int = int(os.getenv("FEEDBACK_EXAMPLES", "8"))  # per direction, in the curation prompt
 
     # ─── Collectors Configuration ────────────────────────────────────────
     COLLECTOR_TIMEOUT: int = 12  # seconds per collector

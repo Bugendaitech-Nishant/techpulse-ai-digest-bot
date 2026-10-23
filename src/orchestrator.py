@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from src.models import TechDigest
+from src.models import DigestItem, TechDigest
 from src.storage.database import DigestDatabase
 from src.agents.harvester import HarvesterAgent
 from src.agents.processor import ProcessorAgent
@@ -31,8 +31,24 @@ class DigestOrchestrator:
     ):
         self.db = db or DigestDatabase(settings.DB_PATH)
         self.harvester = harvester or HarvesterAgent(db=self.db)
-        self.processor = processor or ProcessorAgent()
+        self.processor = processor or ProcessorAgent(
+            feedback_provider=lambda: self.db.get_feedback_examples(settings.FEEDBACK_EXAMPLES)
+        )
         self.publisher = publisher or PublisherAgent()
+
+    @staticmethod
+    def merge_same_day(existing: Dict[str, Any], new: TechDigest) -> TechDigest:
+        """Combine an already-stored digest for the same date with a fresh run; the fresh item wins on a URL clash."""
+        fresh_urls = {item.url for item in new.items}
+        kept = [DigestItem(**i) for i in existing.get("items", []) if i["url"] not in fresh_urls]
+        weight = {"Must Read": 0, "Inspiration": 1, "Skip": 2}
+        items = sorted(kept + list(new.items), key=lambda i: (weight[i.category], -i.priority_score))
+        items = [i.model_copy(update={"rank": n}) for n, i in enumerate(items, 1)]
+        return new.model_copy(update={
+            "items": items,
+            "total_harvested": existing.get("total_harvested", 0) + new.total_harvested,
+            "total_curated": len([i for i in items if i.category != "Skip"]),
+        })
 
     def run(self, dry_run: bool = False, custom_date: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -57,6 +73,12 @@ class DigestOrchestrator:
             digest = self.processor.process(raw_items, target_date=today)
             digest.total_harvested = harvest_stats.get("total_harvested_raw", len(raw_items))
             digest.total_deduplicated = harvest_stats.get("historical_duplicates_filtered", 0)
+
+        # A second run on the same date must add to that day's digest, not replace it.
+        if not dry_run:
+            existing = self.db.get_digest_by_date(today)
+            if existing:
+                digest = self.merge_same_day(existing, digest)
 
         # ── Step 3: Publisher Agent ──
         output_path: Optional[Path] = None

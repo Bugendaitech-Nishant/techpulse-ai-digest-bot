@@ -358,3 +358,10 @@ gh variable set PUBLIC_URL --body https://techpulse-ai-digest.onrender.com/
 Locally, copy the SMTP lines from `.env.example` into `.env` and run
 `python scripts/run_daily.py --no-email` to test without sending. Exit code 3 means the run
 finished but looks suspect (too few items, or the AI curator was not used).
+
+### Ratings and your profile
+
+Each item has Useful and Not useful buttons on the site, and the daily email carries one-click
+links. Ratings go to `data/feedback.jsonl` and, with `FEEDBACK_GITHUB_TOKEN`, to the `feedback`
+branch; the daily run reads them and shows your most recent verdicts to the curator.
+Edit `config/profile.toml` to change what the curator looks for and what it pushes down.

@@ -47,3 +47,5 @@ generate_deck.py
 .venv-laya/
 
 .hallmark/
+
+data/feedback.jsonl

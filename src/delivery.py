@@ -13,6 +13,8 @@ from html import escape
 from typing import Any, Dict, List, Mapping, Sequence
 
 from config.settings import settings
+from src.feedback import feedback_link
+from src.storage.database import DigestDatabase
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +54,7 @@ def build_brief(
     date = digest.get("date", "")
     top = pick_top_items(digest.get("items") or [], top_n)
     kept_total = len([i for i in (digest.get("items") or []) if i.get("category") != "Skip"])
+    feedback_base = feed_url
     subject = f"TechPulse {date}: {len(top)} items worth your time"
     if problems:
         subject = f"[check this run] {subject}"
@@ -64,12 +67,23 @@ def build_brief(
         title, url = str(item.get("title", "")), str(item.get("url", ""))
         why = str(item.get("why_it_matters", "")).strip()
         source = str(item.get("source", ""))
-        text_lines += [f"{n}. {title}", f"   {why}", f"   {source}  {url}", ""]
+        url_hash = DigestDatabase.hash_url(url)
+        up = feedback_link(feedback_base, url_hash, "up")
+        down = feedback_link(feedback_base, url_hash, "down")
+        text_lines += [f"{n}. {title}", f"   {why}", f"   {source}  {url}"]
+        rate_html = ""
+        if up and down:
+            text_lines += [f"   Useful: {up}", f"   Not useful: {down}"]
+            rate_html = (
+                f'<br><span style="font-size:13px"><a href="{escape(up, quote=True)}">Useful</a>'
+                f' &nbsp; <a href="{escape(down, quote=True)}">Not useful</a></span>'
+            )
+        text_lines.append("")
         html_rows.append(
             f'<li style="margin:0 0 16px"><a href="{escape(url, quote=True)}" '
             f'style="font-weight:600;color:#111;text-decoration:none">{escape(title)}</a>'
             f'<br><span style="color:#444">{escape(why)}</span>'
-            f'<br><span style="color:#777;font-size:13px">{escape(source)}</span></li>'
+            f'<br><span style="color:#777;font-size:13px">{escape(source)}</span>{rate_html}</li>'
         )
     if feed_url:
         text_lines += [f"All {kept_total} curated items: {feed_url}"]

@@ -39,11 +39,11 @@ The single biggest gap. A digest nobody opens is not helpful.
 
 Done when: seven days in a row, a digest lands without you touching anything.
 
-### Phase 2: make it yours (about 1–2 weeks)
-1. **Thumbs up/down on every item** (the UI already has the list; add two buttons and a `feedback` table).
-2. **Use the feedback.** Put your 8 most recent up-voted and down-voted items into the curation prompt as few-shot examples. Research on few-shot preference methods (FSPO, arXiv 2502.19312) supports adapting to one user from a handful of examples.
-3. **A real profile file** (interests, anti-interests, sources to trust) instead of constants in `settings.py`. Your own ratings show what it should contain: security incidents in tools you run score 4, infrastructure that changes your stack scores 3, niche research scores 2, general news scores 0.
-4. **Regression gate.** `evaluate_ranking.py` against your human labels runs in CI; a change that drops NDCG@10 below a floor fails.
+### Phase 2: make it yours (built 2026-10-23; needs one GitHub token to persist ratings from the site)
+1. **Thumbs up/down on every item** (site rows, the reading pane, and signed links in the email), stored in a `feedback` table and an append-only log on the `feedback` branch. Built.
+2. **Use the feedback.** Your 8 most recent useful and not-useful items go into the curation prompt as examples. Built. Research on few-shot preference methods (FSPO, arXiv 2502.19312) supports adapting to one user from a handful of examples.
+3. **A real profile file**, `config/profile.toml` (summary, interests, things to push down, tools you run). Built; edit it freely. Your own ratings show what it should contain: security incidents in tools you run score 4, infrastructure that changes your stack scores 3, niche research scores 2, general news scores 0.
+4. **Regression gate.** `evaluate_ranking.py` against your human labels runs in CI; a change that drops NDCG@10 below a floor fails. **Not built yet.**
 
 Done when: week-over-week thumbs-up rate on the top 10 rises, and the label gate is green.
 

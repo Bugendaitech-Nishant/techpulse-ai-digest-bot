@@ -42,8 +42,16 @@ jobs:
             exit 1
           fi
 
+      # Ratings live on the `feedback` branch so they never trigger a redeploy of main.
+      - name: Fetch the ratings log
+        run: |
+          git fetch --depth=1 origin feedback || true
+          mkdir -p data
+          git show FETCH_HEAD:data/feedback.jsonl > data/feedback.jsonl 2>/dev/null || echo "No ratings yet."
+
       - name: Generate the digest and email the brief
         env:
+          FEEDBACK_SECRET: ${{ secrets.FEEDBACK_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
