@@ -1,22 +1,42 @@
 name: Daily Tech Digest
 
 on:
-  # 08:00 UTC daily. GitHub may start scheduled jobs several minutes late.
+  # Starts at 22:15 UTC and then waits for the delivery window (see the `wait` job), so the brief
+  # lands around 09:15 IST even when GitHub starts the scheduled job hours late.
   schedule:
-    - cron: '0 8 * * *'
-  # Manual run from the Actions tab
+    - cron: '15 22 * * *'
+  # Manual run from the Actions tab: no waiting, runs immediately.
   workflow_dispatch:
 
 permissions:
   contents: write
 
-# Never run two digests at once; a second run would race on the commit.
-concurrency:
-  group: daily-digest
-  cancel-in-progress: false
-
 jobs:
+  # Scheduled runs only. Waits until 03:40 UTC (09:10 IST) when it starts earlier than that, and
+  # does not wait when GitHub started it late, so the harvest is fresh and the digest date is right.
+  wait:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Wait for the delivery window
+        run: |
+          mins=$((10#$(date -u +%H) * 60 + 10#$(date -u +%M)))
+          target=$((3 * 60 + 40))
+          if [ "$mins" -ge $((20 * 60)) ]; then wait=$((24 * 60 - mins + target))
+          elif [ "$mins" -lt "$target" ]; then wait=$((target - mins))
+          else wait=0; fi
+          echo "Started at $(date -u +%H:%M) UTC; waiting $wait minutes."
+          sleep $((wait * 60))
+
   generate-digest:
+    needs: wait
+    # Run after the wait on schedule, and straight away when the wait job was skipped (manual run).
+    if: ${{ !cancelled() && (needs.wait.result == 'success' || needs.wait.result == 'skipped') }}
+    # Never run two digests at once; a second run would race on the commit.
+    concurrency:
+      group: daily-digest
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 20
 

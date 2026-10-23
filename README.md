@@ -342,7 +342,7 @@ pytest tests/ -v
 ### Daily email brief
 
 `scripts/run_daily.py` runs the pipeline and emails the top items. The GitHub Actions workflow
-`.github/workflows/digest.yml` runs it every day at 08:00 UTC. Set these repository secrets:
+`.github/workflows/digest.yml` starts every day at 22:15 UTC, waits until 03:40 UTC, then runs, so the brief lands around 09:15 IST even when GitHub starts the job hours late (manual runs do not wait). Set these repository secrets:
 
 ```bash
 gh secret set GROQ_API_KEY
