@@ -37,6 +37,8 @@ class Settings:
     LLM_TEMPERATURE: float = 0.2
     LLM_MAX_TOKENS: int = 4096
     MAX_LLM_RETRIES: int = 2
+    LLM_BATCH_SIZE: int = int(os.getenv("LLM_BATCH_SIZE", "12"))  # small batches: big ones get silently truncated
+    LLM_MAX_ITEMS: int = int(os.getenv("LLM_MAX_ITEMS", "90"))  # per-run cap on items sent to the model
 
     # ─── Database & Deduplication ────────────────────────────────────────
     DB_PATH: Path = DATA_DIR / "tech_digest.db"
@@ -70,6 +72,17 @@ class Settings:
     LIMIT_HUGGINGFACE_PAPERS: int = 15
     LIMIT_DEVTO: int = 15
     LIMIT_ARXIV: int = 15
+
+    # ─── Email delivery (SMTP; works with Gmail app passwords, Resend, Mailgun, SES) ──
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))  # 465 uses implicit TLS, anything else STARTTLS
+    SMTP_USER: str = os.getenv("SMTP_USER", "")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    EMAIL_FROM: str = os.getenv("EMAIL_FROM", "")
+    EMAIL_TO: str = os.getenv("EMAIL_TO", "")  # comma-separated
+    PUBLIC_URL: str = os.getenv("PUBLIC_URL", "https://techpulse-ai-digest.onrender.com/")
+    BRIEF_TOP_N: int = int(os.getenv("BRIEF_TOP_N", "7"))
+    MIN_KEPT_ITEMS: int = int(os.getenv("MIN_KEPT_ITEMS", "5"))  # fewer than this marks a run as suspect
 
     # ─── Production Security & Rate Limiting ────────────────────────────
     APP_VERSION: str = "2.1.0"

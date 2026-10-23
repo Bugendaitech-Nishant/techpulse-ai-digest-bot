@@ -44,3 +44,6 @@ data/*.db-shm
 generate_deck.py
 
 
+.venv-laya/
+
+.hallmark/

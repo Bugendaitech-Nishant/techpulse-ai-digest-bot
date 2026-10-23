@@ -53,6 +53,13 @@ class DigestItem(BaseModel):
     summary: str = Field(..., description="Punchy, factual 2-sentence summary of the item")
     why_it_matters: str = Field(..., description="1-sentence explanation of concrete value for technical engineers")
     tags: List[str] = Field(default_factory=list, description="Extracted tech tags (e.g. ['python', 'agent', 'rag'])")
+    relevance_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    impact_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    freshness_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    novelty_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+    priority_score: float = Field(default=0.0, ge=0.0, le=100.0)
+    rank: int = Field(default=0, ge=0)
 
 
 class TechDigest(BaseModel):
@@ -63,6 +70,8 @@ class TechDigest(BaseModel):
     total_harvested: int = 0
     total_deduplicated: int = 0
     total_curated: int = 0
+    ranking_backend: str = "deterministic"
+    ranking_version: str = "v1"
 
     @property
     def must_reads(self) -> List[DigestItem]:

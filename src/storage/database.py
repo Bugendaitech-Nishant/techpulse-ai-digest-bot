@@ -63,6 +63,8 @@ class DigestDatabase:
                     date TEXT UNIQUE NOT NULL,
                     total_harvested INTEGER NOT NULL,
                     total_curated INTEGER NOT NULL,
+                    ranking_backend TEXT NOT NULL DEFAULT 'deterministic',
+                    ranking_version TEXT NOT NULL DEFAULT 'v1',
                     created_at TEXT NOT NULL
                 );
             """)
@@ -82,6 +84,30 @@ class DigestDatabase:
                     FOREIGN KEY(digest_date) REFERENCES digests(date)
                 );
             """)
+            for column in (
+                "relevance_score REAL NOT NULL DEFAULT 0",
+                "impact_score REAL NOT NULL DEFAULT 0",
+                "freshness_score REAL NOT NULL DEFAULT 0",
+                "novelty_score REAL NOT NULL DEFAULT 0",
+                "confidence REAL NOT NULL DEFAULT 0",
+                "priority_score REAL NOT NULL DEFAULT 0",
+                "rank INTEGER NOT NULL DEFAULT 0",
+            ):
+                try:
+                    cursor.execute(f"ALTER TABLE digest_items ADD COLUMN {column};")
+                except sqlite3.OperationalError as error:
+                    if "duplicate column name" not in str(error).lower():
+                        raise
+            try:
+                cursor.execute("ALTER TABLE digests ADD COLUMN ranking_version TEXT NOT NULL DEFAULT 'v1';")
+            except sqlite3.OperationalError as error:
+                if "duplicate column name" not in str(error).lower():
+                    raise
+            try:
+                cursor.execute("ALTER TABLE digests ADD COLUMN ranking_backend TEXT NOT NULL DEFAULT 'deterministic';")
+            except sqlite3.OperationalError as error:
+                if "duplicate column name" not in str(error).lower():
+                    raise
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_digest_items_date ON digest_items(digest_date);")
 
             # Auto-hydrate database if newly created / empty (critical for ephemeral servers like Render)
@@ -163,11 +189,14 @@ class DigestDatabase:
                 for item in parsed_items:
                     cursor.execute("""
                         INSERT INTO digest_items (
-                            digest_date, title, url, source, category, summary, why_it_matters, created_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            digest_date, title, url, source, category, summary, why_it_matters,
+                            relevance_score, impact_score, freshness_score, novelty_score,
+                            confidence, priority_score, rank, created_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
                         date_str, item["title"], item["url"], item["source"],
-                        item["category"], item["summary"], item["why_it_matters"], now
+                        item["category"], item["summary"], item["why_it_matters"],
+                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, now
                     ))
                     h = self.hash_url(item["url"])
                     cursor.execute("""
@@ -254,13 +283,20 @@ class DigestDatabase:
 
             curated_count = len(digest.must_reads) + len(digest.inspirations)
             cursor.execute("""
-                INSERT INTO digests (date, total_harvested, total_curated, created_at)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO digests (date, total_harvested, total_curated, ranking_backend, ranking_version, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
                 ON CONFLICT(date) DO UPDATE SET
                     total_harvested = CASE WHEN excluded.total_harvested > 0 THEN excluded.total_harvested ELSE digests.total_harvested END,
                     total_curated = CASE WHEN excluded.total_curated > 0 THEN excluded.total_curated ELSE digests.total_curated END,
                     created_at = excluded.created_at;
-            """, (digest.date, digest.total_harvested, curated_count, now))
+            """, (
+                digest.date,
+                digest.total_harvested,
+                curated_count,
+                digest.ranking_backend,
+                digest.ranking_version,
+                now,
+            ))
 
             # Only replace items if new digest provides valid items
             if len(digest.items) > 0:
@@ -268,11 +304,15 @@ class DigestDatabase:
                 for item in digest.items:
                     cursor.execute("""
                         INSERT INTO digest_items (
-                            digest_date, title, url, source, category, summary, why_it_matters, created_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            digest_date, title, url, source, category, summary, why_it_matters,
+                            relevance_score, impact_score, freshness_score, novelty_score,
+                            confidence, priority_score, rank, created_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
                         digest.date, item.title, item.url, item.source,
-                        item.category, item.summary, item.why_it_matters, now
+                        item.category, item.summary, item.why_it_matters,
+                        item.relevance_score, item.impact_score, item.freshness_score,
+                        item.novelty_score, item.confidence, item.priority_score, item.rank, now
                     ))
 
             conn.commit()
@@ -296,31 +336,80 @@ class DigestDatabase:
                 "total_must_reads": total_must_reads,
             }
 
+    def get_insights(self, window_days: int = 30) -> Dict[str, Any]:
+        """Aggregate real, DB-derived statistics for the dashboard (no synthetic figures)."""
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=window_days)).isoformat()
+        with self._connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT date, total_harvested, total_curated, ranking_backend, ranking_version, created_at "
+                "FROM digests ORDER BY date DESC;"
+            )
+            digests = [dict(row) for row in cursor.fetchall()]
+
+            cursor.execute("SELECT category, COUNT(*) AS n FROM digest_items GROUP BY category;")
+            by_category = {row["category"]: row["n"] for row in cursor.fetchall()}
+
+            cursor.execute(
+                "SELECT source, COUNT(*) AS n, MAX(priority_score) AS best, AVG(priority_score) AS avg "
+                "FROM digest_items WHERE category != 'Skip' GROUP BY source ORDER BY n DESC, source ASC;"
+            )
+            by_source = [
+                {
+                    "source": row["source"],
+                    "count": row["n"],
+                    # priority_score is 0 for digests rehydrated from markdown, so report it only when measured
+                    "avg_priority": round(row["avg"], 1) if row["best"] else None,
+                }
+                for row in cursor.fetchall()
+            ]
+
+            cursor.execute("SELECT COUNT(*) FROM seen_items WHERE first_seen_at >= ?;", (cutoff,))
+            seen_window = cursor.fetchone()[0]
+
+        harvested = sum(d["total_harvested"] for d in digests)
+        curated = sum(d["total_curated"] for d in digests)
+        latest = digests[0] if digests else None
+        return {
+            "window_days": window_days,
+            "digests_total": len(digests),
+            "items_total": sum(n for cat, n in by_category.items() if cat != "Skip"),
+            "seen_in_window": seen_window,
+            "last_harvest_at": max((d["created_at"] for d in digests), default=None),
+            "latest": latest,
+            "keep_rate": round(curated / harvested, 3) if harvested else None,
+            "by_category": by_category,
+            "by_source": by_source,
+            "history": [
+                {"date": d["date"], "harvested": d["total_harvested"], "curated": d["total_curated"]}
+                for d in digests[:30]
+            ],
+        }
+
     def list_digests(self) -> List[Dict[str, Any]]:
         """List all historical digest summaries ordered by date descending."""
         with self._connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT date, total_harvested, total_curated, created_at FROM digests ORDER BY date DESC;")
+            cursor.execute("SELECT date, total_harvested, total_curated, ranking_backend, ranking_version, created_at FROM digests ORDER BY date DESC;")
             return [dict(row) for row in cursor.fetchall()]
 
     def get_digest_by_date(self, target_date: str) -> Optional[Dict[str, Any]]:
         """Fetch complete digest details and items for a specific date."""
         with self._connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT date, total_harvested, total_curated, created_at FROM digests WHERE date = ?;", (target_date,))
+            cursor.execute("SELECT date, total_harvested, total_curated, ranking_backend, ranking_version, created_at FROM digests WHERE date = ?;", (target_date,))
             digest_row = cursor.fetchone()
             if not digest_row:
                 return None
 
             cursor.execute("""
-                SELECT title, url, source, category, summary, why_it_matters, created_at
+                SELECT title, url, source, category, summary, why_it_matters,
+                       relevance_score, impact_score, freshness_score, novelty_score,
+                       confidence, priority_score, rank, created_at
                 FROM digest_items
                 WHERE digest_date = ?
-                ORDER BY CASE category
-                    WHEN 'Must Read' THEN 1
-                    WHEN 'Inspiration' THEN 2
-                    ELSE 3
-                END, id ASC;
+                ORDER BY CASE category WHEN 'Must Read' THEN 1 WHEN 'Inspiration' THEN 2 ELSE 3 END,
+                         priority_score DESC, id ASC;
             """, (target_date,))
             items = [dict(row) for row in cursor.fetchall()]
 
@@ -337,4 +426,3 @@ class DigestDatabase:
             if not row:
                 return None
             return self.get_digest_by_date(row["date"])
-

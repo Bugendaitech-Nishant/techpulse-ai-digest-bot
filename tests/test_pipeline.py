@@ -21,7 +21,7 @@ def test_end_to_end_pipeline_with_mock_data():
         db_path = tmp_path / "test.db"
         output_dir = tmp_path / "digests"
 
-        db = DigestDatabase(db_path)
+        db = DigestDatabase(db_path, auto_hydrate=False)
 
         # Mock Harvester
         mock_harvester = MagicMock(spec=HarvesterAgent)
@@ -62,6 +62,8 @@ def test_end_to_end_pipeline_with_mock_data():
         assert res["success"] is True
         assert res["date"] == "2026-10-22"
         assert res["output_file"] is not None
+        assert orchestrator.processor.ranking_backend.metadata.name == "deterministic"
+        assert orchestrator.processor.ranking_backend.metadata.version == "v1"
 
         # Verify output file was created and contains expected headers
         out_file = Path(res["output_file"])

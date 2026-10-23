@@ -37,7 +37,7 @@ def test_deduplication_window():
     """Verify that duplicate items are filtered within the sliding window."""
     with tempfile.TemporaryDirectory() as tmpdir:
         db_path = Path(tmpdir) / "test.db"
-        db = DigestDatabase(db_path)
+        db = DigestDatabase(db_path, auto_hydrate=False)
 
         item1 = RawItem(
             title="Project A",
@@ -79,7 +79,7 @@ def test_record_digest():
     """Verify recording of daily digests and metrics."""
     with tempfile.TemporaryDirectory() as tmpdir:
         db_path = Path(tmpdir) / "test.db"
-        db = DigestDatabase(db_path)
+        db = DigestDatabase(db_path, auto_hydrate=False)
 
         d_item = DigestItem(
             title="LangGraph Pro",
@@ -100,6 +100,8 @@ def test_record_digest():
         stats = db.get_stats()
         assert stats["total_digests_generated"] == 1
         assert stats["total_must_reads"] == 1
+        assert db.get_digest_by_date("2026-10-22")["ranking_version"] == "v1"
+        assert db.get_digest_by_date("2026-10-22")["ranking_backend"] == "deterministic"
 
 
 def test_auto_hydration_from_markdown():

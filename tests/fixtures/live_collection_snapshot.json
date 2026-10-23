@@ -1,0 +1,1183 @@
+[
+  {
+    "title": "HF Paper: What Generation Knows: Unlocking Fine-Grained Understanding in Unified Multimodal Models",
+    "url": "https://huggingface.co/papers/2610.23987",
+    "description": "Fine-grained visual understanding requires distinguishing subtle differences in local attributes and spatial relations, yet remains challenging for existing vision-language models. Unified multimodal models (UMMs) offer a new opportunity through generation pathways that preser... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-14T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.23987",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: What Makes a Good Unmasking Policy? A Controlled Study of Learned Unmasking in Diffusion Language Models",
+    "url": "https://huggingface.co/papers/2610.31576",
+    "description": "Masked diffusion language models generate tokens in parallel, but their efficiency depends on which predictions are committed. Learned unmasking policies improve the speed--accuracy trade-off, yet differ in supervision, inputs, and capacity, obscuring which choices matter. We ... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-22T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.31576",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: RLSplat: Resource-Linear Budget Control for Feed-forward 3D Gaussian Splatting",
+    "url": "https://huggingface.co/papers/2610.27712",
+    "description": "Feed-forward 3D Gaussian Splatting (FF3DGS) reconstructs 3D scenes from images in a single forward pass, making it well-suited to applications that must operate within limited resource budgets. To further improve its practicality, recent budget-controllable FF3DGS methods allo... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-20T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.27712",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: TILDE: Teacher-in-the-Loop Distillation from Embodied Foundation Models",
+    "url": "https://huggingface.co/papers/2610.25376",
+    "description": "Large-scale action pretraining equips Embodied Foundation Models (EFMs) with strong manipulation capabilities, with particular strengths in generalization and closed-loop robustness, but reproducing such pretraining requires substantial robot data and computation. To transfer ... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-18T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.25376",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: RouteWeaver: Weaving Mode Selection and Execution into Unified LLM Routing",
+    "url": "https://huggingface.co/papers/2610.19705",
+    "description": "LLM routing dynamically selects and coordinates heterogeneous language models across diverse tasks. However, existing approaches are largely built around a predefined execution paradigm, such as single-round, multi-round, or agentic routing, which fixes how model calls are org... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-19T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.19705",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: Heartbeat Thinking: Speculative Reasoning and Tool Execution While Listening in Realtime Voice Agents",
+    "url": "https://huggingface.co/papers/2610.26233",
+    "description": "Tool-using voice agents often leave users waiting after speech ends, even when actionable information arrives earlier in the request. Speculative approaches begin work during speech, but chunk-bounded or interrupt-on-update generation can truncate a tool call before its argume... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-19T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.26233",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: Editing Images into Reusable Layers via Compositional Edit-Prior Distillation",
+    "url": "https://huggingface.co/papers/2610.24738",
+    "description": "High-quality image editing requires precise modification of target regions while preserving the content of unrelated regions. Existing editing models produce flattened outputs that limit precise local manipulation and layer reuse, while decomposition methods typically optimize... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-17T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.24738",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: F2G-Pose: Geometry-Aware Foundation Feature Lifting for Direct RGB-D Category-Level Object Pose Estimation",
+    "url": "https://huggingface.co/papers/2610.31623",
+    "description": "This paper studies category-level RGB-D object pose estimation, which recovers an object's 3D rotation and translation without instance-specific CAD models or reference views. This task is highly ambiguous due to intra-class variations, symmetries, and partial observations. Cu... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-22T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.31623",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: Self-Distilling Future Video Representations for World Action Models",
+    "url": "https://huggingface.co/papers/2610.30320",
+    "description": "World Action Models (WAMs) have emerged as a promising approach to learning generalist robot policies using rich spatiotemporal priors from pre-trained video diffusion models. A recent line of WAMs improves inference efficiency by conditioning a separate action decoder on inte... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-21T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.30320",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: AnyGameRenderer: Entity-Consistent Generative Rendering Across Games and an Entity-Level Benchmark",
+    "url": "https://huggingface.co/papers/2610.31466",
+    "description": "AI coding agents can now build small playable games in minutes, but the results usually look like programmer art: gray blockouts, colored geometric primitives, and flat semantic blobs. We present AnyGameRenderer, a video-to-video generative renderer that turns such footage int... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-22T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.31466",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: Toward Recursive Self-Improvement in Physical AI",
+    "url": "https://huggingface.co/papers/2610.29677",
+    "description": "Recursive self-improvement (RSI) describes a system that improves not only its behavior but also the process by which it improves. Recent digital agents test this idea by rewriting their own code and checking each version with executable tests. Bringing these mechanisms into t... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-21T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.29677",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: MolLean: A Process-Verifiable Language for Chemical Reasoning",
+    "url": "https://huggingface.co/papers/2610.20459",
+    "description": "Chemical chain-of-thought can contain hallucinated structural and property claims. We thereby introduce MolLean, a process-verifiable language that grounds chemical reasoning in an explicit molecular state. A layered Lean-based kernel checks state transitions and assertions ov... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-14T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.20459",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: SEAM: Spectral Embedding Alignment and Merging for Low-Resource TTS",
+    "url": "https://huggingface.co/papers/2610.26252",
+    "description": "Expanding the vocabulary of conditional text-to-speech (TTS) models typically requires extensive fine-tuning with paired audio, creating a major bottleneck for low-resource and cross-lingual adaptation. To address this, we introduce SEAM, a zero-audio initialization method tha... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-19T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.26252",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: Verus-Insight: Towards Explainable Artifact Detection in AI-Generated Videos",
+    "url": "https://huggingface.co/papers/2610.30866",
+    "description": "Recent advances in video generation have made synthetic videos increasingly realistic, placing greater demands on reliable AI-generated video detection. Existing artifact-based detectors typically identify generation artifacts as evidence for source prediction, yet they may ei... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-22T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.30866",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "HF Paper: Cola2: Co-Adaptive Hierarchical Language Modeling with Continuous Semantic Compression and Balanced Discrete Generation",
+    "url": "https://huggingface.co/papers/2610.31305",
+    "description": "Hierarchical language generation separates continuous semantic modeling from discrete text realization, but its effectiveness depends on what the latent space compresses and how the discrete generator uses it. We propose Cola2, a framework that jointly studies continuous seman... (Upvotes: 0)",
+    "source": "huggingface_papers",
+    "score": 0,
+    "language": "AI Research",
+    "published_at": "2026-10-22T00:00:00.000Z",
+    "extra_metadata": {
+      "arxiv_id": "2610.31305",
+      "upvotes": 0
+    }
+  },
+  {
+    "title": "ArXiv: Sensorimotor Alignment: A Platonic Proxy for Embodied Policy Success",
+    "url": "https://arxiv.org/abs/2610.31670v1",
+    "description": "Robotic foundation models are typically evaluated through costly closed-loop rollouts, which motivates cheap offline proxies for model capability. The Platonic Representation Hypothesis (PRH) suggests that as representations improve, different modalities such as vision and lan...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:59:51Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: Direct Pass@$k$ Optimization for Thought Pruning: Balancing Quality and Diversity in Test-Time Reasoning",
+    "url": "https://arxiv.org/abs/2610.31667v1",
+    "description": "Test-time scaling has emerged as a key inference strategy for reasoning models, where a model generates a large number of candidate solutions in the hope of finding at least one correct solution. Running all candidate solutions to completion can be computationally demanding, s...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:59:48Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: Phase Transition from Random Features to Fully Trainable Networks",
+    "url": "https://arxiv.org/abs/2610.31663v1",
+    "description": "Constructing accurate and computationally tractable approximation spaces is a fundamental task in scientific computing. Partially trainable neural networks bridge fixed random features and fully adaptive representations. This paper quantifies a phase transition pattern in appr...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:59:29Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: Reliable AI-Assisted Decisions via Selective Auditing",
+    "url": "https://arxiv.org/abs/2610.31662v1",
+    "description": "We consider online monitoring of an AI system that produces a sequence of decisions. At each round, the system outputs a proposed decision together with a confidence score estimating the trustworthiness of the decision. The decision and confidence score need not be produced by...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:59:22Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: SpectralCanary: Embarrassingly Simple Low-Frequency Traces for T2I Dataset-Use Auditing",
+    "url": "https://arxiv.org/abs/2610.31659v1",
+    "description": "Auditing whether a text-to-image (T2I) model was fine-tuned on a particular image collection is difficult: a model can absorb collection-level visual characteristics without reproducing training images. Proactive dataset-use auditing plants a shared signal in a dataset before ...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:59:03Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: Cost-Aware Abstention for LLM-Based IT Ticket Classification",
+    "url": "https://arxiv.org/abs/2610.31657v1",
+    "description": "Wrong automatic routing of an IT support ticket can cost more than human triage. We evaluate cost-aware abstention as an offline, cost-conditional readiness assessment: select a routing policy on calibration data under explicit costs, then evaluate that frozen policy once on h...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:58:52Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: METTA: Memory-Enhanced Test-Time Adaptation for Meta-Reinforcement Learning",
+    "url": "https://arxiv.org/abs/2610.31656v1",
+    "description": "Meta-reinforcement learning aims to train agents that adapt quickly to unseen tasks from limited interaction, but this requires representing task evidence over long interaction histories. Classical recurrent agents compress experience into hidden states, while transformer-base...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:58:27Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: EpiSEM-Bench: Evaluating Safety and Evidence Recovery in LLM Agents under Missing Evidence",
+    "url": "https://arxiv.org/abs/2610.31650v1",
+    "description": "Tool-using language model agents rely on environmental facts to decide whether an action is permitted. When a tool response omits a safety-relevant fact, an agent may carry out a prohibited action even though the user request is benign and every returned statement is true. We ...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:57:04Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: Low-Bit N-Gram Embeddings for Language Models",
+    "url": "https://arxiv.org/abs/2610.31646v1",
+    "description": "Many recent open-weight language models use n-gram embedding tables to improve performance. These tables store learned representations of short token sequences, such as pairs or triples of consecutive tokens, which the model retrieves during processing. However, they can requi...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:56:13Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: A Fix for Softmax and Cross-Entropy",
+    "url": "https://arxiv.org/abs/2610.31642v1",
+    "description": "Standard implementations of softmax, log-softmax, and cross-entropy have two numerical bugs. The first bug, Softmax Collapse, rounds the target logit's gradient to zero if that one logit is much larger than the others, resulting in gradients that no longer sum to zero. The sec...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:54:56Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: Causal Chain of Thought: Mitigating Attention Leakage via Context Isolation",
+    "url": "https://arxiv.org/abs/2610.31639v1",
+    "description": "Chain-of-thought (CoT) prompting elicits step-by-step rationales that appear to explain model predictions, but there is no guarantee these steps causally drive the final answer. In standard autoregressive generation, dense attention allows each reasoning step to attend to the ...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:52:56Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: BeNice! Closing Looping's Inference-Memory Gap via KV-Sharing",
+    "url": "https://arxiv.org/abs/2610.31633v1",
+    "description": "Looped architectures scale quality while keeping parameter count fixed by repeatedly passing activations through the same block of layers. During inference, each recurrence generates independent KV-caches, causing memory to grow linearly. To address this challenge, prior work ...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:49:44Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: Questioning Instrumental Convergence in RLVR: Checkpoint Evidence from OLMo-3",
+    "url": "https://arxiv.org/abs/2610.31624v1",
+    "description": "Instrumental convergence is often invoked as a general reason to expect capable agents to acquire or express power-seeking subgoals: self-preservation, resource acquisition, deception, or resistance to oversight which poses an important threat to the society. For LLMs, reinfor...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:44:41Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: OP-Print: Tracing Membership Imprints in On-Policy Self-Distillation",
+    "url": "https://arxiv.org/abs/2610.31616v1",
+    "description": "On-policy distillation has been widely adopted for alleviating the distribution mismatch of off-policy distillation. Self-distillation further removes the need for an external teacher by using the student's own outputs, enhanced with extra context or demonstrations, as supervi...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:41:04Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "ArXiv: Efficient and Optimal Learning of Discrete Distributions with Person-Level Privacy",
+    "url": "https://arxiv.org/abs/2610.31612v1",
+    "description": "We study learning a discrete distribution under person-level differential privacy in the batched setting. Given $n$ users, each contributing $m$ i.i.d. samples from an unknown distribution $\u03bc$ over $[k]$, we seek an estimate of $\u03bc$ with total-variation error $\u03b1$. We give polyn...",
+    "source": "arxiv_ai",
+    "score": 10,
+    "language": "AI/ML Research",
+    "published_at": "2026-10-22T17:40:13Z",
+    "extra_metadata": {}
+  },
+  {
+    "title": "Quad9 to exit France",
+    "url": "https://quad9.net/news/blog/au-revoir-france/",
+    "description": "HN discussion (1134 points, 390 comments) by farrokhi",
+    "source": "hacker_news",
+    "score": 1134,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T14:32:38Z",
+    "extra_metadata": {
+      "hn_id": "50195959",
+      "num_comments": 390,
+      "author": "farrokhi"
+    }
+  },
+  {
+    "title": "eMudhra to exit global SSL/TLS certificate business",
+    "url": "https://emudhra.com/en/press-release/emudhra-to-exit-global-ssl-tls-certificate-business",
+    "description": "HN discussion (1012 points, 670 comments) by bo0tzz",
+    "source": "hacker_news",
+    "score": 1012,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T13:33:39Z",
+    "extra_metadata": {
+      "hn_id": "50195110",
+      "num_comments": 670,
+      "author": "bo0tzz"
+    }
+  },
+  {
+    "title": "WorldTUI: I trained a 360M model to pretend to be a terminal",
+    "url": "https://simedw.com/2026/10/21/world-model-terminal/",
+    "description": "HN discussion (525 points, 164 comments) by alphax314",
+    "source": "hacker_news",
+    "score": 525,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T02:18:41Z",
+    "extra_metadata": {
+      "hn_id": "50190363",
+      "num_comments": 164,
+      "author": "alphax314"
+    }
+  },
+  {
+    "title": "Tell HN: I unknowingly broke the PHP RCE embargo. I am sorry.",
+    "url": "https://news.ycombinator.com/item?id=50193416",
+    "description": "HN discussion (497 points, 200 comments) by petecooper",
+    "source": "hacker_news",
+    "score": 497,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T10:11:44Z",
+    "extra_metadata": {
+      "hn_id": "50193416",
+      "num_comments": 200,
+      "author": "petecooper"
+    }
+  },
+  {
+    "title": "Run full iOS 16.5 firmware on Android Devices",
+    "url": "https://github.com/oosexgang/hackios-xnu-kernel",
+    "description": "HN discussion (396 points, 137 comments) by aghuang",
+    "source": "hacker_news",
+    "score": 396,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T15:26:22Z",
+    "extra_metadata": {
+      "hn_id": "50196718",
+      "num_comments": 137,
+      "author": "aghuang"
+    }
+  },
+  {
+    "title": "OpenShell \u2013 A safe, private runtime for fleets of autonomous AI agents",
+    "url": "https://github.com/NVIDIA/OpenShell",
+    "description": "HN discussion (367 points, 187 comments) by niemandhier",
+    "source": "hacker_news",
+    "score": 367,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T17:44:06Z",
+    "extra_metadata": {
+      "hn_id": "50198675",
+      "num_comments": 187,
+      "author": "niemandhier"
+    }
+  },
+  {
+    "title": "Docker is weird",
+    "url": "https://codeandcake.dev/posts/2026-10-22-docker-is-weird",
+    "description": "HN discussion (367 points, 182 comments) by psxuaw",
+    "source": "hacker_news",
+    "score": 367,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T23:45:56Z",
+    "extra_metadata": {
+      "hn_id": "50202681",
+      "num_comments": 182,
+      "author": "psxuaw"
+    }
+  },
+  {
+    "title": "Every AI model has the same \"controversial\" take on humans",
+    "url": "https://www.modelcompare.ai/blog/ai-models-controversial-take-on-humans",
+    "description": "HN discussion (354 points, 382 comments) by rakannimer",
+    "source": "hacker_news",
+    "score": 354,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T16:08:00Z",
+    "extra_metadata": {
+      "hn_id": "50197313",
+      "num_comments": 382,
+      "author": "rakannimer"
+    }
+  },
+  {
+    "title": "LLMs are making formal software verification feasible at a much larger scale",
+    "url": "https://www.anthropic.com/research/formal-verification",
+    "description": "HN discussion (290 points, 157 comments) by johnbender",
+    "source": "hacker_news",
+    "score": 290,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T22:54:43Z",
+    "extra_metadata": {
+      "hn_id": "50202217",
+      "num_comments": 157,
+      "author": "johnbender"
+    }
+  },
+  {
+    "title": "Xbox wants you to pay 24 to 40 cents per hour to stream games you bought",
+    "url": "https://arstechnica.com/gaming/2026/10/xbox-wants-you-to-pay-24-to-40-cents-per-hour-to-stream-games-you-already-bought/",
+    "description": "HN discussion (280 points, 242 comments) by entryleveljobsc",
+    "source": "hacker_news",
+    "score": 280,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T11:42:03Z",
+    "extra_metadata": {
+      "hn_id": "50194009",
+      "num_comments": 242,
+      "author": "entryleveljobsc"
+    }
+  },
+  {
+    "title": "Getting ready to operate GNU Taler in Germany",
+    "url": "https://www.taler.net/en/news/2026-13.html",
+    "description": "HN discussion (261 points, 105 comments) by dewey",
+    "source": "hacker_news",
+    "score": 261,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T16:14:31Z",
+    "extra_metadata": {
+      "hn_id": "50197404",
+      "num_comments": 105,
+      "author": "dewey"
+    }
+  },
+  {
+    "title": "Hedra is a 3D open world game I wrote from scratch while in highschool",
+    "url": "https://github.com/maxilevi/project-hedra/tree/pre-ai",
+    "description": "HN discussion (178 points, 31 comments) by maxilevi",
+    "source": "hacker_news",
+    "score": 178,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T18:44:36Z",
+    "extra_metadata": {
+      "hn_id": "50199389",
+      "num_comments": 31,
+      "author": "maxilevi"
+    }
+  },
+  {
+    "title": "The foolishness of \"natural language programming\" (1978)",
+    "url": "https://www.cs.utexas.edu/~EWD/transcriptions/EWD06xx/EWD667.html",
+    "description": "HN discussion (115 points, 70 comments) by xiaoyu2006",
+    "source": "hacker_news",
+    "score": 115,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-23T00:52:01Z",
+    "extra_metadata": {
+      "hn_id": "50203161",
+      "num_comments": 70,
+      "author": "xiaoyu2006"
+    }
+  },
+  {
+    "title": "Mortality Among People with Attention-Deficit/Hyperactivity Disorder",
+    "url": "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2855472",
+    "description": "HN discussion (94 points, 57 comments) by gumby",
+    "source": "hacker_news",
+    "score": 94,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-20T22:24:23Z",
+    "extra_metadata": {
+      "hn_id": "50173516",
+      "num_comments": 57,
+      "author": "gumby"
+    }
+  },
+  {
+    "title": "Local Wikipedia: Wikipedia, but only for things a half hour walk from you",
+    "url": "https://edjefferson.com/localwiki/",
+    "description": "HN discussion (93 points, 22 comments) by sohkamyung",
+    "source": "hacker_news",
+    "score": 93,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T23:01:18Z",
+    "extra_metadata": {
+      "hn_id": "50202285",
+      "num_comments": 22,
+      "author": "sohkamyung"
+    }
+  },
+  {
+    "title": "Railpass",
+    "url": "https://train.samismith.com/",
+    "description": "HN discussion (90 points, 23 comments) by CharlesW",
+    "source": "hacker_news",
+    "score": 90,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T21:38:32Z",
+    "extra_metadata": {
+      "hn_id": "50201414",
+      "num_comments": 23,
+      "author": "CharlesW"
+    }
+  },
+  {
+    "title": "Jank \u2013 The native Clojure dialect with seamless C++ interop",
+    "url": "https://jank-lang.org/",
+    "description": "HN discussion (70 points, 4 comments) by giancarlostoro",
+    "source": "hacker_news",
+    "score": 70,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T23:56:36Z",
+    "extra_metadata": {
+      "hn_id": "50202762",
+      "num_comments": 4,
+      "author": "giancarlostoro"
+    }
+  },
+  {
+    "title": "This I Believe (1952)",
+    "url": "https://www.awakin.org/v2/read/view.php?tid=468",
+    "description": "HN discussion (57 points, 14 comments) by ctoth",
+    "source": "hacker_news",
+    "score": 57,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-23T02:19:38Z",
+    "extra_metadata": {
+      "hn_id": "50203759",
+      "num_comments": 14,
+      "author": "ctoth"
+    }
+  },
+  {
+    "title": "Color Names",
+    "url": "https://names.color.pizza",
+    "description": "HN discussion (51 points, 7 comments) by akkartik",
+    "source": "hacker_news",
+    "score": 51,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-20T16:27:56Z",
+    "extra_metadata": {
+      "hn_id": "50168850",
+      "num_comments": 7,
+      "author": "akkartik"
+    }
+  },
+  {
+    "title": "How to Design Flowers",
+    "url": "https://www.asimov.press/p/flowers",
+    "description": "HN discussion (38 points, 2 comments) by surprisetalk",
+    "source": "hacker_news",
+    "score": 38,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-20T14:00:07Z",
+    "extra_metadata": {
+      "hn_id": "50166604",
+      "num_comments": 2,
+      "author": "surprisetalk"
+    }
+  },
+  {
+    "title": "Why my Asus laptop kept rebooting after sleep and how to fix it",
+    "url": "https://idiallo.com/blog/asus-laptop-keeps-rebooting-after-sleep",
+    "description": "HN discussion (37 points, 29 comments) by surprisetalk",
+    "source": "hacker_news",
+    "score": 37,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-20T13:40:04Z",
+    "extra_metadata": {
+      "hn_id": "50166272",
+      "num_comments": 29,
+      "author": "surprisetalk"
+    }
+  },
+  {
+    "title": "Postgres recovery_prefetch can cause outages",
+    "url": "https://ardentperf.com/2026/10/20/postgres-recovery_prefetch-considered-harmful-and-causing-outages/",
+    "description": "HN discussion (33 points, 0 comments) by plaur782",
+    "source": "hacker_news",
+    "score": 33,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-21T22:33:08Z",
+    "extra_metadata": {
+      "hn_id": "50188614",
+      "num_comments": 0,
+      "author": "plaur782"
+    }
+  },
+  {
+    "title": "A lost Schr\u00f6dinger manuscript reveals a twist in quantum physics",
+    "url": "https://www.sciencealert.com/a-lost-schrdinger-manuscript-reveals-a-surprising-twist-in-quantum-physics",
+    "description": "HN discussion (24 points, 5 comments) by ibobev",
+    "source": "hacker_news",
+    "score": 24,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T07:41:29Z",
+    "extra_metadata": {
+      "hn_id": "50192396",
+      "num_comments": 5,
+      "author": "ibobev"
+    }
+  },
+  {
+    "title": "Show HN: OnKey \u2013 I'm a bad singer, so I built an app to show where I'm off-key",
+    "url": "https://github.com/dsmurrell/onkey",
+    "description": "HN discussion (19 points, 12 comments) by dsmurrell",
+    "source": "hacker_news",
+    "score": 19,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T14:04:44Z",
+    "extra_metadata": {
+      "hn_id": "50195488",
+      "num_comments": 12,
+      "author": "dsmurrell"
+    }
+  },
+  {
+    "title": "The alien space of science: Coherent but cognitively unavailable directions",
+    "url": "https://arxiv.org/abs/2603.01092",
+    "description": "HN discussion (18 points, 2 comments) by martincsweiss",
+    "source": "hacker_news",
+    "score": 18,
+    "language": "Tech/Discussion",
+    "published_at": "2026-10-22T13:25:01Z",
+    "extra_metadata": {
+      "hn_id": "50195002",
+      "num_comments": 2,
+      "author": "martincsweiss"
+    }
+  },
+  {
+    "title": "AI Is Winning Literary Awards. The Data Says That's Not What's Happening.",
+    "url": "https://dev.to/james_anderson_h/ai-is-winning-literary-awards-the-data-says-thats-not-whats-happening-179d",
+    "description": "The headlines have been impossible to miss. An AI-assisted novel takes a major prize in Japan. AI... (7 min read, 15 reactions)",
+    "source": "devto_articles",
+    "score": 15,
+    "language": "Ai",
+    "published_at": "2026-10-23T05:29:29Z",
+    "extra_metadata": {
+      "reading_time": 7,
+      "tags": [
+        "ai",
+        "writing",
+        "data",
+        "discuss"
+      ]
+    }
+  },
+  {
+    "title": "Nothing Reported It",
+    "url": "https://dev.to/kenwalger/nothing-reported-it-9ke",
+    "description": "Five ways my own test harness lied to me, and the one that nearly got published   The number... (11 min read, 8 reactions)",
+    "source": "devto_articles",
+    "score": 8,
+    "language": "Ai",
+    "published_at": "2026-10-22T13:34:00Z",
+    "extra_metadata": {
+      "reading_time": 11,
+      "tags": [
+        "ai",
+        "testing",
+        "programming",
+        "devops"
+      ]
+    }
+  },
+  {
+    "title": "926 Steps, Two Lobotomies, and Zero Nudges: Flight-Testing the Commitment Machine Across Gemini, Claude, and GPT-OSS",
+    "url": "https://dev.to/gde/926-steps-two-lobotomies-and-zero-nudges-flight-testing-the-commitment-machine-across-gemini-55ca",
+    "description": "A 2026 Harvard study of 718 companies found that AI agents write 30% more code and close zero additional tickets because review times jump 49%. Here is what happened when I put my 1986 Commitment Machine into live production across Gemini, Claude, and GPT-OSS. (16 min read, 3 reactions)",
+    "source": "devto_articles",
+    "score": 3,
+    "language": "Ai",
+    "published_at": "2026-10-22T23:51:30Z",
+    "extra_metadata": {
+      "reading_time": 16,
+      "tags": [
+        "ai",
+        "programming",
+        "architecture",
+        "unix"
+      ]
+    }
+  },
+  {
+    "title": "Why an 80-Year-Old Math Book Fixed My AI Coding Agent",
+    "url": "https://dev.to/gulajavaministudio/why-an-80-year-old-math-book-fixed-my-ai-coding-agent-517b",
+    "description": "Here is a scenario almost every developer reading this has lived through over the past year.  It is... (12 min read, 10 reactions)",
+    "source": "devto_articles",
+    "score": 10,
+    "language": "Ai",
+    "published_at": "2026-10-23T03:57:06Z",
+    "extra_metadata": {
+      "reading_time": 12,
+      "tags": [
+        "ai",
+        "webdev",
+        "programming",
+        "productivity"
+      ]
+    }
+  },
+  {
+    "title": "Update, things are coming together.",
+    "url": "https://dev.to/unitbuilds/update-things-are-coming-together-4lo3",
+    "description": "So it's been a while and there's been some developments...  Firstly, I joined YC startup school and... (3 min read, 20 reactions)",
+    "source": "devto_articles",
+    "score": 20,
+    "language": "Ai",
+    "published_at": "2026-10-22T08:59:07Z",
+    "extra_metadata": {
+      "reading_time": 3,
+      "tags": [
+        "ai",
+        "career",
+        "discuss",
+        "development"
+      ]
+    }
+  },
+  {
+    "title": "[Boost]",
+    "url": "https://dev.to/xbill/-4pn2",
+    "description": "Now Open Source: TorchTPU and the TPU Agent Suite for Native PyTorch on Google Cloud TPUs      ... (1 min read, 0 reactions)",
+    "source": "devto_articles",
+    "score": 0,
+    "language": "Python",
+    "published_at": "2026-10-23T01:55:17Z",
+    "extra_metadata": {
+      "reading_time": 1,
+      "tags": [
+        "ai",
+        "cloud",
+        "opensource",
+        "python"
+      ]
+    }
+  },
+  {
+    "title": "My laptop has no GPU, so I gave it the night shift",
+    "url": "https://dev.to/rehan1604/my-laptop-has-no-gpu-so-i-gave-it-the-night-shift-1glp",
+    "description": "This is a submission for the Hacktoberfest Open-Source AI Challenge Week 3: Slow and Steady \ud83e\udda5  What I... (8 min read, 0 reactions)",
+    "source": "devto_articles",
+    "score": 0,
+    "language": "Python",
+    "published_at": "2026-10-22T06:23:31Z",
+    "extra_metadata": {
+      "reading_time": 8,
+      "tags": [
+        "devchallenge",
+        "hf26challenge",
+        "ai",
+        "python"
+      ]
+    }
+  },
+  {
+    "title": "Safe CSV export in Python: preventing formula injection before a lead list reaches Excel",
+    "url": "https://dev.to/locatenext/safe-csv-export-in-python-preventing-formula-injection-before-a-lead-list-reaches-excel-5bc7",
+    "description": "Stop CSV formula injection in lead lists and skip-trace exports with a pandas sanitizer that keeps negative numbers and E.164 phones intact. (10 min read, 2 reactions)",
+    "source": "devto_articles",
+    "score": 2,
+    "language": "Python",
+    "published_at": "2026-10-22T22:07:02Z",
+    "extra_metadata": {
+      "reading_time": 10,
+      "tags": [
+        "python",
+        "security",
+        "csv",
+        "excel"
+      ]
+    }
+  },
+  {
+    "title": "Stop Repeating .filter(is_active=True) Everywhere",
+    "url": "https://dev.to/anas_issath/stop-repeating-filterisactivetrue-everywhere-aa5",
+    "description": "Custom managers and querysets. How to name your query logic once, reuse it everywhere, and chain it like Django's built-in methods. (7 min read, 1 reactions)",
+    "source": "devto_articles",
+    "score": 1,
+    "language": "Python",
+    "published_at": "2026-10-22T08:43:05Z",
+    "extra_metadata": {
+      "reading_time": 7,
+      "tags": [
+        "django",
+        "python",
+        "orm",
+        "webdev"
+      ]
+    }
+  },
+  {
+    "title": "sloth-tidy: the file organizer that files like you \u2014 and never repeats a mistake",
+    "url": "https://dev.to/abhinav412/sloth-tidy-the-file-organizer-that-files-like-you-and-never-repeats-a-mistake-1mgi",
+    "description": "A local, habit-mirroring file organizer: dry-run-first safety, journal-first moves, undo-as-feedback memory, and two-model consensus on Ollama. (5 min read, 0 reactions)",
+    "source": "devto_articles",
+    "score": 0,
+    "language": "Python",
+    "published_at": "2026-10-22T17:55:13Z",
+    "extra_metadata": {
+      "reading_time": 5,
+      "tags": [
+        "devchallenge",
+        "hf26challenge",
+        "python",
+        "ai"
+      ]
+    }
+  },
+  {
+    "title": "Git 2.56's last-modified command is fast on one directory and slow on scattered files",
+    "url": "https://dev.to/alexgeorgiev17/git-256s-last-modified-command-is-fast-on-one-directory-and-slow-on-scattered-files-2ggm",
+    "description": "I benchmarked Git's new last-modified command against a per-file git log loop on git/git: 861ms versus 2981ms listing one real directory, but slower once the same 40 paths were scattered across the tree, and a parent-then-child pathspec order silently drops a row. (6 min read, 15 reactions)",
+    "source": "devto_articles",
+    "score": 15,
+    "language": "Opensource",
+    "published_at": "2026-10-22T10:00:00Z",
+    "extra_metadata": {
+      "reading_time": 6,
+      "tags": [
+        "git",
+        "devops",
+        "performance",
+        "opensource"
+      ]
+    }
+  },
+  {
+    "title": "Hush: I Hid 10 Emergencies in My Own Notifications. An On-Device Gemma OS Found All 10.",
+    "url": "https://dev.to/rajan_mishra_a9f78ad216b4/hush-i-hid-10-emergencies-in-my-own-notifications-an-on-device-gemma-os-found-all-10-m3g",
+    "description": "This is a submission for the Hacktoberfest Open-Source AI Challenge Week 3: Slow and Steady          ... (5 min read, 10 reactions)",
+    "source": "devto_articles",
+    "score": 10,
+    "language": "Opensource",
+    "published_at": "2026-10-23T04:03:04Z",
+    "extra_metadata": {
+      "reading_time": 5,
+      "tags": [
+        "devchallenge",
+        "hf26challenge",
+        "ai",
+        "opensource"
+      ]
+    }
+  },
+  {
+    "title": "Crowdwide Day 20: Almost Done\u2026 But There\u2019s Always Something More! \ud83d\ude2d",
+    "url": "https://dev.to/puneetkumar2010/crowdwide-day-20-almost-done-but-theres-always-something-more-chf",
+    "description": "I was building a social media platform named Crowdwide!  It has this special thing about it... it... (2 min read, 28 reactions)",
+    "source": "devto_articles",
+    "score": 28,
+    "language": "Opensource",
+    "published_at": "2026-10-22T12:06:45Z",
+    "extra_metadata": {
+      "reading_time": 2,
+      "tags": [
+        "webdev",
+        "buildinpublic",
+        "opensource",
+        "discuss"
+      ]
+    }
+  },
+  {
+    "title": "I Wanted a Guardian. I Kept Building Things I Had to Babysit.",
+    "url": "https://dev.to/kenielzep97/i-wanted-a-guardian-i-kept-building-things-i-had-to-babysit-4k40",
+    "description": "This is a submission for the Hacktoberfest Open-Source AI Challenge Week 3: Slow and Steady.         ... (7 min read, 14 reactions)",
+    "source": "devto_articles",
+    "score": 14,
+    "language": "Opensource",
+    "published_at": "2026-10-22T20:37:02Z",
+    "extra_metadata": {
+      "reading_time": 7,
+      "tags": [
+        "devchallenge",
+        "hf26challenge",
+        "opensource",
+        "agents"
+      ]
+    }
+  },
+  {
+    "title": "Bill & Document Sloth: A Local-First AI Paperwork Manager with Gemma & TabPFN",
+    "url": "https://dev.to/ayush_gupta_17/bill-document-sloth-a-local-first-ai-paperwork-manager-with-gemma-tabpfn-j09",
+    "description": "This is a submission for the Hacktoberfest Open-Source AI Challenge Week 3: Slow and Steady          ... (4 min read, 6 reactions)",
+    "source": "devto_articles",
+    "score": 6,
+    "language": "Opensource",
+    "published_at": "2026-10-22T17:23:44Z",
+    "extra_metadata": {
+      "reading_time": 4,
+      "tags": [
+        "devchallenge",
+        "hf26challenge",
+        "ai",
+        "opensource"
+      ]
+    }
+  },
+  {
+    "title": "anthropics / knowledge-work-plugins",
+    "url": "https://github.com/anthropics/knowledge-work-plugins",
+    "description": "Open source repository of plugins primarily intended for knowledge workers to use in Claude Cowork",
+    "source": "github_trending",
+    "score": 303,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "Graphify-Labs / graphify",
+    "url": "https://github.com/Graphify-Labs/graphify",
+    "description": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. A /graphify skill for Claude Code, Cursor, Codex, and Gemini CLI: local deterministic AST parsing, every edge explained, no vector store.",
+    "source": "github_trending",
+    "score": 1408,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "fastapi / fastapi",
+    "url": "https://github.com/fastapi/fastapi",
+    "description": "FastAPI framework, high performance, easy to learn, fast to code, ready for production",
+    "source": "github_trending",
+    "score": 101,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "luongnv89 / claude-howto",
+    "url": "https://github.com/luongnv89/claude-howto",
+    "description": "A visual, example-driven guide to Claude Code \u2014 from basic concepts to advanced agents, with copy-paste templates that bring immediate value.",
+    "source": "github_trending",
+    "score": 177,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "vllm-project / vllm",
+    "url": "https://github.com/vllm-project/vllm",
+    "description": "A high-throughput and memory-efficient inference and serving engine for LLMs",
+    "source": "github_trending",
+    "score": 440,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "headroomlabs-ai / headroom",
+    "url": "https://github.com/headroomlabs-ai/headroom",
+    "description": "Compress tool outputs, logs, files, and RAG chunks before they reach the LLM. 20% fewer tokens for coding agents, 60-95% fewer tokens for JSON, same answers. Library, proxy, MCP server.",
+    "source": "github_trending",
+    "score": 517,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "Z4nzu / hackingtool",
+    "url": "https://github.com/Z4nzu/hackingtool",
+    "description": "ALL IN ONE Hacking Tool For Hackers",
+    "source": "github_trending",
+    "score": 50,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "shiyu-coder / Kronos",
+    "url": "https://github.com/shiyu-coder/Kronos",
+    "description": "Kronos: A Foundation Model for the Language of Financial Markets",
+    "source": "github_trending",
+    "score": 500,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "NanmiCoder / MediaCrawler",
+    "url": "https://github.com/NanmiCoder/MediaCrawler",
+    "description": "\u5c0f\u7ea2\u4e66\u7b14\u8bb0 | \u8bc4\u8bba\u722c\u866b\u3001\u6296\u97f3\u89c6\u9891 | \u8bc4\u8bba\u722c\u866b\u3001\u5feb\u624b\u89c6\u9891 | \u8bc4\u8bba\u722c\u866b\u3001B \u7ad9\u89c6\u9891 \uff5c \u8bc4\u8bba\u722c\u866b\u3001\u5fae\u535a\u5e16\u5b50 \uff5c \u8bc4\u8bba\u722c\u866b\u3001\u767e\u5ea6\u8d34\u5427\u5e16\u5b50 \uff5c \u767e\u5ea6\u8d34\u5427\u8bc4\u8bba\u56de\u590d\u722c\u866b | \u77e5\u4e4e\u95ee\u7b54\u6587\u7ae0\uff5c\u8bc4\u8bba\u722c\u866b",
+    "source": "github_trending",
+    "score": 102,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "BerriAI / litellm",
+    "url": "https://github.com/BerriAI/litellm",
+    "description": "The fastest, litest AI Gateway. Rust core with Python SDK. Call 100+ LLM APIs in OpenAI (or native) format with cost tracking, guardrails, load balancing, and logging [Bedrock, Azure, OpenAI, Anthropic, OpenAI, VertexAI, vLLM, Nvidia NIM]",
+    "source": "github_trending",
+    "score": 107,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "Comfy-Org / ComfyUI",
+    "url": "https://github.com/Comfy-Org/ComfyUI",
+    "description": "The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface. The fastest local inference engine in the world.",
+    "source": "github_trending",
+    "score": 681,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "onyx-dot-app / onyx",
+    "url": "https://github.com/onyx-dot-app/onyx",
+    "description": "Open Source AI Platform - AI Chat with advanced features that works with every LLM",
+    "source": "github_trending",
+    "score": 181,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "HKUDS / Vibe-Trading",
+    "url": "https://github.com/HKUDS/Vibe-Trading",
+    "description": "\"Vibe-Trading: Your Personal Trading Agent\"",
+    "source": "github_trending",
+    "score": 171,
+    "language": "Python",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "python"
+    }
+  },
+  {
+    "title": "php / php-src",
+    "url": "https://github.com/php/php-src",
+    "description": "The PHP Interpreter",
+    "source": "github_trending",
+    "score": 287,
+    "language": "C",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "all"
+    }
+  },
+  {
+    "title": "DietrichGebert / ponytail",
+    "url": "https://github.com/DietrichGebert/ponytail",
+    "description": "Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.",
+    "source": "github_trending",
+    "score": 1948,
+    "language": "JavaScript",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "all"
+    }
+  },
+  {
+    "title": "cloudflare / security-audit-skill",
+    "url": "https://github.com/cloudflare/security-audit-skill",
+    "description": "A coding-agent skill for multi-phase security audits with independently verified, machine-readable findings",
+    "source": "github_trending",
+    "score": 2979,
+    "language": "JavaScript",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "all"
+    }
+  },
+  {
+    "title": "supabase / supabase",
+    "url": "https://github.com/supabase/supabase",
+    "description": "The Postgres development platform. Supabase gives you a dedicated Postgres database to build your web, mobile, and AI applications.",
+    "source": "github_trending",
+    "score": 693,
+    "language": "TypeScript",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "all"
+    }
+  },
+  {
+    "title": "Meloong-Git / PCL",
+    "url": "https://github.com/Meloong-Git/PCL",
+    "description": "Minecraft \u542f\u52a8\u5668 Plain Craft Launcher\uff08PCL\uff09\u3002",
+    "source": "github_trending",
+    "score": 119,
+    "language": "Visual Basic .NET",
+    "published_at": "",
+    "extra_metadata": {
+      "trending_lang": "all"
+    }
+  }
+]

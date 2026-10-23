@@ -3,184 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechPulse — Autonomous Technical Intelligence Observatory</title>
-  <meta name="description" content="Ultra-premium technical intelligence observatory. Distilling open-source velocity, AI research preprints, and developer signals.">
+  <title>TechPulse, the daily AI and developer digest</title>
+  <meta name="description" content="A ranked daily digest of AI research, open-source projects and developer news, curated and scored from six public sources.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'><circle cx='12' cy='12' r='8'/></svg>">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2' y='2' width='12' height='12' rx='3' fill='none' stroke='%23f5b942' stroke-width='2'/%3E%3C/svg%3E">
 </head>
 <body>
 
-  <!-- Top Instrument Telemetry Header -->
-  <header class="header-bar">
-    <div class="brand-monolith">
-      <div class="beacon-pulse" aria-label="Signal Monitor Online"></div>
-      <div class="brand-text">
-        <span>TECHPULSE</span>
-        <span class="dim">//</span>
-        <span style="font-weight: 400; color: var(--text-body);">OSINT-AI</span>
-        <span class="brand-tag">OBSERVATORY</span>
-      </div>
-    </div>
+  <header class="shell-bar">
+    <div class="container">
+      <a href="/" class="brand-monolith" aria-label="TechPulse, live feed">
+        <span class="beacon-pulse" aria-hidden="true"></span>
+        <span>TechPulse</span>
+      </a>
 
-    <!-- Stitch Obsidian Navigation Rail -->
-    <nav class="nav-pills" role="navigation" aria-label="Main Navigation">
-      <a href="/" class="nav-pill active" data-path="live-feed">Live Feed</a>
-      <a href="/curated-digests" class="nav-pill" data-path="curated-digests">Curated Digests</a>
-      <a href="#spectrum-rail" class="nav-pill" data-path="ai-trends-and-signals">AI Trends</a>
-      <a href="#kpi-strip" class="nav-pill" data-path="sources-and-bot-config">Sources &amp; Config</a>
-    </nav>
+      <nav class="nav-tabs" aria-label="Main">
+        <a href="/" class="nav-tab" aria-current="page">Live feed</a>
+        <a href="/curated-digests" class="nav-tab">Digests</a>
+      </nav>
 
-    <div class="header-actions">
-      <!-- Historical Date Selector -->
-      <div class="date-selector-wrapper" title="Browse historical digests">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
-        <select id="date-select" class="date-select" aria-label="Select digest date">
-          <option value="latest">Latest Digest</option>
+      <div class="bar-actions">
+        <label class="visually-hidden" for="date-select">Digest date</label>
+        <select id="date-select" class="field" title="Browse earlier digests">
+          <option value="latest">Latest digest</option>
         </select>
+
+        <button type="button" class="btn" id="btn-export" title="Download the shown digest as Markdown">
+          <span>Export .md</span>
+        </button>
+
+        <div class="keyboard-hint" id="keyboard-hint">
+          <kbd>↑</kbd><kbd>↓</kbd><span>move</span><kbd>↵</kbd><span>open</span>
+        </div>
+
+        <div class="quota-pill" id="quota-pill" title="Hourly harvest budget">
+          <span class="quota-indicator-dot" id="quota-dot" aria-hidden="true"></span>
+          <span class="quota-text" id="quota-text">Quota ready</span>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="btn-harvest" title="Run a harvest now">
+          <span>Run harvest</span>
+        </button>
       </div>
-
-      <!-- Export Markdown Action -->
-      <button class="btn-secondary" id="btn-export" title="Download active digest as Markdown">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        <span>Export .MD</span>
-      </button>
-
-      <!-- Keyboard flight controls hint (Shown in cockpit mode) -->
-      <div class="keyboard-hint" style="display: none;" id="keyboard-hint">
-        <span>Flight</span> <kbd>↑</kbd> <kbd>↓</kbd> <span>Open</span> <kbd>↵</kbd>
-      </div>
-
-      <!-- Quota & Cooldown Indicator -->
-      <div class="quota-pill" id="quota-pill" title="Hourly harvest budget & cooldown governor">
-        <span class="quota-indicator-dot" id="quota-dot"></span>
-        <span class="quota-text" id="quota-text">Quota: Ready</span>
-      </div>
-
-      <!-- Live Harvest Trigger -->
-      <button class="btn-primary" id="btn-harvest" title="Trigger on-demand multi-source harvest">
-        <svg class="harvest-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
-        </svg>
-        <span>Run Harvest</span>
-      </button>
     </div>
   </header>
 
-  <main class="app-wrapper">
+  <main class="app-wrapper container">
 
-    <!-- Compact KPI Hero Metric Ribbon (Interactive Filters) -->
-    <section class="kpi-strip" aria-label="Observatory Metrics">
-      <div class="kpi-card interactive" id="kpi-card-corpus" title="Filter to all curated signals">
-        <span class="kpi-label">30-Day Corpus</span>
-        <div class="kpi-value-row">
-          <span class="kpi-number" id="kpi-tracked">--</span>
-          <span class="kpi-subtext">Novel URLs</span>
-        </div>
+    <div class="page-head">
+      <div>
+        <h1>Today’s digest</h1>
+        <p id="page-sub">Loading the latest ranked items.</p>
       </div>
+    </div>
 
-      <div class="kpi-card interactive" id="kpi-card-must-read" title="Click to filter Must Reads">
-        <span class="kpi-label">High Conviction</span>
-        <div class="kpi-value-row">
-          <span class="kpi-number emerald" id="kpi-must-read">--</span>
-          <span class="kpi-subtext">Must Read</span>
-        </div>
-      </div>
+    <section class="readings" aria-label="Readings from the shown digest">
+      <button type="button" class="reading-cell" id="kpi-card-corpus" title="Show every curated item">
+        <span class="reading-label">URLs seen, 30 days</span>
+        <span class="reading-value" id="kpi-tracked">--</span>
+        <span class="reading-note">after deduplication</span>
+      </button>
 
-      <div class="kpi-card interactive" id="kpi-card-inspiration" title="Click to filter Inspirations">
-        <span class="kpi-label">Exploratory Signals</span>
-        <div class="kpi-value-row">
-          <span class="kpi-number amber" id="kpi-inspiration">--</span>
-          <span class="kpi-subtext">Inspirations</span>
-        </div>
-      </div>
+      <button type="button" class="reading-cell" id="kpi-card-must-read" title="Show must reads only">
+        <span class="reading-label">Must read</span>
+        <span class="reading-value" id="kpi-must-read">--</span>
+        <span class="reading-note" id="kpi-must-note">of the curated set</span>
+      </button>
 
-      <div class="kpi-card" id="kpi-card-engine">
-        <span class="kpi-label">Inference Engine</span>
-        <div class="kpi-value-row">
-          <span class="kpi-number cyan" style="font-size: 1.15rem;" id="kpi-engine">Groq 120B</span>
-          <span class="kpi-subtext" id="kpi-latency">Fast JSON Mode</span>
-        </div>
+      <button type="button" class="reading-cell" id="kpi-card-inspiration" title="Show inspiration only">
+        <span class="reading-label">Inspiration</span>
+        <span class="reading-value" id="kpi-inspiration">--</span>
+        <span class="reading-note">worth a look</span>
+      </button>
+
+      <div class="reading-cell" id="kpi-card-engine">
+        <span class="reading-label">Curated by</span>
+        <span class="reading-value is-text" id="kpi-engine">--</span>
+        <span class="reading-note" id="kpi-latency">ranking backend</span>
       </div>
     </section>
 
-    <!-- Control Bar: Search + High-Signal Curation Tabs + View Switcher -->
-    <section class="control-bar">
+    <section class="control-bar" aria-label="Filters">
       <div class="search-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="search-input" class="search-input" placeholder="Filter signals, tools, papers, architectures..." autocomplete="off">
-        <span class="kbd-shortcut">Ctrl K</span>
+        <label class="visually-hidden" for="search-input">Search the digest</label>
+        <input type="search" id="search-input" name="q" class="field search-input" placeholder="Search titles and summaries" autocomplete="off" spellcheck="false">
+        <span class="kbd-shortcut"><kbd>Ctrl K</kbd></span>
       </div>
 
       <div class="filter-group">
-        <div class="segmented-control" role="tablist">
-          <button class="seg-btn is-active" data-category="curated" role="tab" id="tab-curated">
-            High Signal <span class="tab-badge" id="count-curated">0</span>
+        <div class="segmented-control" role="group" aria-label="Category">
+          <button type="button" class="seg-btn is-active" data-category="curated" id="tab-curated">
+            High signal <span class="tab-badge" id="count-curated">0</span>
           </button>
-          <button class="seg-btn" data-category="Must Read" role="tab" id="tab-must-read">
-            <span class="status-dot emerald"></span>
-            Must Read <span class="tab-badge" id="count-must-read">0</span>
+          <button type="button" class="seg-btn" data-category="Must Read" id="tab-must-read">
+            Must read <span class="tab-badge" id="count-must-read">0</span>
           </button>
-          <button class="seg-btn" data-category="Inspiration" role="tab" id="tab-inspiration">
-            <span class="status-dot amber"></span>
+          <button type="button" class="seg-btn" data-category="Inspiration" id="tab-inspiration">
             Inspiration <span class="tab-badge" id="count-inspiration">0</span>
           </button>
-          <button class="seg-btn muted" data-category="Skip" role="tab" id="tab-skip" title="View items filtered out as noise">
-            Noise Audit <span class="tab-badge" id="count-skip">0</span>
+          <button type="button" class="seg-btn muted" data-category="Skip" id="tab-skip" title="Items the curator filtered out">
+            Filtered out <span class="tab-badge" id="count-skip">0</span>
           </button>
         </div>
 
-        <div class="view-toggle" title="Switch layout mode">
-          <button class="view-btn is-active" id="view-cards-btn" title="Responsive Cards Grid">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"></rect>
-              <rect x="14" y="3" width="7" height="7"></rect>
-              <rect x="14" y="14" width="7" height="7"></rect>
-              <rect x="3" y="14" width="7" height="7"></rect>
-            </svg>
-          </button>
-          <button class="view-btn" id="view-cockpit-btn" title="Cockpit Master-Detail (Zero-Scroll Flight Mode)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="11" y1="3" x2="11" y2="21"></line>
-            </svg>
-          </button>
+        <div class="view-toggle" role="group" aria-label="Layout">
+          <button type="button" class="view-btn is-active" id="view-cards-btn" title="Ranked list">List</button>
+          <button type="button" class="view-btn" id="view-cockpit-btn" title="List with a reading pane">Split</button>
         </div>
       </div>
     </section>
 
-    <!-- Source Spectrum Filter Rail -->
-    <section class="spectrum-rail" id="spectrum-rail" aria-label="Source spectrum filters">
-      <!-- Injected dynamically by app.js -->
-    </section>
+    <section class="spectrum-rail" id="spectrum-rail" aria-label="Filter by source"></section>
 
-    <!-- Dynamic Main Content Container -->
-    <!-- Mode 1: 3-Column Bento Cards Grid (Default) -->
-    <!-- Mode 2: Viewport-Contained Cockpit Split View (Toggled) -->
-    <div id="content-container" class="cards-grid-view">
-      <div class="shimmer-box"></div>
-      <div class="shimmer-box"></div>
-      <div class="shimmer-box"></div>
+    <div id="content-container" class="cards-grid-view" role="list" aria-live="polite" aria-busy="true">
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
     </div>
-
+    <p class="wake-note" id="wake-note" hidden>The server is waking from idle. The first load can take about 30 seconds.</p>
   </main>
 
-  <!-- Slide-Over Quick Reader Drawer (Available for Grid Mode) -->
-  <div class="drawer-overlay" id="drawer-overlay" style="display: none;"></div>
+  <dialog id="key-dialog" aria-labelledby="key-title">
+    <form method="dialog">
+      <h2 id="key-title">Harvest key</h2>
+      <p class="muted">This server only lets key holders run a harvest.</p>
+      <label>
+        API key
+        <input type="password" name="key" class="field" autocomplete="off" required>
+      </label>
+      <div class="row">
+        <button type="submit" class="btn" value="cancel" formnovalidate>Cancel</button>
+        <button type="submit" class="btn btn-primary" value="ok">Run harvest</button>
+      </div>
+    </form>
+  </dialog>
 
-  <!-- Toast Notification System -->
-  <div class="toast-container" id="toast-container"></div>
+  <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
 
+  <script src="/static/shell.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>

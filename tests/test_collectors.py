@@ -102,3 +102,17 @@ def test_devto_collector_parsing():
         item = res.items[0]
         assert item.title == "Building Production Multi-Agent Systems in Python"
         assert item.score == 67
+
+
+def test_devto_collector_skips_bare_bracket_reposts():
+    """A '[Boost]' repost has no real title and must not reach the digest."""
+    collector = DevToCollector()
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [
+        {"title": "[Boost]", "url": "https://dev.to/u/boost", "positive_reactions_count": 1},
+        {"title": "A real article", "url": "https://dev.to/u/real", "positive_reactions_count": 5},
+    ]
+    with patch("requests.get", return_value=mock_response):
+        titles = {i.title for i in collector.fetch().items}
+    assert titles == {"A real article"}

@@ -5,7 +5,7 @@
 
 [![Daily Tech Digest](https://img.shields.io/badge/schedule-daily%208AM%20UTC-blue?style=flat-square)](.github/workflows/digest.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue?style=flat-square&logo=python)](https://python.org)
-[![Tests Passing](https://img.shields.io/badge/pytest-22%20passed-brightgreen?style=flat-square)](tests/)
+[![Tests Passing](https://img.shields.io/badge/pytest-36%20core%20tests-brightgreen?style=flat-square)](tests/)
 [![Playwright E2E](https://img.shields.io/badge/playwright-e2e%20verified-brightgreen?style=flat-square)](tests/test_ui_playwright.py)
 [![Cost](https://img.shields.io/badge/cost-%240%2Fmonth-green?style=flat-square)](https://console.groq.com)
 
@@ -41,9 +41,95 @@ pytest tests/test_models.py tests/test_database.py tests/test_collectors.py test
 # Run Playwright visual end-to-end tests (Chromium headless)
 pytest tests/test_ui_playwright.py -v
 
-# Run entire test suite (22/22 tests)
+# Run entire test suite (core tests; start the API first for Playwright)
 pytest tests/ -v
 ```
+
+### Ranking evaluation
+
+Curated items receive a deterministic, source-aware `v1` priority score based on
+profile relevance, impact, freshness, novelty, and source-normalized popularity.
+The dependency-free metrics in `src/evaluation.py` support offline comparison
+against human-labelled relevance judgements:
+
+- Precision@K for top-of-digest usefulness
+- NDCG@K for graded ordering quality
+- Reciprocal rank for first relevant-item placement
+
+This baseline is intentionally separated from model integrations so Laya or
+Jev can be evaluated against the same labelled examples before affecting
+production ordering.
+
+Run the reproducible backend comparison command:
+
+```bash
+python scripts/evaluate_ranking.py --backend deterministic
+python scripts/evaluate_ranking.py --backend laya --device cpu
+```
+
+Run both backends and get a machine-readable recommendation:
+
+```bash
+python scripts/compare_ranking_backends.py \
+  --fixture tests/fixtures/ranking_labels_human.json
+```
+
+The comparison command requires `label_source: "human"` for every item. Use
+`evaluate_ranking.py` with the provisional fixture for exploratory experiments.
+
+For a promotion-quality gate, require a larger, multi-source fixture:
+
+```bash
+python scripts/evaluate_ranking.py --backend deterministic --min-items 100 --min-sources 4
+```
+
+The Laya command requires the optional Laya environment and reports backend
+metadata, latency, ranking metrics, model warnings, confidence values, and the
+resulting order. Laya remains opt-in until it is evaluated on a substantially
+larger labelled fixture.
+
+Build a review queue from historical digests before expanding the benchmark:
+
+```bash
+python scripts/export_ranking_review.py
+```
+
+This writes `tests/fixtures/ranking_review.json` with full summaries and
+metadata. The `relevance` field is intentionally blank; `suggested_category`
+and `suggested_priority_score` are only context for a human reviewer and must
+not be treated as ground truth. Set `label_source` and `label_notes` when
+reviewing each item, then copy verified numeric relevance labels into the
+evaluation fixture.
+
+Check annotation progress and promotion readiness:
+
+```bash
+python scripts/ranking_label_status.py
+```
+
+The command reports completion by source and returns
+`ready_for_comparison: true` only when every item is labelled, every source
+has at least one labelled item, every label is explicitly marked
+`label_source: "human"`, and the minimum item/source thresholds are met.
+Assistant-provisional labels can be used for exploratory comparisons but cannot
+pass this promotion gate.
+
+For a faster browser workflow, start the API and open
+`http://127.0.0.1:8000/label-review`. The workspace shows one item at a time,
+supports keyboard scores `0`–`4`, records an optional rationale, and saves to
+`tests/fixtures/ranking_labels_human.json` without modifying the provisional
+fixture.
+
+To refresh an expanded exploratory corpus from a live collector snapshot:
+
+```bash
+python scripts/build_assistant_expanded_fixture.py
+```
+
+This combines the reviewed historical examples with newly collected public
+items and applies an explicit provisional rubric. It is useful for stress
+testing rankers, but its labels remain non-human and cannot authorize a
+production change.
 
 ---
 
@@ -139,7 +225,7 @@ AIAgentInitiative/
 │   │   ├── processor.py     # Agent 2: Groq LLM filter & categorizer with fallback
 │   │   └── publisher.py     # Agent 3: Markdown compiler & exporter
 │   └── orchestrator.py      # End-to-end pipeline coordinator
-├── tests/                   # Complete test suite (30/30 passing)
+├── tests/                   # Complete test suite (36 core + 10 UI passing)
 │   ├── __init__.py
 │   ├── test_models.py       # Pydantic validation tests
 │   ├── test_database.py     # SQLite deduplication & window tests
@@ -252,3 +338,23 @@ pytest tests/ -v
 - **Database & State**: $0 (Persistent SQLite volume with WAL mode)
 - **Rate-Limiting & Caching**: $0 (In-memory token bucket + SlowAPI)
 - **Feed Ingestion**: $0 (All public APIs & RSS feeds)
+
+### Daily email brief
+
+`scripts/run_daily.py` runs the pipeline and emails the top items. The GitHub Actions workflow
+`.github/workflows/digest.yml` runs it every day at 08:00 UTC. Set these repository secrets:
+
+```bash
+gh secret set GROQ_API_KEY
+gh secret set SMTP_HOST
+gh secret set SMTP_PORT
+gh secret set SMTP_USER
+gh secret set SMTP_PASSWORD
+gh secret set EMAIL_FROM
+gh secret set EMAIL_TO
+gh variable set PUBLIC_URL --body https://techpulse-ai-digest.onrender.com/
+```
+
+Locally, copy the SMTP lines from `.env.example` into `.env` and run
+`python scripts/run_daily.py --no-email` to test without sending. Exit code 3 means the run
+finished but looks suspect (too few items, or the AI curator was not used).

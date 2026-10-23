@@ -3,6 +3,7 @@ devto.py — Ingests top engineering articles from Dev.to across AI, Python, and
 Extracts title, positive reactions, reading time, and tags.
 """
 
+import re
 import requests
 from typing import List
 
@@ -44,6 +45,9 @@ class DevToCollector(BaseCollector):
                 title = art.get("title")
                 url = art.get("url")
                 if not title or not url:
+                    continue
+                # Reposts arrive as a bare "[Boost]" style tag with no real title.
+                if re.fullmatch(r"\[[^\]]*\]", title.strip()):
                     continue
 
                 reactions = art.get("positive_reactions_count", 0)

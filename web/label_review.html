@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TechPulse — Label Review</title>
+  <link rel="stylesheet" href="/static/label_review.css">
+</head>
+<body>
+  <main class="review-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">TECHPULSE / EVALUATION LAB</p>
+        <h1>Human relevance review</h1>
+        <p class="subhead">Review one item at a time. Your labels are saved to a separate human fixture.</p>
+      </div>
+      <a class="back-link" href="/">Back to observatory</a>
+    </header>
+
+    <section class="progress-card" aria-live="polite">
+      <div>
+        <span class="muted">ANNOTATION PROGRESS</span>
+        <strong id="progress-count">Loading…</strong>
+      </div>
+      <div class="progress-track"><span id="progress-bar"></span></div>
+      <span id="progress-percent" class="progress-percent">0%</span>
+    </section>
+
+    <div id="error" class="error" role="alert" hidden></div>
+    <section id="review-card" class="review-card" hidden>
+      <div class="item-meta">
+        <span id="item-source" class="source-pill"></span>
+        <span id="item-number" class="muted"></span>
+      </div>
+      <h2 id="item-title"></h2>
+      <a id="item-url" class="item-url" target="_blank" rel="noopener noreferrer"></a>
+      <p id="item-description" class="description"></p>
+      <div class="context">
+        <span class="muted">WHY IT MATTERS</span>
+        <p id="item-why"></p>
+      </div>
+
+      <fieldset>
+        <legend>How relevant is this to the TechPulse audience?</legend>
+        <div class="scores">
+          <button data-score="0"><b>0</b><span>Irrelevant</span></button>
+          <button data-score="1"><b>1</b><span>Peripheral</span></button>
+          <button data-score="2"><b>2</b><span>Useful, indirect</span></button>
+          <button data-score="3"><b>3</b><span>Highly relevant</span></button>
+          <button data-score="4"><b>4</b><span>Essential</span></button>
+        </div>
+      </fieldset>
+
+      <label class="notes-label" for="notes">Reason or uncertainty (optional)</label>
+      <textarea id="notes" maxlength="2000" placeholder="Why did you choose this score?"></textarea>
+      <div class="actions">
+        <button id="skip" class="secondary">Skip for now</button>
+        <button id="save" class="primary" disabled>Save label &amp; next</button>
+      </div>
+    </section>
+    <section id="complete" class="complete" hidden>
+      <div class="complete-icon">✓</div>
+      <h2>Review complete</h2>
+      <p>All items are marked human. Run the readiness check and compare the backends.</p>
+      <code>python scripts\ranking_label_status.py --fixture tests\fixtures\ranking_labels_human.json --min-items 100 --min-sources 5</code>
+    </section>
+  </main>
+  <script src="/static/label_review.js"></script>
+</body>
+</html>

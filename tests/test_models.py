@@ -60,6 +60,8 @@ def test_digest_item_properties():
     )
 
     digest = TechDigest(date="2026-10-22", items=[d1, d2, d3])
+    assert digest.ranking_version == "v1"
+    assert digest.ranking_backend == "deterministic"
     assert len(digest.must_reads) == 1
     assert digest.must_reads[0].title == "Agent Engine"
     assert len(digest.inspirations) == 1

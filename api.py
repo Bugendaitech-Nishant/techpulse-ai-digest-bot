@@ -8,6 +8,7 @@ import sys
 import io
 import time
 import logging
+import json
 from pathlib import Path
 from typing import Optional, Dict, Any
 
@@ -24,6 +25,7 @@ if sys.platform == "win32" and "pytest" not in sys.modules and not os.environ.ge
         pass
 
 from fastapi import FastAPI, HTTPException, Request, Header, BackgroundTasks, Response
+from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -69,6 +71,8 @@ app.add_middleware(
 
 WEB_DIR = Path(__file__).parent / "web"
 WEB_DIR.mkdir(exist_ok=True)
+LABEL_FIXTURE = Path(__file__).parent / "tests" / "fixtures" / "ranking_labels_assistant_expanded.json"
+HUMAN_LABEL_FIXTURE = Path(__file__).parent / "tests" / "fixtures" / "ranking_labels_human.json"
 
 # Mount static web directory
 app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
@@ -96,6 +100,97 @@ def get_curated_digests(request: Request):
     if not archive_file.exists():
         raise HTTPException(status_code=404, detail="Curated Digests UI not compiled.")
     return FileResponse(archive_file)
+
+
+@app.get("/label-review")
+def get_label_review(request: Request):
+    """Serve the local human annotation workspace."""
+    review_file = WEB_DIR / "label_review.html"
+    if not review_file.exists():
+        raise HTTPException(status_code=404, detail="Label review UI not available.")
+    return FileResponse(review_file)
+
+
+class LabelUpdate(BaseModel):
+    relevance: int = Field(..., ge=0, le=4)
+    label_notes: str = Field(default="", max_length=2000)
+
+
+def _read_label_fixture() -> list[dict[str, Any]]:
+    if not LABEL_FIXTURE.exists():
+        raise HTTPException(status_code=404, detail="Expanded label fixture not found.")
+    try:
+        data = json.loads(LABEL_FIXTURE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        logger.error("Could not read label fixture: %s", error)
+        raise HTTPException(status_code=500, detail="Label fixture could not be read.") from error
+    if not isinstance(data, list):
+        raise HTTPException(status_code=500, detail="Label fixture has an invalid format.")
+    return data
+
+
+def _read_human_fixture() -> list[dict[str, Any]]:
+    if not HUMAN_LABEL_FIXTURE.exists():
+        return _read_label_fixture()
+    try:
+        data = json.loads(HUMAN_LABEL_FIXTURE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        logger.error("Could not read human label fixture: %s", error)
+        raise HTTPException(status_code=500, detail="Human label fixture could not be read.") from error
+    if not isinstance(data, list):
+        raise HTTPException(status_code=500, detail="Human label fixture has an invalid format.")
+    return data
+
+
+def _write_human_fixture(items: list[dict[str, Any]]) -> None:
+    HUMAN_LABEL_FIXTURE.parent.mkdir(parents=True, exist_ok=True)
+    temporary = HUMAN_LABEL_FIXTURE.with_suffix(".json.tmp")
+    try:
+        temporary.write_text(json.dumps(items, indent=2) + "\n", encoding="utf-8")
+        temporary.replace(HUMAN_LABEL_FIXTURE)
+    except OSError as error:
+        logger.error("Could not persist human label fixture: %s", error)
+        raise HTTPException(status_code=500, detail="Label could not be saved.") from error
+
+
+@app.get("/api/label-review")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def get_label_review_data(request: Request):
+    """Return annotation items and progress for the local review workspace."""
+    items = _read_human_fixture()
+    labelled = sum(
+        isinstance(item.get("relevance"), int)
+        and not isinstance(item.get("relevance"), bool)
+        and item.get("label_source") == "human"
+        for item in items
+    )
+    return {
+        "items": items,
+        "total": len(items),
+        "labelled": labelled,
+        "unlabelled": len(items) - labelled,
+    }
+
+
+@app.put("/api/label-review/{item_index}")
+@limiter.limit("120/minute")
+def update_label_review(
+    item_index: int,
+    payload: LabelUpdate,
+    request: Request,
+):
+    """Persist one human label to the separate review fixture."""
+    items = _read_human_fixture()
+    if item_index < 0 or item_index >= len(items):
+        raise HTTPException(status_code=404, detail="Label review item not found.")
+    item = dict(items[item_index])
+    item["relevance"] = payload.relevance
+    item["label_source"] = "human"
+    item["label_notes"] = payload.label_notes.strip()
+    items[item_index] = item
+    _write_human_fixture(items)
+    labelled = sum(entry.get("label_source") == "human" for entry in items)
+    return {"success": True, "item": item, "labelled": labelled, "total": len(items)}
 
 
 @app.get("/api/health")
@@ -158,6 +253,24 @@ def get_stats(request: Request, response: Response) -> Dict[str, Any]:
     response.headers["X-Cache"] = "MISS"
     response.headers["Cache-Control"] = "public, max-age=60"
     return stats
+
+
+@app.get("/api/insights")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def get_insights(request: Request, response: Response) -> Dict[str, Any]:
+    """Return real archive statistics aggregated from the database (sources, funnel, history)."""
+    cache_key = "api:insights"
+    cached = cache_manager.get(cache_key)
+    if cached:
+        response.headers["X-Cache"] = "HIT"
+        response.headers["Cache-Control"] = "public, max-age=60"
+        return cached
+
+    insights = db.get_insights()
+    cache_manager.set(cache_key, insights, ttl=60)
+    response.headers["X-Cache"] = "MISS"
+    response.headers["Cache-Control"] = "public, max-age=60"
+    return insights
 
 
 @app.get("/api/digests")

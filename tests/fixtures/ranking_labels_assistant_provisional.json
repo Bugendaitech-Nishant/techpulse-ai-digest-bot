@@ -1,0 +1,227 @@
+[
+  {
+    "title": "vllm-project / vllm",
+    "url": "https://github.com/vllm-project/vllm",
+    "source": "github_trending",
+    "description": "High-throughput LLM inference engine for production serving.",
+    "relevance": 4,
+    "label_source": "assistant_provisional",
+    "label_notes": "Directly relevant to production LLM and agent infrastructure."
+  },
+  {
+    "title": "headroomlabs-ai / headroom",
+    "url": "https://github.com/headroomlabs-ai/headroom",
+    "source": "github_trending",
+    "description": "Compresses tool outputs, logs, files, and RAG chunks for LLM workflows.",
+    "relevance": 4,
+    "label_source": "assistant_provisional",
+    "label_notes": "Directly improves cost and latency for coding agents and RAG."
+  },
+  {
+    "title": "Comfy-Org / ComfyUI",
+    "url": "https://github.com/Comfy-Org/ComfyUI",
+    "source": "github_trending",
+    "description": "Node-based GUI and API for diffusion model pipelines.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "Useful workflow design pattern, but not central to the target stack."
+  },
+  {
+    "title": "shiyu-coder / Kronos",
+    "url": "https://github.com/shiyu-coder/Kronos",
+    "source": "github_trending",
+    "description": "Domain-specific financial language model.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "Relevant as a model specialization example, not a direct platform dependency."
+  },
+  {
+    "title": "Graphify-Labs / graphify",
+    "url": "https://github.com/Graphify-Labs/graphify",
+    "source": "github_trending",
+    "description": "Deterministic codebase knowledge graph for LLM reasoning.",
+    "relevance": 4,
+    "label_source": "assistant_provisional",
+    "label_notes": "Directly relevant to agent context, retrieval, and codebase reasoning."
+  },
+  {
+    "title": "k2-fsa / OmniVoice",
+    "url": "https://github.com/k2-fsa/OmniVoice",
+    "source": "github_trending",
+    "description": "Multilingual voice cloning and speech synthesis system.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "Relevant only if voice interfaces are in scope."
+  },
+  {
+    "title": "PHP 8.2.35",
+    "url": "https://github.com/php/php-src/releases/tag/php-8.2.35",
+    "source": "hacker_news",
+    "description": "PHP bug-fix and security release.",
+    "relevance": 0,
+    "label_source": "assistant_provisional",
+    "label_notes": "No direct connection to the configured AI, Python, or agent focus."
+  },
+  {
+    "title": "Eight Bits of Trust: eMudhra's CA keys cracked in milliseconds",
+    "url": "https://scotthelme.co.uk/eight-bits-of-trust-emudhras-ca-keys-cracked-in-milliseconds/",
+    "source": "hacker_news",
+    "description": "Certificate authority key compromise report.",
+    "relevance": 1,
+    "label_source": "assistant_provisional",
+    "label_notes": "Important general security awareness, but not specific to the target system."
+  },
+  {
+    "title": "Today's PHP security release, and how we're strengthening security",
+    "url": "https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/",
+    "source": "hacker_news",
+    "description": "PHP security update and hardening plans.",
+    "relevance": 0,
+    "label_source": "assistant_provisional",
+    "label_notes": "Outside the configured language and platform focus."
+  },
+  {
+    "title": "EA is shutting down BioWare",
+    "url": "https://www.theverge.com/games/1015647/ea-is-shutting-down-bioware",
+    "source": "hacker_news",
+    "description": "Entertainment industry closure report.",
+    "relevance": 0,
+    "label_source": "assistant_provisional",
+    "label_notes": "No technical or AI engineering relevance."
+  },
+  {
+    "title": "Compromised LiteLLM 1.107.0 on PyPI Installs a Credential Stealer and Backdoor",
+    "url": "https://safedep.io/litellm-pypi-compromise-credential-stealer-backdoor/",
+    "source": "hacker_news",
+    "description": "Supply-chain compromise affecting an LLM tooling package.",
+    "relevance": 4,
+    "label_source": "assistant_provisional",
+    "label_notes": "Directly relevant security intelligence for LLM infrastructure and Python supply chains."
+  },
+  {
+    "title": "DuckDB 2.0.0 LTS “Cinnamon Teal”",
+    "url": "https://duckdb.org/2026/10/21/announcing-duckdb-200",
+    "source": "hacker_news",
+    "description": "Embedded analytics database with Python integration improvements.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "Potentially useful infrastructure for agent data pipelines, but not core."
+  },
+  {
+    "title": "HF Paper: What Makes a Good Symbol for Hybrid Discrete-Continuous Planning?",
+    "url": "https://huggingface.co/papers/2610.23010",
+    "source": "huggingface_papers",
+    "description": "Symbol design for hybrid robot planning.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "Relevant to planning research, but not directly actionable for this software stack."
+  },
+  {
+    "title": "HF Paper: Not All Features Are Created Equal: A Mechanistic Study of Vision-Language-Action Models",
+    "url": "https://huggingface.co/papers/2603.19233",
+    "source": "huggingface_papers",
+    "description": "Mechanistic analysis of feature importance in vision-language-action models.",
+    "relevance": 3,
+    "label_source": "assistant_provisional",
+    "label_notes": "Directly informs multimodal agent model design, though not current pipeline infrastructure."
+  },
+  {
+    "title": "HF Paper: BiDex-100: A Comprehensive Benchmark for Bimanual Dexterous Manipulation Across 100+ Simulation Tasks",
+    "url": "https://huggingface.co/papers/2610.25459",
+    "source": "huggingface_papers",
+    "description": "Benchmark suite for embodied manipulation agents.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "Useful evaluation research for embodied agents, outside the immediate product focus."
+  },
+  {
+    "title": "HF Paper: Training the Whole Agent, Not Just the Model",
+    "url": "https://huggingface.co/papers/2610.28069",
+    "source": "huggingface_papers",
+    "description": "Jointly trains coding-agent policy and its harness.",
+    "relevance": 4,
+    "label_source": "assistant_provisional",
+    "label_notes": "Directly relevant to agent orchestration, tool use, memory, and interaction reliability."
+  },
+  {
+    "title": "HF Paper: Axiomatic World Modeling for Physics Reasoning",
+    "url": "https://huggingface.co/papers/2610.24519",
+    "source": "huggingface_papers",
+    "description": "World-model framework intended to reduce hallucinated physics reasoning.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "General reliability insight with limited direct applicability to the digest bot."
+  },
+  {
+    "title": "HF Paper: World Models with Configurable Perception",
+    "url": "https://huggingface.co/papers/2610.27914",
+    "source": "huggingface_papers",
+    "description": "Configurable perception modules for planning in noisy environments.",
+    "relevance": 3,
+    "label_source": "assistant_provisional",
+    "label_notes": "Relevant architectural idea for filtering context and improving agent focus."
+  },
+  {
+    "title": "ArXiv: Joints, Camera, Action! Co-Generating 3D Motion and Video for Arbitrary Rigs",
+    "url": "https://arxiv.org/abs/2610.28632v1",
+    "source": "arxiv_ai",
+    "description": "Joint 3D motion and video generation for arbitrary rigs.",
+    "relevance": 1,
+    "label_source": "assistant_provisional",
+    "label_notes": "Peripheral generative-media research with no immediate relation to the target pipeline."
+  },
+  {
+    "title": "ArXiv: GBClaw: An agentic AI framework for atomistic grain boundary research and mechanistic discovery",
+    "url": "https://arxiv.org/abs/2610.28629v1",
+    "source": "arxiv_ai",
+    "description": "End-to-end scientific automation using agents, simulation, and hypothesis generation.",
+    "relevance": 3,
+    "label_source": "assistant_provisional",
+    "label_notes": "Strong agent orchestration example, though domain-specific."
+  },
+  {
+    "title": "ArXiv: Learning Adaptable Dexterous Skills via Hybrid Dexterous Mimicking",
+    "url": "https://arxiv.org/abs/2610.28628v1",
+    "source": "arxiv_ai",
+    "description": "Imitation and reinforcement learning for adaptable dexterous manipulation.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "Relevant to embodied agents but not the current software-agent focus."
+  },
+  {
+    "title": "ArXiv: UniWALM: Unified World Action Language Model for Embodied Robot Control",
+    "url": "https://arxiv.org/abs/2610.28626v1",
+    "source": "arxiv_ai",
+    "description": "Unified language, perception, and action model for robot control.",
+    "relevance": 3,
+    "label_source": "assistant_provisional",
+    "label_notes": "Relevant to multimodal agent architecture, with indirect implementation value."
+  },
+  {
+    "title": "ArXiv: Industrial ReMEmbR: Scaling Spatiotemporal Memory to Robot Fleets",
+    "url": "https://arxiv.org/abs/2610.28624v1",
+    "source": "arxiv_ai",
+    "description": "Scalable shared episodic memory for robot fleets.",
+    "relevance": 3,
+    "label_source": "assistant_provisional",
+    "label_notes": "Useful memory-system architecture, though focused on robotics."
+  },
+  {
+    "title": "ArXiv: Planning under Noise with Neural Operators",
+    "url": "https://arxiv.org/abs/2610.28623v1",
+    "source": "arxiv_ai",
+    "description": "Noise-aware planning method for robust execution.",
+    "relevance": 2,
+    "label_source": "assistant_provisional",
+    "label_notes": "General planning robustness insight, not directly actionable here."
+  },
+  {
+    "title": "AWS rates PHP RCE as Important so Amazon Linux 2023 patch may take 20 days",
+    "url": "https://github.com/amazonlinux/amazon-linux-2023/issues/1148",
+    "source": "hacker_news",
+    "description": "Discussion of patch latency for a PHP remote-code-execution issue.",
+    "relevance": 1,
+    "label_source": "assistant_provisional",
+    "label_notes": "Cloud security context is useful, but the incident is outside the target tooling."
+  }
+]

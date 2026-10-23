@@ -1,0 +1,58 @@
+[
+  {
+    "title": "vllm-project / vllm",
+    "url": "https://github.com/vllm-project/vllm",
+    "source": "github_trending",
+    "score": 100,
+    "relevance": 3
+  },
+  {
+    "title": "headroomlabs-ai / headroom",
+    "url": "https://github.com/headroomlabs-ai/headroom",
+    "source": "github_trending",
+    "score": 90,
+    "relevance": 3
+  },
+  {
+    "title": "Graphify-Labs / graphify",
+    "url": "https://github.com/Graphify-Labs/graphify",
+    "source": "github_trending",
+    "score": 80,
+    "relevance": 3
+  },
+  {
+    "title": "Training the Whole Agent, Not Just the Model",
+    "url": "https://huggingface.co/papers/2610.28069",
+    "source": "huggingface_papers",
+    "score": 90,
+    "relevance": 3
+  },
+  {
+    "title": "Comfy-Org / ComfyUI",
+    "url": "https://github.com/Comfy-Org/ComfyUI",
+    "source": "github_trending",
+    "score": 70,
+    "relevance": 1
+  },
+  {
+    "title": "Kronos",
+    "url": "https://github.com/shiyu-coder/Kronos",
+    "source": "github_trending",
+    "score": 50,
+    "relevance": 1
+  },
+  {
+    "title": "Compromised LiteLLM package",
+    "url": "https://safedep.io/litellm-pypi-compromise-credential-stealer-backdoor/",
+    "source": "hacker_news",
+    "score": 100,
+    "relevance": 2
+  },
+  {
+    "title": "GBClaw",
+    "url": "https://arxiv.org/abs/2610.28629v1",
+    "source": "arxiv_ai",
+    "score": 10,
+    "relevance": 1
+  }
+]

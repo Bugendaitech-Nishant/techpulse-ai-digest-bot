@@ -70,6 +70,7 @@ class PublisherAgent:
             f"> **Curated Sources**: {source_pills}",
             f"> ",
             f"> **Pipeline Stats**: {len(must_reads)} Must Read · {len(inspirations)} Inspiration · {len(skips)} Filtered Out (Total Harvested: {digest.total_harvested})",
+            f"> **Ranking**: `{digest.ranking_backend}/{digest.ranking_version}` priority scoring",
             "",
             "---",
             "",
@@ -123,6 +124,7 @@ class PublisherAgent:
         return [
             f"### {index}. [{item.title}]({item.url})",
             f"**Source**: {badge}{tags_str}",
+            f"**Priority**: {item.priority_score:.1f}/100",
             "",
             f"**Summary**: {item.summary}",
             "",

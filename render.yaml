@@ -16,6 +16,8 @@ services:
         value: 3.12.0
       - key: GROQ_API_KEY
         sync: false # Render will ask you to paste this key when creating the service
+      - key: HARVEST_API_KEY
+        sync: false # Set a secret here so only key holders can run a harvest (the UI asks for it)
       - key: GROQ_MODEL
         value: openai/gpt-oss-120b
       - key: RATE_LIMIT_READ
