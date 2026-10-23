@@ -1,4 +1,4 @@
-"""Shared fixtures: keep tests independent of a developer's local .env."""
+"""Shared fixtures: keep tests independent of a developer's local .env and real data files."""
 
 import pytest
 
@@ -14,3 +14,11 @@ def _no_local_access_key(monkeypatch):
 
     monkeypatch.setattr(settings, "HARVEST_API_KEY", None)
     monkeypatch.setattr(quota_manager, "api_key", None)
+
+
+@pytest.fixture(autouse=True)
+def _isolated_run_log(tmp_path, monkeypatch):
+    """Pipeline tests must not append to the real digests/runs.jsonl."""
+    from config.settings import settings
+
+    monkeypatch.setattr(settings, "RUNS_FILE", tmp_path / "runs.jsonl")

@@ -46,13 +46,14 @@ def main(argv=None) -> int:
                 logger.exception("Could not send the failure alert either")
         return 1
 
-    problems = delivery.digest_problems(digest, settings.MIN_KEPT_ITEMS)
+    problems = delivery.digest_problems(digest, settings.MIN_KEPT_ITEMS, failed_sources=result.get("failed_sources", []))
     for problem in problems:
         logger.warning(problem)
 
     if can_email:
         brief = delivery.build_brief(
-            digest, top_n=settings.BRIEF_TOP_N, feed_url=settings.PUBLIC_URL, problems=problems
+            digest, top_n=settings.BRIEF_TOP_N, feed_url=settings.PUBLIC_URL, problems=problems,
+            rating_counts=orchestrator.db.get_feedback_counts(),
         )
         try:
             delivery.send_email(brief["subject"], brief["text"], brief["html"])

@@ -79,6 +79,7 @@ class Settings:
     FEEDBACK_SECRET: str = os.getenv("FEEDBACK_SECRET", "")  # signs the one-click email links
     FEEDBACK_GITHUB_TOKEN: str = os.getenv("FEEDBACK_GITHUB_TOKEN", "")  # fine-grained token, Contents read/write
     GITHUB_REPO: str = os.getenv("GITHUB_REPO", "Bugendaitech-Nishant/techpulse-ai-digest-bot")
+    RUNS_FILE: Path = Path(os.getenv("RUNS_FILE", str(DIGESTS_DIR / "runs.jsonl")))
     FEEDBACK_EXAMPLES: int = int(os.getenv("FEEDBACK_EXAMPLES", "8"))  # per direction, in the curation prompt
 
     # ─── Collectors Configuration ────────────────────────────────────────

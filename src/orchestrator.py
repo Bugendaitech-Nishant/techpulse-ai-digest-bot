@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 
 from src.models import DigestItem, TechDigest
+from src import runlog
 from src.storage.database import DigestDatabase
 from src.agents.harvester import HarvesterAgent
 from src.agents.processor import ProcessorAgent
@@ -93,6 +94,22 @@ class DigestOrchestrator:
         elapsed = round(time.perf_counter() - pipeline_start, 2)
         logger.info(f"--- Pipeline completed in {elapsed}s ---")
 
+        breakdown = harvest_stats.get("collector_breakdown", {})
+        failed_sources = [name for name, info in breakdown.items() if not info.get("success", True)]
+        if failed_sources:
+            logger.warning(f"Sources that failed this run: {', '.join(sorted(failed_sources))}")
+        if not dry_run:
+            runlog.append_run(runlog.make_record(
+                date=today,
+                duration_seconds=elapsed,
+                harvested=digest.total_harvested,
+                novel=harvest_stats.get("novel_items_for_curation", 0),
+                kept=len([i for i in digest.items if i.category != "Skip"]),
+                unreviewed=len([i for i in digest.items if i.why_it_matters.startswith("Not reviewed")]),
+                security=len([i for i in digest.items if i.source == "security_advisories"]),
+                failed_sources=failed_sources,
+            ))
+
         return {
             "success": True,
             "date": today,
@@ -103,4 +120,5 @@ class DigestOrchestrator:
             "skipped": len(digest.skips),
             "output_file": str(output_path) if output_path else None,
             "harvest_stats": harvest_stats,
+            "failed_sources": failed_sources,
         }

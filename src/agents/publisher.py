@@ -40,8 +40,13 @@ class PublisherAgent:
         """
         logger.info(f"Agent 3 (Publisher): Compiling Markdown digest for {digest.date}")
 
-        markdown_content = self.render_markdown(digest)
         output_file = self.output_dir / f"{digest.date}.md"
+        if not digest.items and output_file.exists() and "### " in output_file.read_text(encoding="utf-8", errors="replace"):
+            # An empty run (nothing new, or a failed harvest) must never wipe a digest that has content.
+            logger.warning(f"Agent 3 (Publisher): kept the existing {output_file.name} instead of overwriting it with an empty digest.")
+            return output_file
+
+        markdown_content = self.render_markdown(digest)
         output_file.write_text(markdown_content, encoding="utf-8")
 
         logger.info(f"Agent 3 (Publisher): Digest saved to {output_file}")

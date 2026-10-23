@@ -7,6 +7,7 @@
 const regions = {
   readings: () => document.getElementById('readings'),
   history: () => document.getElementById('history-region'),
+  runs: () => document.getElementById('runs-region'),
   sources: () => document.getElementById('sources-region'),
   top: () => document.getElementById('top-region'),
 };
@@ -48,6 +49,7 @@ function render(insights, latest) {
     regions.readings().innerHTML = '';
     regions.sources().innerHTML = '';
     regions.top().innerHTML = '';
+    regions.runs().innerHTML = '';
     regions.history().innerHTML = `
       <div class="state-panel">
         <h3>No digests yet</h3>
@@ -62,6 +64,7 @@ function render(insights, latest) {
 
   const backend = insights.latest ? `${insights.latest.ranking_backend} ${insights.latest.ranking_version}` : '--';
   const categories = insights.by_category || {};
+  const fb = insights.feedback || {};
   regions.readings().innerHTML = `
     <div class="reading-cell">
       <span class="reading-label">Digests</span>
@@ -79,14 +82,53 @@ function render(insights, latest) {
       <span class="reading-note">of harvested items survive curation</span>
     </div>
     <div class="reading-cell">
+      <span class="reading-label">Useful rate</span>
+      <span class="reading-value">${pct(fb.useful_rate)}</span>
+      <span class="reading-note">${ratingNote(fb)}</span>
+    </div>
+    <div class="reading-cell">
       <span class="reading-label">Ranked by</span>
       <span class="reading-value is-text">${escapeHtml(backend)}</span>
       <span class="reading-note">${insights.seen_in_window} URLs seen in ${insights.window_days} days</span>
     </div>`;
 
   renderHistory(insights.history);
+  renderRuns(insights.runs || []);
   renderSources(insights.by_source, insights.items_total);
   renderTop(latest);
+}
+
+function ratingNote(fb) {
+  const rated = (fb.up || 0) + (fb.down || 0);
+  if (!rated) return 'rate items on the feed to start measuring';
+  const top = fb.top10_useful_rate === null || fb.top10_useful_rate === undefined
+    ? ''
+    : `, ${pct(fb.top10_useful_rate)} within the top 10`;
+  return `${fb.up} useful, ${fb.down} not useful${top}`;
+}
+
+function renderRuns(runs) {
+  if (!runs.length) {
+    regions.runs().innerHTML = '';
+    return;
+  }
+  const rows = runs.map((r) => `
+    <tr>
+      <td>${escapeHtml(r.date)}</td>
+      <td class="num">${Math.round(r.duration_seconds)} s</td>
+      <td class="num">${r.harvested}</td>
+      <td class="num">${r.kept}</td>
+      <td class="num">${r.security}</td>
+      <td>${r.failed_sources && r.failed_sources.length ? escapeHtml(r.failed_sources.map(sourceName).join(', ')) : 'none'}</td>
+    </tr>`).join('');
+  regions.runs().innerHTML = `
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Recent runs</caption>
+        <thead><tr><th scope="col">Date</th><th scope="col" class="num">Duration</th><th scope="col" class="num">Harvested</th><th scope="col" class="num">Kept</th><th scope="col" class="num">Security</th><th scope="col">Failed sources</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
 function renderHistory(history) {
@@ -171,6 +213,7 @@ function renderError() {
   regions.readings().innerHTML = '';
   regions.sources().innerHTML = '';
   regions.top().innerHTML = '';
+  regions.runs().innerHTML = '';
   regions.history().innerHTML = `
     <div class="state-panel is-error">
       <h3>The archive did not load</h3>

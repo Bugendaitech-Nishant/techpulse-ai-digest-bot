@@ -112,6 +112,9 @@ class FakeDb:
     def get_digest_by_date(self, date):
         return self._digest
 
+    def get_feedback_counts(self):
+        return {"up": 0, "down": 0}
+
 
 def _patch_pipeline(monkeypatch, digest, crash=False):
     class FakeOrchestrator:
@@ -152,3 +155,17 @@ def test_run_daily_reports_email_failure_with_exit_2(smtp, monkeypatch):
 
     monkeypatch.setattr(delivery, "send_email", boom)
     assert run_daily.main([]) == 2
+
+
+def test_failed_sources_are_reported_as_a_problem():
+    problems = delivery.digest_problems(_digest([_item(n) for n in range(6)]), min_kept=5, failed_sources=["arxiv_ai", "devto_articles"])
+    assert problems == ["These sources failed and are missing from today: arxiv_ai, devto_articles."]
+
+
+def test_brief_nudges_when_nothing_is_rated_and_reports_counts_when_something_is():
+    digest = _digest([_item(1)])
+    none = delivery.build_brief(digest, top_n=3, rating_counts={"up": 0, "down": 0})
+    assert "have not rated anything yet" in none["text"]
+    some = delivery.build_brief(digest, top_n=3, rating_counts={"up": 3, "down": 1})
+    assert "rated 4 items (3 useful, 1 not useful)" in some["text"]
+    assert "rated" not in delivery.build_brief(digest, top_n=3)["text"]  # omitted when counts are unknown

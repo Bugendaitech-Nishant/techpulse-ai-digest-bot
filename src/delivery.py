@@ -26,11 +26,18 @@ def pick_top_items(items: Sequence[Mapping[str, Any]], limit: int) -> List[Mappi
     return [i for i in items if i.get("category") != "Skip"][:limit]
 
 
-def digest_problems(digest: Mapping[str, Any], min_kept: int, max_unreviewed_share: float = 0.5) -> List[str]:
+def digest_problems(
+    digest: Mapping[str, Any],
+    min_kept: int,
+    max_unreviewed_share: float = 0.5,
+    failed_sources: Sequence[str] = (),
+) -> List[str]:
     """Describe anything that makes this run untrustworthy, so it is surfaced instead of hidden."""
     items = digest.get("items") or []
     kept = [i for i in items if i.get("category") != "Skip"]
     problems: List[str] = []
+    if failed_sources:
+        problems.append(f"These sources failed and are missing from today: {', '.join(sorted(failed_sources))}.")
     if len(kept) < min_kept:
         problems.append(f"Only {len(kept)} items were kept (expected at least {min_kept}).")
     if items:
@@ -49,6 +56,7 @@ def build_brief(
     top_n: int,
     feed_url: str = "",
     problems: Sequence[str] = (),
+    rating_counts: Mapping[str, int] | None = None,
 ) -> Dict[str, str]:
     """Build subject, plain-text and HTML bodies for the email brief."""
     date = digest.get("date", "")
@@ -85,6 +93,16 @@ def build_brief(
             f'<br><span style="color:#444">{escape(why)}</span>'
             f'<br><span style="color:#777;font-size:13px">{escape(source)}</span>{rate_html}</li>'
         )
+    rated = (rating_counts or {}).get("up", 0) + (rating_counts or {}).get("down", 0)
+    if rating_counts is not None:
+        rating_line = (
+            f"You have rated {rated} items ({rating_counts.get('up', 0)} useful, {rating_counts.get('down', 0)} not useful)."
+            if rated
+            else "You have not rated anything yet. Use the links above on a few items so tomorrow's brief fits you better."
+        )
+        text_lines += [rating_line, ""]
+    else:
+        rating_line = ""
     if feed_url:
         text_lines += [f"All {kept_total} curated items: {feed_url}"]
 
@@ -95,7 +113,7 @@ def build_brief(
             + "<br>".join(escape(p) for p in problems)
             + "</div>"
         )
-    footer_html = (
+    footer_html = (f'<p style="color:#555">{escape(rating_line)}</p>' if rating_line else "") + (
         f'<p><a href="{escape(feed_url, quote=True)}">All {kept_total} curated items</a></p>' if feed_url else ""
     )
     html = (

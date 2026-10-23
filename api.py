@@ -42,6 +42,7 @@ from src.storage.database import DigestDatabase
 from src.security.quota_manager import quota_manager
 from src.security.cache_manager import cache_manager
 from src import feedback as feedback_store
+from src import runlog
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -283,6 +284,7 @@ def get_insights(request: Request, response: Response) -> Dict[str, Any]:
         return cached
 
     insights = db.get_insights()
+    insights["runs"] = runlog.read_runs(14)
     cache_manager.set(cache_key, insights, ttl=60)
     response.headers["X-Cache"] = "MISS"
     response.headers["Cache-Control"] = "public, max-age=60"

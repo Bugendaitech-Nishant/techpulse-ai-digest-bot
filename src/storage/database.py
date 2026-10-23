@@ -420,6 +420,28 @@ class DigestDatabase:
                 "total_must_reads": total_must_reads,
             }
 
+    def _feedback_insights(self, recent_digests: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """How useful the reader found the digest: overall, and for the top 10 of each recent digest."""
+        counts = self.get_feedback_counts()
+        ratings = self.get_feedback_map()
+        top_up = top_down = 0
+        for digest in recent_digests:
+            detail = self.get_digest_by_date(digest["date"]) or {}
+            kept = [i for i in detail.get("items", []) if i["category"] != "Skip"][:10]
+            for item in kept:
+                rating = ratings.get(item["url"], 0)
+                top_up += rating == 1
+                top_down += rating == -1
+        def rate(up: int, down: int):
+            return round(up / (up + down), 3) if up + down else None
+        return {
+            "up": counts["up"],
+            "down": counts["down"],
+            "useful_rate": rate(counts["up"], counts["down"]),
+            "top10_rated": top_up + top_down,
+            "top10_useful_rate": rate(top_up, top_down),
+        }
+
     def get_insights(self, window_days: int = 30) -> Dict[str, Any]:
         """Aggregate real, DB-derived statistics for the dashboard (no synthetic figures)."""
         cutoff = (datetime.now(timezone.utc) - timedelta(days=window_days)).isoformat()
@@ -451,6 +473,7 @@ class DigestDatabase:
             cursor.execute("SELECT COUNT(*) FROM seen_items WHERE first_seen_at >= ?;", (cutoff,))
             seen_window = cursor.fetchone()[0]
 
+        feedback = self._feedback_insights(digests[:14])
         harvested = sum(d["total_harvested"] for d in digests)
         curated = sum(d["total_curated"] for d in digests)
         latest = digests[0] if digests else None
@@ -462,6 +485,7 @@ class DigestDatabase:
             "last_harvest_at": max((d["created_at"] for d in digests), default=None),
             "latest": latest,
             "keep_rate": round(curated / harvested, 3) if harvested else None,
+            "feedback": feedback,
             "by_category": by_category,
             "by_source": by_source,
             "history": [
