@@ -199,3 +199,22 @@ def test_github_push_appends_to_the_feedback_branch_and_retries_a_conflict(monke
 def test_github_push_is_off_without_a_token(monkeypatch):
     monkeypatch.setattr(settings, "FEEDBACK_GITHUB_TOKEN", "")
     assert fb.push_event(fb.make_event("u", 1, "T", "s", "x", "c")) is False
+
+
+def test_remote_fetch_uses_the_authenticated_api_when_a_token_is_set(monkeypatch):
+    monkeypatch.setattr(settings, "FEEDBACK_GITHUB_TOKEN", "tok")
+    monkeypatch.setattr(settings, "GITHUB_REPO", "o/r")
+    seen = {}
+
+    class Resp:
+        status_code = 200
+        text = '{"url": "https://e.com/1", "rating": 1, "at": "2026-10-23T00:00:00+00:00"}\nnot json\n'
+
+    def fake_get(url, **kw):
+        seen["url"], seen["headers"] = url, kw.get("headers", {})
+        return Resp()
+
+    monkeypatch.setattr(fb.requests, "get", fake_get)
+    events = fb.fetch_remote_events()
+    assert [e["url"] for e in events] == ["https://e.com/1"]
+    assert "api.github.com" in seen["url"] and seen["headers"]["Authorization"] == "Bearer tok"

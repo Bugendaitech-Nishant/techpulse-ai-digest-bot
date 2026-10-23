@@ -149,12 +149,24 @@ def push_event(event: Dict[str, Any]) -> bool:
 
 
 def fetch_remote_events() -> List[Dict[str, Any]]:
-    """Read the feedback log from the public feedback branch so a fresh server starts with it."""
+    """Read the feedback log from the feedback branch so a fresh server starts with it.
+
+    With a token the API is used (always current); without one the public raw URL is used,
+    which a CDN may serve up to a few minutes late.
+    """
     if not settings.GITHUB_REPO:
         return []
-    url = f"https://raw.githubusercontent.com/{settings.GITHUB_REPO}/{FEEDBACK_BRANCH}/{LOG_PATH_IN_REPO}"
     try:
-        res = requests.get(url, timeout=10, headers={"User-Agent": settings.USER_AGENT})
+        if github_sync_enabled():
+            res = requests.get(
+                _api(f"contents/{LOG_PATH_IN_REPO}"),
+                params={"ref": FEEDBACK_BRANCH},
+                headers={**_headers(), "Accept": "application/vnd.github.raw+json"},
+                timeout=10,
+            )
+        else:
+            url = f"https://raw.githubusercontent.com/{settings.GITHUB_REPO}/{FEEDBACK_BRANCH}/{LOG_PATH_IN_REPO}"
+            res = requests.get(url, timeout=10, headers={"User-Agent": settings.USER_AGENT})
     except requests.RequestException as error:
         logger.warning(f"Could not fetch the feedback log: {error}")
         return []
