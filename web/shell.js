@@ -10,6 +10,7 @@ const SOURCE_NAMES = {
   huggingface_papers: 'Hugging Face',
   devto_articles: 'Dev.to',
   arxiv_ai: 'ArXiv AI',
+  security_advisories: 'Security advisories',
 };
 
 const HARVEST_KEY_STORAGE = 'techpulse.harvestKey';

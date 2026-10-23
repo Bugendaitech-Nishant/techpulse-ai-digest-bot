@@ -17,12 +17,14 @@ class FakeClient:
 
     def __init__(self, answer_first: int | None = None, fail: bool = False):
         self.calls = 0
+        self.prompts: list[str] = []
         self._answer_first = answer_first
         self._fail = fail
         self.chat = SimpleNamespace(completions=SimpleNamespace(create=self._create))
 
     def _create(self, **kwargs):
         self.calls += 1
+        self.prompts.append(kwargs["messages"][1]["content"])
         if self._fail:
             raise RuntimeError("model down")
         payload = json.loads(kwargs["messages"][1]["content"].split("\n\n", 1)[1])
@@ -83,3 +85,31 @@ def test_keyword_fallback_never_claims_must_read(monkeypatch):
 def test_total_llm_failure_falls_back_instead_of_raising():
     digest = _agent(FakeClient(fail=True)).process([_raw(1, description="AI agents")], "2026-10-23")
     assert len(digest.items) == 1
+
+
+def test_security_items_skip_the_model_and_lead_the_digest(monkeypatch):
+    monkeypatch.setattr(settings, "LLM_BATCH_SIZE", 10)
+    advisory = RawItem(
+        title="GHSA-1: Remote code execution in litellm", url="https://github.com/advisories/GHSA-1",
+        description="Details", source="security_advisories", score=100, language="Security",
+        extra_metadata={"severity": "critical", "packages": {"litellm": "1.2.3"}},
+    )
+    client = FakeClient()
+    digest = _agent(client).process([_raw(1), _raw(2), advisory], "2026-10-23")
+    first = digest.items[0]
+    assert first.source == "security_advisories" and first.category == "Must Read"
+    assert "litellm" in first.why_it_matters and "Fixed in litellm 1.2.3" in first.why_it_matters
+    assert [i.rank for i in digest.items] == [1, 2, 3]
+    sent = "".join(call for call in client.prompts)
+    assert "GHSA-1" not in sent  # the advisory never went to the model
+
+
+def test_a_digest_of_only_advisories_needs_no_model():
+    advisory = RawItem(
+        title="GHSA-2: Moderate issue in fastapi", url="https://github.com/advisories/GHSA-2", description="d",
+        source="security_advisories", score=30, language="Security",
+        extra_metadata={"severity": "moderate", "packages": {"fastapi": ""}},
+    )
+    digest = ProcessorAgent(api_key=None).process([advisory], "2026-10-23")
+    assert digest.items[0].category == "Inspiration"
+    assert "No fixed version" in digest.items[0].why_it_matters

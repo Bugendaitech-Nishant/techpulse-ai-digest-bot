@@ -43,13 +43,13 @@ Done when: seven days in a row, a digest lands without you touching anything.
 1. **Thumbs up/down on every item** (site rows, the reading pane, and signed links in the email), stored in a `feedback` table and an append-only log on the `feedback` branch. Built.
 2. **Use the feedback.** Your 8 most recent useful and not-useful items go into the curation prompt as examples. Built. Research on few-shot preference methods (FSPO, arXiv 2502.19312) supports adapting to one user from a handful of examples.
 3. **A real profile file**, `config/profile.toml` (summary, interests, things to push down, tools you run). Built; edit it freely. Your own ratings show what it should contain: security incidents in tools you run score 4, infrastructure that changes your stack scores 3, niche research scores 2, general news scores 0.
-4. **Regression gate.** `evaluate_ranking.py` against your human labels runs in CI; a change that drops NDCG@10 below a floor fails. **Not built yet.**
+4. **Regression gate.** `evaluate_ranking.py` against your human labels runs in CI; a change that drops NDCG@10 below a floor fails. Built: `tests/test_quality_floor.py` runs on every push (offline), and `scripts/eval_curation.py` scores the real model against your labels weekly and on demand (`eval-curation.yml`).
 
 Done when: week-over-week thumbs-up rate on the top 10 rises, and the label gate is green.
 
 ### Phase 3: make it actionable (about 2 weeks)
 1. **Merge duplicates** across sources (the same release on HN, a blog and GitHub becomes one entry).
-2. **Security feed**: NVD and package advisories matched against a list of tools you use, shown first.
+2. **Security feed**: GitHub Advisory Database advisories and malware reports for the packages listed under `tools` in `config/profile.toml`, shown first, high and critical only. Built; it skips the model so the facts are never reworded.
 3. **Weekly "what changed"** summary built from the stored digests.
 4. **Full-text summaries** for the top items only, to keep cost down and make "why it matters" concrete.
 

@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - run: pip install -r requirements.txt
+
+      # The browser UI tests need a running server and Chromium; they are run locally.
+      - name: Unit and API tests, including the offline quality floor
+        run: >
+          python -m pytest tests -q
+          --ignore=tests/test_ui_playwright.py
+          --ignore=tests/test_label_review_playwright.py

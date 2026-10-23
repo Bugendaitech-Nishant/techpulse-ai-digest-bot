@@ -22,6 +22,7 @@ SOURCE_BADGES: Dict[str, str] = {
     "huggingface_papers": "Hugging Face Papers",
     "devto_articles": "Dev.to Articles",
     "arxiv_ai": "ArXiv AI",
+    "security_advisories": "Security advisories",
 }
 
 

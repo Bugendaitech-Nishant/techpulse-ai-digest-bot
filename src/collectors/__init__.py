@@ -10,6 +10,7 @@ from src.collectors.hacker_news import HackerNewsCollector
 from src.collectors.huggingface import HuggingFacePapersCollector
 from src.collectors.devto import DevToCollector
 from src.collectors.arxiv_ai import ArXivCollector
+from src.collectors.security_advisories import SecurityAdvisoryCollector
 
 __all__ = [
     "BaseCollector",
@@ -19,4 +20,5 @@ __all__ = [
     "HuggingFacePapersCollector",
     "DevToCollector",
     "ArXivCollector",
+    "SecurityAdvisoryCollector",
 ]

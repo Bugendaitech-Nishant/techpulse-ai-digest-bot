@@ -93,6 +93,9 @@ class Settings:
     LIMIT_HUGGINGFACE_PAPERS: int = 15
     LIMIT_DEVTO: int = 15
     LIMIT_ARXIV: int = 15
+    LIMIT_SECURITY: int = int(os.getenv("LIMIT_SECURITY", "5"))  # advisories per run
+    SECURITY_LOOKBACK_DAYS: int = int(os.getenv("SECURITY_LOOKBACK_DAYS", "14"))
+    GITHUB_API_TOKEN: str = os.getenv("GITHUB_TOKEN", "")  # optional, only raises the advisory API rate limit
 
     # ─── Email delivery (SMTP; works with Gmail app passwords, Resend, Mailgun, SES) ──
     SMTP_HOST: str = os.getenv("SMTP_HOST", "")

@@ -19,6 +19,8 @@ from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
+SECURITY_SOURCE = "security_advisories"
+
 SYSTEM_PROMPT = """You are an elite AI technical curator and Principal Software Architect.
 Analyze the following batch of technical items (repositories, research papers, community discussions, and articles).
 
@@ -93,6 +95,14 @@ class ProcessorAgent:
             logger.info("Agent 2 (Processor): No items to process.")
             return TechDigest(date=target_date, items=[], total_harvested=0, total_curated=0)
 
+        # Security advisories are factual and already matched to the reader's tools, so they skip
+        # the model: it could only dilute or reword them. They are always shown first.
+        security_raw = [r for r in raw_items if r.source == SECURITY_SOURCE]
+        if security_raw:
+            raw_items = [r for r in raw_items if r.source != SECURITY_SOURCE]
+            rest = self.process(raw_items, target_date) if raw_items else TechDigest(date=target_date)
+            return self._with_security_first(rest, security_raw)
+
         # If no client or no key, use heuristic fallback
         if not self.client:
             return self._heuristic_fallback(raw_items, target_date)
@@ -130,6 +140,41 @@ class ProcessorAgent:
             ranking_backend=self.ranking_backend.metadata.name,
             ranking_version=self.ranking_backend.metadata.version,
         )
+
+    @staticmethod
+    def _security_item(raw: RawItem) -> DigestItem:
+        """Turn an advisory into a digest item without a model: the facts are already structured."""
+        meta = raw.extra_metadata or {}
+        severity = str(meta.get("severity", "")).lower()
+        packages: dict = meta.get("packages") or {}
+        names = ", ".join(sorted(packages)) or "a tool you run"
+        fixes = [f"{name} {version}" for name, version in sorted(packages.items()) if version]
+        fix_text = f"Fixed in {', '.join(fixes)}." if fixes else "No fixed version is listed."
+        impact = {"malware": 1.0, "critical": 1.0, "high": 0.85, "moderate": 0.6}.get(severity, 0.5)
+        category = "Must Read" if severity in ("malware", "critical", "high") else "Inspiration"
+        return DigestItem(
+            title=f"Security: {raw.title}",
+            url=raw.url,
+            source=raw.source,
+            category=category,
+            summary=raw.description[:320],
+            why_it_matters=f"Affects {names}, which you run. Severity: {severity or 'unknown'}. {fix_text}",
+            tags=["security", *sorted(packages)],
+            relevance_score=1.0,
+            impact_score=impact,
+        )
+
+    def _with_security_first(self, digest: TechDigest, security_raw: List[RawItem]) -> TechDigest:
+        """Prepend deterministic security items to a digest and renumber the ranks."""
+        security_items = [self._security_item(r) for r in security_raw]
+        security_items.sort(key=lambda i: (i.category != "Must Read", -i.impact_score, i.title))
+        items = security_items + list(digest.items)
+        items = [i.model_copy(update={"rank": n}) for n, i in enumerate(items, 1)]
+        return digest.model_copy(update={
+            "items": items,
+            "total_harvested": digest.total_harvested + len(security_raw),
+            "total_curated": digest.total_curated + len(security_items),
+        })
 
     def _build_system_prompt(self) -> str:
         """Profile, anti-interests and the reader's own recent ratings as calibration examples."""

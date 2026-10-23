@@ -365,3 +365,10 @@ Each item has Useful and Not useful buttons on the site, and the daily email car
 links. Ratings go to `data/feedback.jsonl` and, with `FEEDBACK_GITHUB_TOKEN`, to the `feedback`
 branch; the daily run reads them and shows your most recent verdicts to the curator.
 Edit `config/profile.toml` to change what the curator looks for and what it pushes down.
+
+### Security advisories and quality checks
+
+The `tools` list in `config/profile.toml` is matched against GitHub's advisory database. High and
+critical advisories (and malware reports) from the last 14 days appear first in the digest.
+`ci.yml` runs the tests on every push. `eval-curation.yml` runs `scripts/eval_curation.py`, which
+scores the real model against `tests/fixtures/ranking_labels_human.json` and fails on a drop.

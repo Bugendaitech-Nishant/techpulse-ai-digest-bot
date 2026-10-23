@@ -2,6 +2,7 @@
 test_collectors.py — Unit and isolation tests for all 6 data collectors.
 """
 
+from config.settings import settings
 from unittest.mock import patch, MagicMock
 from src.collectors import (
     GitHubTrendingCollector,
@@ -116,3 +117,52 @@ def test_devto_collector_skips_bare_bracket_reposts():
     with patch("requests.get", return_value=mock_response):
         titles = {i.title for i in collector.fetch().items}
     assert titles == {"A real article"}
+
+
+def _advisory(ghsa, severity, published, package="litellm", patched="1.2.3", **extra):
+    return {
+        "ghsa_id": ghsa, "severity": severity, "published_at": published, "summary": f"Problem in {package}",
+        "description": "Details", "html_url": f"https://github.com/advisories/{ghsa}", "cve_id": "CVE-2026-0001",
+        "withdrawn_at": None, "type": "reviewed",
+        "vulnerabilities": [{"package": {"name": package}, "first_patched_version": patched}], **extra,
+    }
+
+
+def test_security_collector_keeps_recent_matching_high_severity_only(monkeypatch):
+    from datetime import datetime, timedelta, timezone
+    from src.collectors import SecurityAdvisoryCollector
+
+    monkeypatch.setattr(settings, "USER_TOOLS", ["litellm", "fastapi"])
+    fresh = (datetime.now(timezone.utc) - timedelta(days=2)).isoformat()
+    stale = (datetime.now(timezone.utc) - timedelta(days=60)).isoformat()
+    reviewed = [
+        _advisory("GHSA-aaaa", "critical", fresh),
+        _advisory("GHSA-bbbb", "low", fresh),                      # too minor for a daily brief
+        _advisory("GHSA-cccc", "high", stale),                     # too old
+        _advisory("GHSA-dddd", "high", fresh, package="numpy"),    # not a tool the reader runs
+        _advisory("GHSA-eeee", "high", fresh, withdrawn_at="2026-10-01T00:00:00Z"),
+    ]
+    malware = [_advisory("GHSA-ffff", "critical", fresh, patched=None, type="malware")]
+    responses = iter([reviewed, malware])
+
+    def fake_get(url, **kw):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.json.return_value = next(responses)
+        return resp
+
+    with patch("requests.get", side_effect=fake_get):
+        items = SecurityAdvisoryCollector().fetch().items
+    assert {i.url.rsplit("/", 1)[-1] for i in items} == {"GHSA-aaaa", "GHSA-ffff"}
+    assert all(i.source == "security_advisories" for i in items)
+
+
+def test_security_collector_reports_http_failure_instead_of_returning_nothing(monkeypatch):
+    from src.collectors import SecurityAdvisoryCollector
+
+    monkeypatch.setattr(settings, "USER_TOOLS", ["litellm"])
+    resp = MagicMock()
+    resp.status_code = 403
+    with patch("requests.get", return_value=resp):
+        result = SecurityAdvisoryCollector().fetch()
+    assert result.success is False and "403" in result.error

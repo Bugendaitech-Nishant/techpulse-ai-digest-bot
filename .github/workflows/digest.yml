@@ -52,6 +52,7 @@ jobs:
       - name: Generate the digest and email the brief
         env:
           FEEDBACK_SECRET: ${{ secrets.FEEDBACK_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
