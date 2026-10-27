@@ -3,3 +3,4 @@
 {"date": "2026-10-24", "at": "2026-10-24T03:42:54.205552+00:00", "duration_seconds": 133.7, "harvested": 75, "novel": 48, "kept": 21, "unreviewed": 0, "security": 0, "failed_sources": []}
 {"date": "2026-10-25", "at": "2026-10-25T03:42:56.187774+00:00", "duration_seconds": 107.9, "harvested": 76, "novel": 52, "kept": 22, "unreviewed": 0, "security": 0, "failed_sources": []}
 {"date": "2026-10-26", "at": "2026-10-26T03:44:06.759470+00:00", "duration_seconds": 199.3, "harvested": 80, "novel": 61, "kept": 24, "unreviewed": 0, "security": 0, "failed_sources": ["arxiv_ai"]}
+{"date": "2026-10-27", "at": "2026-10-27T03:43:53.739653+00:00", "duration_seconds": 192.6, "harvested": 85, "novel": 67, "kept": 36, "unreviewed": 0, "security": 0, "failed_sources": ["arxiv_ai"]}
