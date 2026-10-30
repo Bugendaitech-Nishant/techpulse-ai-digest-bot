@@ -76,6 +76,9 @@ class DigestItem(BaseModel):
     )
     next_step_detail: str = Field(default="", description="One concrete action: the command, or what to compare")
     story_id: str = Field(default="", description="Shared by items that report the same event, across days")
+    verification: Literal["not_checked", "verified", "corrected", "unverified"] = Field(
+        default="not_checked", description="Outcome of the critic checking this entry against its source")
+    verification_note: str = Field(default="", description="The claims the source does not back, when unverified")
     relevance_score: float = Field(default=0.0, ge=0.0, le=1.0)
     impact_score: float = Field(default=0.0, ge=0.0, le=1.0)
     freshness_score: float = Field(default=0.0, ge=0.0, le=1.0)

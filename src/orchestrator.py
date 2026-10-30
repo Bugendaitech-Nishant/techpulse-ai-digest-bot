@@ -15,6 +15,7 @@ from src.storage.database import DigestDatabase
 from src.agents.harvester import HarvesterAgent
 from src.agents.processor import ProcessorAgent
 from src.agents.publisher import PublisherAgent
+from src.agents.critic import review_digest
 from src.stories import find_story_groups, story_id_for
 from config.settings import settings
 
@@ -99,6 +100,8 @@ class DigestOrchestrator:
 
         if not dry_run:
             digest = self.assign_stories(digest)
+            if self.processor.client:
+                digest = review_digest(digest, self.processor.ask_json)
 
         # ── Step 3: Publisher Agent ──
         output_path: Optional[Path] = None

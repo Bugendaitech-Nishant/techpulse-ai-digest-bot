@@ -119,6 +119,8 @@ class DigestDatabase:
                 "next_step TEXT NOT NULL DEFAULT 'Read'",
                 "next_step_detail TEXT NOT NULL DEFAULT ''",
                 "story_id TEXT NOT NULL DEFAULT ''",
+                "verification TEXT NOT NULL DEFAULT 'not_checked'",
+                "verification_note TEXT NOT NULL DEFAULT ''",
             ):
                 try:
                     cursor.execute(f"ALTER TABLE digest_items ADD COLUMN {column};")
@@ -250,15 +252,15 @@ class DigestDatabase:
                     digest_date, title, url, source, category, summary, why_it_matters,
                     relevance_score, impact_score, freshness_score, novelty_score,
                     confidence, priority_score, rank, published_at, tags,
-                    topics, next_step, next_step_detail, story_id, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    topics, next_step, next_step_detail, story_id, verification, verification_note, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 digest.date, item.title, item.url, item.source,
                 item.category, item.summary, item.why_it_matters,
                 item.relevance_score, item.impact_score, item.freshness_score,
                 item.novelty_score, item.confidence, item.priority_score, item.rank,
                 item.published_at, json.dumps(item.tags), json.dumps(item.topics),
-                item.next_step, item.next_step_detail, item.story_id, created_at,
+                item.next_step, item.next_step_detail, item.story_id, item.verification, item.verification_note, created_at,
             ))
 
     @staticmethod
@@ -513,7 +515,7 @@ class DigestDatabase:
                 SELECT title, url, source, category, summary, why_it_matters,
                        relevance_score, impact_score, freshness_score, novelty_score,
                        confidence, priority_score, rank, published_at, tags,
-                       topics, next_step, next_step_detail, story_id, created_at
+                       topics, next_step, next_step_detail, story_id, verification, verification_note, created_at
                 FROM digest_items
                 WHERE digest_date = ?
                 ORDER BY CASE category WHEN 'Must Read' THEN 1 WHEN 'Inspiration' THEN 2 ELSE 3 END,

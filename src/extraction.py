@@ -45,6 +45,22 @@ def fetch_article_text(url: str, timeout: int = 8) -> str:
         return ""
 
 
+def read_source(url: str, timeout: int = 10, max_chars: int = 6000) -> str:
+    """All visible text of the page, for checking claims. Unlike the opening text above, this keeps lists and tables."""
+    try:
+        resp = requests.get(url, headers={"User-Agent": settings.USER_AGENT}, timeout=timeout)
+        if resp.status_code != 200 or "html" not in resp.headers.get("content-type", "html"):
+            return ""
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for tag in soup(["script", "style", "nav", "header", "footer", "aside", "form"]):
+            tag.decompose()
+        root = soup.find("article") or soup.find("main") or soup.body or soup
+        return " ".join(root.get_text(" ").split())[:max_chars]
+    except Exception as error:
+        logger.debug(f"Could not read {url}: {error}")
+        return ""
+
+
 def enrich_with_text(items: List[RawItem], fetch=fetch_article_text, workers: int = 8) -> int:
     """Replace thin descriptions with the article's opening text, in place. Returns how many were enriched."""
     todo = [i for i in items if needs_text(i)]

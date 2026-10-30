@@ -241,10 +241,10 @@ class ProcessorAgent:
         """Only gpt-oss understands reasoning_effort; other models would reject it."""
         return {"reasoning_effort": settings.LLM_REASONING_EFFORT} if "gpt-oss" in model and settings.LLM_REASONING_EFFORT else {}
 
-    def ask_json(self, prompt: str) -> str:
+    def ask_json(self, prompt: str, models: Optional[List[str]] = None) -> str:
         """One JSON-mode question to the model chain, for small helper tasks such as story grouping."""
         last_error: Exception = RuntimeError("no model client")
-        for model in (settings.GROQ_PRIMARY_MODEL, settings.GROQ_FALLBACK_MODEL):
+        for model in models or (settings.GROQ_PRIMARY_MODEL, settings.GROQ_FALLBACK_MODEL):
             try:
                 completion = self.client.chat.completions.create(
                     model=model,

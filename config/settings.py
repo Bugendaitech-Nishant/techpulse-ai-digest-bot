@@ -54,6 +54,10 @@ class Settings:
     MAX_LLM_RETRIES: int = 2
     LLM_BATCH_SIZE: int = int(os.getenv("LLM_BATCH_SIZE", "12"))  # small batches: big ones get silently truncated
     LLM_MAX_ITEMS: int = int(os.getenv("LLM_MAX_ITEMS", "90"))  # per-run cap on items sent to the model
+    # The critic checks entries against their source. A separate model: it has its own daily quota, and writers miss their own errors.
+    CRITIC_MODEL: str = os.getenv("CRITIC_MODEL", "openai/gpt-oss-20b")
+    CRITIC_MAX_ITEMS: int = int(os.getenv("CRITIC_MAX_ITEMS", "15"))  # 0 turns the critic off
+    CRITIC_PAUSE_SECONDS: float = float(os.getenv("CRITIC_PAUSE_SECONDS", "4"))  # free tier allows 8000 tokens a minute
 
     # ─── Database & Deduplication ────────────────────────────────────────
     DB_PATH: Path = Path(os.getenv("DB_PATH", str(DATA_DIR / "tech_digest.db")))

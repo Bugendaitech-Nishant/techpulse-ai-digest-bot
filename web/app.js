@@ -420,6 +420,13 @@ function metaLine(item) {
   return `${escapeHtml(ageLabel(item))}${tags ? ` · ${tags}` : ''}`;
 }
 
+function verificationLine(item) {
+  if (item.verification === 'verified') return '<span class="check-mark">Checked against source</span>';
+  if (item.verification === 'corrected') return '<span class="check-mark">Corrected against source</span>';
+  if (item.verification === 'unverified') return `<span class="check-mark check-warn" title="${escapeHtml(item.verification_note)}">Not fully backed by source</span>`;
+  return '';
+}
+
 function nextStepLine(item) {
   const story = item.story_id ? ` <button type="button" class="story-btn" data-story="${escapeHtml(item.story_id)}">Follow the story</button>` : '';
   if (item.category === 'Skip' || (!item.next_step_detail && !story)) return story ? `<p class="card-next">${story}</p>` : '';
@@ -457,6 +464,7 @@ function buildSignalCard(item, index) {
       <p class="card-meta">${metaLine(item)}</p>
       <p class="card-desc">${escapeHtml(item.category === 'Skip' ? item.why_it_matters : item.summary)}</p>
       ${nextStepLine(item)}
+      ${verificationLine(item)}
     </div>
     <div class="card-foot">
       <span class="badge-source">${escapeHtml(sourceName(item.source))}</span>
