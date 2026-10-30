@@ -35,8 +35,8 @@ Agents inside one process call each other directly. The A2A docs position A2A fo
 
 ## Phases
 
-1. **Critic and reviser. Built, not committed.** `src/agents/critic.py`, a badge on each card, rate limits stop the pass and never the digest.
-2. **Agent tools: MCP, then A2A.** Read-only `action_items(stack)`, `search`, `story`. Then a small script reads a lockfile and asks TechPulse. Done when Claude Code can answer "what affects this repo today?" from live data. This is the part that makes it agent to agent, and it uses almost no LLM tokens.
+1. **Critic and reviser. Committed, not deployed.** `src/agents/critic.py`, a badge on each card, rate limits stop the pass and never the digest.
+2. **Agent tools: MCP, then A2A. Built, not deployed.** `/mcp`, `/a2a`, `scripts/ask_techpulse.py`. Read-only `action_items(stack)`, `search`, `story`. Then a small script reads a lockfile and asks TechPulse. Done when Claude Code can answer "what affects this repo today?" from live data. This is the part that makes it agent to agent, and it uses almost no LLM tokens.
 3. **LangGraph orchestration.** Turn the pipeline into a graph with SQLite checkpoints, so a run stopped by quota continues later. Done when killing a real run and restarting repeats no finished item. Checkpoints must survive between GitHub Actions runs.
 4. **Scout agent.** For Patch and Must Read items, call real tools (GitHub releases, OSV advisories) and attach what it confirmed. Done when an entry can say "fixed in 2.3.1" with a link it fetched. Probably needs Gemini for quota.
 5. **Vision analyst.** Top items only, skip SVG and dynamic chart URLs (the API rejected them), show useful diagrams on the card with a caption, and drop decorative ones.

@@ -37,6 +37,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
+from src.agent_api import attach_agent_api
 from src.orchestrator import DigestOrchestrator
 from src.storage.database import DigestDatabase
 from src.security.quota_manager import quota_manager
@@ -83,6 +84,7 @@ app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
 
 db = DigestDatabase(settings.DB_PATH)
 orchestrator = DigestOrchestrator(db=db)
+attach_agent_api(app, db)
 APP_START_TIME = time.time()
 
 

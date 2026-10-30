@@ -542,6 +542,15 @@ class DigestDatabase:
             ).fetchall()
         return [dict(r) for r in reversed(rows)]
 
+    def get_kept_items(self, since_date: str) -> List[Dict[str, Any]]:
+        """Items worth showing since a date, newest first: what other agents can ask about."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT * FROM digest_items WHERE category != 'Skip' AND digest_date >= ? ORDER BY digest_date DESC, rank ASC;",
+                (since_date,),
+            ).fetchall()
+        return [{**dict(r), "tags": json.loads(r["tags"] or "[]"), "topics": json.loads(r["topics"] or "[]")} for r in rows]
+
     def set_story_ids(self, mapping: Dict[str, str]) -> None:
         """Stamp story ids onto stored items by URL (older members of a story are updated too)."""
         with self._connection() as conn:
