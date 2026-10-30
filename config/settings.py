@@ -49,6 +49,8 @@ class Settings:
     GROQ_FALLBACK_MODEL: str = "qwen/qwen3.8-27b"
     LLM_TEMPERATURE: float = 0.2
     LLM_MAX_TOKENS: int = 4096
+    # gpt-oss spends most of its token budget thinking; at the default, 12-item batches hit the cap and drop items
+    LLM_REASONING_EFFORT: str = os.getenv("LLM_REASONING_EFFORT", "low")
     MAX_LLM_RETRIES: int = 2
     LLM_BATCH_SIZE: int = int(os.getenv("LLM_BATCH_SIZE", "12"))  # small batches: big ones get silently truncated
     LLM_MAX_ITEMS: int = int(os.getenv("LLM_MAX_ITEMS", "90"))  # per-run cap on items sent to the model

@@ -17,6 +17,12 @@ def _no_local_access_key(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def _no_article_fetching(monkeypatch):
+    """Curation tests must not read real web pages."""
+    monkeypatch.setattr("src.agents.processor.enrich_with_text", lambda items, **kw: 0)
+
+
+@pytest.fixture(autouse=True)
 def _isolated_run_log(tmp_path, monkeypatch):
     """Pipeline tests must not append to the real digests/runs.jsonl."""
     from config.settings import settings

@@ -330,6 +330,16 @@ def get_latest_digest(request: Request, response: Response):
     return digest
 
 
+@app.get("/api/story/{story_id}")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def get_story(story_id: str, request: Request):
+    """Every item that reported one event, oldest first."""
+    items = db.get_story(story_id)
+    if not items:
+        raise HTTPException(status_code=404, detail="No such story.")
+    return {"story_id": story_id, "items": items}
+
+
 @app.get("/api/digest/{target_date}")
 @limiter.limit(settings.RATE_LIMIT_READ)
 def get_digest_by_date(target_date: str, request: Request, response: Response):

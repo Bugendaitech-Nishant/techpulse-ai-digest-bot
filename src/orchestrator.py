@@ -15,6 +15,7 @@ from src.storage.database import DigestDatabase
 from src.agents.harvester import HarvesterAgent
 from src.agents.processor import ProcessorAgent
 from src.agents.publisher import PublisherAgent
+from src.stories import find_story_groups, story_id_for
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -51,6 +52,21 @@ class DigestOrchestrator:
             "total_curated": len([i for i in items if i.category != "Skip"]),
         })
 
+    def assign_stories(self, digest: TechDigest) -> TechDigest:
+        """Give items that report the same event one story id, across the last week. Best effort."""
+        if not self.processor.client or not digest.items:
+            return digest
+        kept = [i for i in digest.items if i.category != "Skip"]
+        groups = find_story_groups(kept, self.db.get_recent_items(digest.date), self.processor.ask_json)
+        mapping = {url: story_id_for(urls) for urls in groups for url in urls}
+        if not mapping:
+            return digest
+        logger.info(f"Stories: {len(groups)} stories span {len(mapping)} items")
+        self.db.set_story_ids(mapping)
+        self.publisher.patch_story_ids(mapping)
+        items = [i.model_copy(update={"story_id": mapping.get(i.url, i.story_id)}) for i in digest.items]
+        return digest.model_copy(update={"items": items})
+
     def run(self, dry_run: bool = False, custom_date: Optional[str] = None) -> Dict[str, Any]:
         """
         Execute full pipeline:
@@ -80,6 +96,9 @@ class DigestOrchestrator:
             existing = self.db.get_digest_by_date(today)
             if existing:
                 digest = self.merge_same_day(existing, digest)
+
+        if not dry_run:
+            digest = self.assign_stories(digest)
 
         # ── Step 3: Publisher Agent ──
         output_path: Optional[Path] = None

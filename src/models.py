@@ -3,9 +3,25 @@ models.py — Strongly-typed Pydantic models for TechPulse AI Digest Bot.
 Enforces validation across data harvesting, database persistence, LLM curation, and publishing.
 """
 
+import re
 from datetime import datetime, timezone
 from typing import List, Literal, Optional, Dict, Any
 from pydantic import BaseModel, Field, HttpUrl, field_validator
+
+
+# The fixed vocabulary the curator picks topics from, so filters stay clean instead of 387 free-form tags.
+TOPICS = (
+    "agents", "llm-models", "local-llm", "inference", "rag", "evaluation", "fine-tuning", "multimodal",
+    "ai-safety", "security", "vulnerabilities", "supply-chain", "python", "rust", "javascript", "databases",
+    "data-engineering", "cloud", "devops", "kubernetes", "observability", "developer-tools", "open-source",
+    "research", "hardware", "robotics", "regulation", "startups", "web", "mobile",
+)
+NEXT_STEPS = ("Patch", "Try", "Evaluate", "Read", "Watch", "Ignore")
+
+
+def normalize_tag(tag: str) -> str:
+    """'AI agents', 'AI-agents' and '#ai_agents' are one tag."""
+    return re.sub(r"[\s_]+", "-", str(tag).strip().lstrip("#").lower()).strip("-")
 
 
 class RawItem(BaseModel):
@@ -54,6 +70,12 @@ class DigestItem(BaseModel):
     why_it_matters: str = Field(..., description="1-sentence explanation of concrete value for technical engineers")
     tags: List[str] = Field(default_factory=list, description="Extracted tech tags (e.g. ['python', 'agent', 'rag'])")
     published_at: str = Field(default="", description="When the source published or last updated it (ISO); empty when unknown")
+    topics: List[str] = Field(default_factory=list, description="1-3 topics from TOPICS")
+    next_step: Literal["Patch", "Try", "Evaluate", "Read", "Watch", "Ignore"] = Field(
+        default="Read", description="What the reader should do about it"
+    )
+    next_step_detail: str = Field(default="", description="One concrete action: the command, or what to compare")
+    story_id: str = Field(default="", description="Shared by items that report the same event, across days")
     relevance_score: float = Field(default=0.0, ge=0.0, le=1.0)
     impact_score: float = Field(default=0.0, ge=0.0, le=1.0)
     freshness_score: float = Field(default=0.0, ge=0.0, le=1.0)

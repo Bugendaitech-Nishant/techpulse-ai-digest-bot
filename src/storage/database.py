@@ -115,6 +115,10 @@ class DigestDatabase:
                 "rank INTEGER NOT NULL DEFAULT 0",
                 "published_at TEXT NOT NULL DEFAULT ''",
                 "tags TEXT NOT NULL DEFAULT '[]'",
+                "topics TEXT NOT NULL DEFAULT '[]'",
+                "next_step TEXT NOT NULL DEFAULT 'Read'",
+                "next_step_detail TEXT NOT NULL DEFAULT ''",
+                "story_id TEXT NOT NULL DEFAULT ''",
             ):
                 try:
                     cursor.execute(f"ALTER TABLE digest_items ADD COLUMN {column};")
@@ -245,14 +249,16 @@ class DigestDatabase:
                 INSERT INTO digest_items (
                     digest_date, title, url, source, category, summary, why_it_matters,
                     relevance_score, impact_score, freshness_score, novelty_score,
-                    confidence, priority_score, rank, published_at, tags, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    confidence, priority_score, rank, published_at, tags,
+                    topics, next_step, next_step_detail, story_id, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 digest.date, item.title, item.url, item.source,
                 item.category, item.summary, item.why_it_matters,
                 item.relevance_score, item.impact_score, item.freshness_score,
                 item.novelty_score, item.confidence, item.priority_score, item.rank,
-                item.published_at, json.dumps(item.tags), created_at,
+                item.published_at, json.dumps(item.tags), json.dumps(item.topics),
+                item.next_step, item.next_step_detail, item.story_id, created_at,
             ))
 
     @staticmethod
@@ -506,17 +512,49 @@ class DigestDatabase:
             cursor.execute("""
                 SELECT title, url, source, category, summary, why_it_matters,
                        relevance_score, impact_score, freshness_score, novelty_score,
-                       confidence, priority_score, rank, published_at, tags, created_at
+                       confidence, priority_score, rank, published_at, tags,
+                       topics, next_step, next_step_detail, story_id, created_at
                 FROM digest_items
                 WHERE digest_date = ?
                 ORDER BY CASE category WHEN 'Must Read' THEN 1 WHEN 'Inspiration' THEN 2 ELSE 3 END,
                          priority_score DESC, id ASC;
             """, (target_date,))
-            items = [{**dict(row), "tags": json.loads(row["tags"] or "[]")} for row in cursor.fetchall()]
+            items = [
+                {**dict(row), "tags": json.loads(row["tags"] or "[]"), "topics": json.loads(row["topics"] or "[]")}
+                for row in cursor.fetchall()
+            ]
 
             res = dict(digest_row)
             res["items"] = items
             return res
+
+    def get_recent_items(self, before_date: str, days: int = 7, limit: int = 150) -> List[Dict[str, Any]]:
+        """Kept items of the days before `before_date`, oldest first: the candidates for story grouping."""
+        cutoff = (datetime.fromisoformat(before_date) - timedelta(days=days)).date().isoformat()
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT title, url, digest_date AS date FROM digest_items "
+                "WHERE category != 'Skip' AND digest_date >= ? AND digest_date < ? "
+                "ORDER BY digest_date DESC, rank ASC LIMIT ?;",
+                (cutoff, before_date, limit),
+            ).fetchall()
+        return [dict(r) for r in reversed(rows)]
+
+    def set_story_ids(self, mapping: Dict[str, str]) -> None:
+        """Stamp story ids onto stored items by URL (older members of a story are updated too)."""
+        with self._connection() as conn:
+            conn.executemany("UPDATE digest_items SET story_id = ? WHERE url = ?;", [(sid, url) for url, sid in mapping.items()])
+            conn.commit()
+
+    def get_story(self, story_id: str) -> List[Dict[str, Any]]:
+        """Every item of one story, oldest first."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT title, url, source, summary, next_step_detail, published_at, digest_date FROM digest_items "
+                "WHERE story_id = ? AND story_id != '' ORDER BY digest_date ASC, rank ASC;",
+                (story_id,),
+            ).fetchall()
+        return [dict(r) for r in rows]
 
     def get_latest_digest(self) -> Optional[Dict[str, Any]]:
         """Fetch the most recent digest."""

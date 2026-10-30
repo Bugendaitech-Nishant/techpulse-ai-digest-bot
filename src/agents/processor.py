@@ -14,7 +14,8 @@ from typing import Callable, Dict, List, Optional
 from groq import Groq
 
 from src.backends import DeterministicV1Backend, RankingBackend
-from src.models import RawItem, DigestItem, TechDigest
+from src.extraction import enrich_with_text
+from src.models import NEXT_STEPS, TOPICS, RawItem, DigestItem, TechDigest, normalize_tag
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,13 @@ PUSH DOWN, EVEN IF POPULAR:
 CATEGORIZATION RULES:
 1. "Must Read": Highest priority. Directly relevant to AI agents, LLM architectures, Python dev tooling, or high-impact open source. Write a clear technical summary and why it matters.
 2. "Inspiration": Interesting architectures, side-project ideas, or emerging tech trends.
-3. "Skip": Generic marketing, duplicate concepts, cryptocurrency noise, or unrelated domain topics.
+3. "Skip": Generic marketing, duplicate concepts, cryptocurrency noise, or unrelated domain topics. For Skip, why_it_matters must state why the reader can safely ignore it.
+
+NEXT STEP, the one thing the reader should do about the item:
+Patch = a security issue or breaking change in a tool they run; Try = a tool or release worth 30 minutes;
+Evaluate = could replace something they use, so compare; Read = worth understanding, nothing to run;
+Watch = promising but too early, revisit later; Ignore = use with category Skip.
+Base every summary on the description given. If it is only a headline or a stub, say so instead of inventing details such as numbers.
 
 OUTPUT SPECIFICATION:
 Respond ONLY with a valid JSON object matching this schema:
@@ -52,7 +59,10 @@ Respond ONLY with a valid JSON object matching this schema:
       "impact": 0-4 integer,
       "summary": "Factual 2-sentence summary of what this actually builds or discusses.",
       "why_it_matters": "1 concise sentence explaining practical relevance for engineers. Be specific to this item, never generic.",
-      "tags": ["tag1", "tag2"]
+      "next_step": "Patch" | "Try" | "Evaluate" | "Read" | "Watch" | "Ignore",
+      "next_step_detail": "One concrete action, e.g. the upgrade command or what to compare it against. Empty for Ignore.",
+      "topics": ["1 to 3 values chosen ONLY from: {topic_list}"],
+      "tags": ["up to 4 names of the specific tools, models or companies involved"]
     }}
   ]
 }}
@@ -79,6 +89,7 @@ class ProcessorAgent:
         feedback_provider: Optional[Callable[[], Dict[str, List[Dict[str, str]]]]] = None,
     ):
         self.feedback_provider = feedback_provider
+        self.enrich = enrich_with_text  # injectable so tests never touch the network
         self.api_key = api_key or settings.GROQ_API_KEY
         self.ranking_backend = ranking_backend or DeterministicV1Backend()
         if not self.api_key:
@@ -108,6 +119,7 @@ class ProcessorAgent:
             return self._heuristic_fallback(raw_items, target_date)
 
         selected = self._select_for_curation(raw_items)
+        self.enrich(selected)
         curated: dict[str, DigestItem] = {}
         models_to_try = [settings.GROQ_PRIMARY_MODEL, settings.GROQ_FALLBACK_MODEL]
 
@@ -159,7 +171,10 @@ class ProcessorAgent:
             category=category,
             summary=raw.description[:320],
             why_it_matters=f"Affects {names}, which you run. Severity: {severity or 'unknown'}. {fix_text}",
-            tags=["security", *sorted(packages)],
+            tags=sorted(normalize_tag(p) for p in packages),
+            topics=["security", "vulnerabilities"],
+            next_step="Patch",
+            next_step_detail=fix_text,
             published_at=raw.published_at or "",
             relevance_score=1.0,
             impact_score=impact,
@@ -190,6 +205,7 @@ class ProcessorAgent:
             interest_keywords="; ".join(settings.USER_INTERESTS),
             avoid_keywords="; ".join(settings.USER_AVOID) or "nothing specific",
             feedback_block=self._format_feedback(examples),
+            topic_list=", ".join(TOPICS),
         )
 
     @staticmethod
@@ -220,6 +236,29 @@ class ProcessorAgent:
                     selected.append(by_source[source].pop(0))
         return selected
 
+    @staticmethod
+    def _model_options(model: str) -> dict:
+        """Only gpt-oss understands reasoning_effort; other models would reject it."""
+        return {"reasoning_effort": settings.LLM_REASONING_EFFORT} if "gpt-oss" in model and settings.LLM_REASONING_EFFORT else {}
+
+    def ask_json(self, prompt: str) -> str:
+        """One JSON-mode question to the model chain, for small helper tasks such as story grouping."""
+        last_error: Exception = RuntimeError("no model client")
+        for model in (settings.GROQ_PRIMARY_MODEL, settings.GROQ_FALLBACK_MODEL):
+            try:
+                completion = self.client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0,
+                    max_tokens=settings.LLM_MAX_TOKENS,
+                    response_format={"type": "json_object"},
+                    **self._model_options(model),
+                )
+                return completion.choices[0].message.content or "{}"
+            except Exception as error:
+                last_error = error
+        raise last_error
+
     def _curate_chunk(self, chunk: List[RawItem], curated: dict, models_to_try: List[str]) -> None:
         """Send one chunk to the model chain and add every validated item to `curated`."""
         payload = [
@@ -249,6 +288,7 @@ class ProcessorAgent:
                         temperature=settings.LLM_TEMPERATURE,
                         max_tokens=settings.LLM_MAX_TOKENS,
                         response_format={"type": "json_object"},
+                        **self._model_options(model),
                     )
                     content = completion.choices[0].message.content or "{}"
                     for item in self._parse_and_validate(content, chunk):
@@ -296,7 +336,10 @@ class ProcessorAgent:
                     category=category,
                     summary=item_dict.get("summary") or item_lookup[url].description or "No summary available.",
                     why_it_matters=item_dict.get("why_it_matters") or "Matches your general tech profile.",
-                    tags=item_dict.get("tags") or [],
+                    tags=self._clean_tags(item_dict.get("tags")),
+                    topics=[t for t in self._clean_tags(item_dict.get("topics")) if t in TOPICS][:3],
+                    next_step=self._next_step(item_dict.get("next_step"), category),
+                    next_step_detail=str(item_dict.get("next_step_detail") or "")[:240],
                     published_at=item_lookup[url].published_at or "",
                     relevance_score=self._scale_score(item_dict.get("relevance")),
                     impact_score=self._scale_score(item_dict.get("impact")),
@@ -307,6 +350,20 @@ class ProcessorAgent:
                 continue
 
         return validated_items
+
+    @staticmethod
+    def _clean_tags(values) -> List[str]:
+        """Normalised, de-duplicated, at most 6; tolerates the model returning a non-list."""
+        if not isinstance(values, list):
+            return []
+        return list(dict.fromkeys(t for t in (normalize_tag(v) for v in values) if t))[:6]
+
+    @staticmethod
+    def _next_step(value, category: str) -> str:
+        """Skip items are always Ignore; an unknown or missing step falls back to Read."""
+        if category == "Skip":
+            return "Ignore"
+        return value if value in NEXT_STEPS and value != "Ignore" else "Read"
 
     @staticmethod
     def _scale_score(value) -> float:
@@ -345,7 +402,8 @@ class ProcessorAgent:
             category=cat,
             summary=raw.description or "Automated tech feed item.",
             why_it_matters=why,
-            tags=[m.split()[0].lower() for m in matches[:3]],
+            tags=[normalize_tag(m.split()[0]) for m in matches[:3]],
+            next_step="Read" if matches else "Ignore",
             published_at=raw.published_at or "",
         )
 

@@ -5,6 +5,7 @@ saves it to digests/YYYY-MM-DD.md, and logs a clean console summary.
 Includes Windows cp1252-safe console printing to prevent UnicodeEncodeError.
 """
 
+import json
 import sys
 import logging
 from pathlib import Path
@@ -55,6 +56,22 @@ class PublisherAgent:
         self._print_safe_summary(digest, output_file)
 
         return output_file
+
+    def patch_story_ids(self, mapping: dict, last_n_files: int = 10) -> None:
+        """Write story ids into the recent saved digests, so a database rebuilt from them keeps the stories."""
+        for path in sorted(self.output_dir.glob("*.json"))[-last_n_files:]:
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            changed = False
+            for item in data.get("items", []):
+                sid = mapping.get(item.get("url"))
+                if sid and item.get("story_id") != sid:
+                    item["story_id"] = sid
+                    changed = True
+            if changed:
+                path.write_text(json.dumps(data, indent=1), encoding="utf-8")
 
     def render_markdown(self, digest: TechDigest) -> str:
         """Render complete Markdown document from TechDigest object."""

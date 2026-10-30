@@ -5,7 +5,9 @@
  * Shared helpers (escapeHtml, toasts, quota, harvest, export) live in shell.js.
  */
 
-const CATEGORY_LABELS = { curated: 'High signal', 'Must Read': 'Must read', Inspiration: 'Inspiration', Skip: 'Filtered out' };
+const CATEGORY_LABELS = { curated: 'High signal', 'Must Read': 'Must read', Inspiration: 'Inspiration', Skip: 'Safe to ignore' };
+const STEP_ORDER = ['Patch', 'Try', 'Evaluate', 'Read', 'Watch'];
+const STEP_HEADINGS = { Patch: 'Needs action', Try: 'Try this', Evaluate: 'Worth comparing', Read: 'Worth knowing', Watch: 'Keep an eye on' };
 const VALID_CATEGORIES = Object.keys(CATEGORY_LABELS);
 
 const state = {
@@ -307,7 +309,12 @@ function computeFilteredItems() {
       if (!text.includes(state.searchQuery)) return false;
     }
     return true;
-  });
+  }).sort((a, b) => stepRank(a) - stepRank(b)); // stable: keeps the ranking inside each group
+}
+
+function stepRank(item) {
+  const i = STEP_ORDER.indexOf(item.next_step);
+  return i === -1 ? STEP_ORDER.length : i;
 }
 
 function renderContent() {
@@ -362,7 +369,18 @@ function resetFilters() {
 function renderListView(container) {
   container.className = 'cards-grid-view';
   container.innerHTML = '';
-  state.filteredItems.forEach((item, index) => container.appendChild(buildSignalCard(item, index)));
+  const grouped = state.activeCategory === 'curated' && new Set(state.filteredItems.map((i) => i.next_step)).size > 1;
+  let lastStep = null;
+  state.filteredItems.forEach((item, index) => {
+    if (grouped && item.next_step !== lastStep) {
+      lastStep = item.next_step;
+      const h = document.createElement('h2');
+      h.className = 'step-heading';
+      h.textContent = STEP_HEADINGS[lastStep] || 'Worth knowing';
+      container.appendChild(h);
+    }
+    container.appendChild(buildSignalCard(item, index));
+  });
 }
 
 function renderSplitView(container) {
@@ -398,8 +416,32 @@ function ageLabel(item) {
 }
 
 function metaLine(item) {
-  const tags = (item.tags || []).slice(0, 4).map((t) => `#${escapeHtml(String(t).replace(/\s+/g, '-'))}`).join(' ');
+  const tags = [...(item.topics || []), ...(item.tags || [])].slice(0, 5).map((t) => `#${escapeHtml(String(t).replace(/\s+/g, '-'))}`).join(' ');
   return `${escapeHtml(ageLabel(item))}${tags ? ` · ${tags}` : ''}`;
+}
+
+function nextStepLine(item) {
+  const story = item.story_id ? ` <button type="button" class="story-btn" data-story="${escapeHtml(item.story_id)}">Follow the story</button>` : '';
+  if (item.category === 'Skip' || (!item.next_step_detail && !story)) return story ? `<p class="card-next">${story}</p>` : '';
+  const detail = item.next_step_detail ? `<strong>${escapeHtml(item.next_step)}:</strong> ${escapeHtml(item.next_step_detail)}` : '';
+  return `<p class="card-next">${detail}${story}</p>`;
+}
+
+async function openStory(storyId) {
+  let items;
+  try {
+    items = (await getJson(`/api/story/${encodeURIComponent(storyId)}`)).items;
+  } catch (err) {
+    showToast('Could not load the story.');
+    return;
+  }
+  const rows = items.map((i) => `
+    <li>
+      <span class="measured">${escapeHtml((i.published_at || i.digest_date || '').slice(0, 10))}</span>
+      <a href="${escapeHtml(i.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(i.title)}</a>
+      <p>${escapeHtml(i.next_step_detail || i.summary)}</p>
+    </li>`).join('');
+  openModal({ title: 'Story', url: '', summary: '' }, null, `<h2 class="inspector-title">The story so far</h2><ol class="story-list">${rows}</ol>`);
 }
 
 function buildSignalCard(item, index) {
@@ -413,7 +455,8 @@ function buildSignalCard(item, index) {
     <div class="card-main">
       <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="card-title">${escapeHtml(item.title)}</a>
       <p class="card-meta">${metaLine(item)}</p>
-      <p class="card-desc">${escapeHtml(item.summary)}</p>
+      <p class="card-desc">${escapeHtml(item.category === 'Skip' ? item.why_it_matters : item.summary)}</p>
+      ${nextStepLine(item)}
     </div>
     <div class="card-foot">
       <span class="badge-source">${escapeHtml(sourceName(item.source))}</span>
@@ -436,7 +479,7 @@ function buildSignalCard(item, index) {
     }
   };
   card.addEventListener('click', (e) => {
-    if (e.target.closest('.rate')) return; // rating a row must not also open it
+    if (e.target.closest('.rate') || e.target.closest('.story-btn')) return; // rating a row must not also open it
     activate();
   });
   card.addEventListener('keydown', (e) => {
@@ -471,6 +514,12 @@ function buildInspectorHtml(item) {
       <span class="inspector-heading">Summary</span>
       <p class="inspector-text">${escapeHtml(item.summary)}</p>
     </div>
+
+    ${item.next_step_detail ? `
+      <div class="inspector-section">
+        <span class="inspector-heading">${escapeHtml(item.next_step)}</span>
+        <p class="inspector-text">${escapeHtml(item.next_step_detail)}</p>
+      </div>` : ''}
 
     ${item.why_it_matters ? `
       <div class="inspector-section">
@@ -557,6 +606,12 @@ document.addEventListener('click', (e) => {
     submitRating(rate.dataset.url, (state.ratings[rate.dataset.url] || 0) === next ? 0 : next);
     return;
   }
+  const story = e.target.closest('.story-btn');
+  if (story) {
+    e.stopPropagation();
+    openStory(story.dataset.story);
+    return;
+  }
   const btn = e.target.closest('[data-copy]');
   if (!btn) return;
   navigator.clipboard.writeText(btn.dataset.copy).then(
@@ -567,7 +622,7 @@ document.addEventListener('click', (e) => {
 
 let modalReturnFocus = null;
 
-function openModal(item, returnTo) {
+function openModal(item, returnTo, bodyHtml) {
   closeModal();
   modalReturnFocus = returnTo || null;
   const modal = document.createElement('div');
@@ -578,7 +633,7 @@ function openModal(item, returnTo) {
   modal.innerHTML = `
     <div class="modal-panel">
       <button type="button" class="btn modal-close" id="modal-close" aria-label="Close">Close</button>
-      ${buildInspectorHtml(item)}
+      ${bodyHtml || buildInspectorHtml(item)}
     </div>`;
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   document.body.appendChild(modal);
