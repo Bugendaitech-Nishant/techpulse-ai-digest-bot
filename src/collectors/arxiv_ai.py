@@ -33,8 +33,7 @@ class ArXivCollector(BaseCollector):
             timeout=self.timeout,
         )
 
-        if resp.status_code != 200:
-            return items
+        resp.raise_for_status()  # let the collector retry and report the failure instead of looking empty
 
         # Parse Atom XML
         root = ET.fromstring(resp.text)

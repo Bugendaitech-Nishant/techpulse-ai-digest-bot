@@ -4,6 +4,7 @@ Maintains a 30-day sliding deduplication window to ensure recurring items
 are not recommended repeatedly across daily digests.
 """
 
+import json
 import re
 import sqlite3
 import hashlib
@@ -17,6 +18,8 @@ from src.models import RawItem, TechDigest, DigestItem
 from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
+
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 class DigestDatabase:
@@ -110,6 +113,8 @@ class DigestDatabase:
                 "confidence REAL NOT NULL DEFAULT 0",
                 "priority_score REAL NOT NULL DEFAULT 0",
                 "rank INTEGER NOT NULL DEFAULT 0",
+                "published_at TEXT NOT NULL DEFAULT ''",
+                "tags TEXT NOT NULL DEFAULT '[]'",
             ):
                 try:
                     cursor.execute(f"ALTER TABLE digest_items ADD COLUMN {column};")
@@ -138,95 +143,117 @@ class DigestDatabase:
 
     def _auto_hydrate_from_markdown(self, cursor: sqlite3.Cursor) -> None:
         """
-        Auto-hydrate SQLite database from committed Markdown files in digests/.
-        Ensures historical digests and deduplication state survive ephemeral server restarts (e.g. Render).
+        Rebuild the database from the committed digests/ files, so history and deduplication survive
+        an ephemeral server (Render). A YYYY-MM-DD.json holds everything; older dates that only have a
+        Markdown file are parsed as far as the Markdown allows (no dates, no filtered items).
         """
         from config.settings import settings
         digests_dir = settings.DIGESTS_DIR
         if not digests_dir.exists():
             return
 
-        md_files = sorted(digests_dir.glob("*.md"))
-        now = datetime.now(timezone.utc).isoformat()
-        total_digests = 0
-        total_items = 0
-
-        for md_file in md_files:
-            date_str = md_file.stem
-            if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
+        digests: Dict[str, TechDigest] = {}
+        for path in sorted(digests_dir.glob("*.json")):
+            if not DATE_RE.match(path.stem):
                 continue
-
             try:
-                content = md_file.read_text(encoding="utf-8", errors="replace")
+                digests[path.stem] = TechDigest.model_validate_json(path.read_text(encoding="utf-8"))
             except Exception as e:
-                logger.warning(f"Could not read {md_file} for auto-hydration: {e}")
-                continue
-
-            parsed_items = []
-            for section in content.split("\n## "):
-                sec_title = section.split("\n")[0].strip()
-                if "Must Read" in sec_title:
-                    current_cat = "Must Read"
-                elif "Inspiration" in sec_title:
-                    current_cat = "Inspiration"
-                else:
+                logger.warning(f"Could not read {path} for auto-hydration: {e}")
+        for path in sorted(digests_dir.glob("*.md")):
+            if DATE_RE.match(path.stem) and path.stem not in digests:
+                try:
+                    parsed = self._parse_markdown_digest(path.stem, path.read_text(encoding="utf-8", errors="replace"))
+                except Exception as e:
+                    logger.warning(f"Could not read {path} for auto-hydration: {e}")
                     continue
+                if parsed:
+                    digests[path.stem] = parsed
 
-                item_blocks = re.split(r"\n### \d+\. ", "\n" + section)
-                for block in item_blocks[1:]:
-                    m_link = re.search(r"\[(.*?)\]\((.*?)\)", block)
-                    if not m_link:
-                        continue
-                    title = m_link.group(1).strip()
-                    url = m_link.group(2).strip()
-
-                    m_source = re.search(r"\*\*Source\*\*:\s*([^\n`·]+)", block)
-                    source = m_source.group(1).strip() if m_source else "Feed"
-
-                    m_summary = re.search(r"\*\*Summary\*\*:\s*(.*?)(?=\n\n\*\*Why|\Z)", block, re.DOTALL)
-                    summary = m_summary.group(1).strip() if m_summary else ""
-
-                    m_why = re.search(r"\*\*Why It Matters\*\*:\s*(.*?)(?=\n\n---|\n---|\Z)", block, re.DOTALL)
-                    why = m_why.group(1).strip() if m_why else ""
-
-                    parsed_items.append({
-                        "title": title,
-                        "url": url,
-                        "source": source,
-                        "category": current_cat,
-                        "summary": summary,
-                        "why_it_matters": why,
-                    })
-
-            if parsed_items:
+        for digest in digests.values():
+            self._write_digest(cursor, digest, digest.generated_at)
+            for item in digest.items:
                 cursor.execute("""
-                    INSERT OR IGNORE INTO digests (date, total_harvested, total_curated, created_at)
-                    VALUES (?, ?, ?, ?)
-                """, (date_str, len(parsed_items), len(parsed_items), now))
+                    INSERT OR IGNORE INTO seen_items (url_hash, url, title, source, first_seen_at, last_seen_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (self.hash_url(item.url), item.url, item.title, item.source, digest.generated_at, digest.generated_at))
 
-                for item in parsed_items:
-                    cursor.execute("""
-                        INSERT INTO digest_items (
-                            digest_date, title, url, source, category, summary, why_it_matters,
-                            relevance_score, impact_score, freshness_score, novelty_score,
-                            confidence, priority_score, rank, created_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        date_str, item["title"], item["url"], item["source"],
-                        item["category"], item["summary"], item["why_it_matters"],
-                        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, now
-                    ))
-                    h = self.hash_url(item["url"])
-                    cursor.execute("""
-                        INSERT OR IGNORE INTO seen_items (url_hash, url, title, source, first_seen_at, last_seen_at)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    """, (h, item["url"], item["title"], item["source"], now, now))
+        if digests:
+            logger.info(f"Auto-hydrated database with {sum(len(d.items) for d in digests.values())} items across {len(digests)} digests.")
 
-                total_digests += 1
-                total_items += len(parsed_items)
+    @staticmethod
+    def _parse_markdown_digest(date_str: str, content: str) -> Optional[TechDigest]:
+        """Best-effort read of a Markdown digest written before digests were also saved as JSON."""
+        from src.agents.publisher import SOURCE_BADGES
+        source_keys = {name: key for key, name in SOURCE_BADGES.items()}
+        items: List[DigestItem] = []
+        for section in content.split("\n## "):
+            title = section.split("\n")[0]
+            category = "Must Read" if "Must Read" in title else "Inspiration" if "Inspiration" in title else None
+            if not category:
+                continue
+            for block in re.split(r"\n### \d+\. ", "\n" + section)[1:]:
+                link = re.search(r"\[(.*?)\]\((.*?)\)", block)
+                if not link:
+                    continue
+                source_line = re.search(r"\*\*Source\*\*:\s*([^\n]*)", block)
+                source_text = source_line.group(1) if source_line else ""
+                source = source_text.split("·")[0].split("`")[0].strip() or "Feed"
+                summary = re.search(r"\*\*Summary\*\*:\s*(.*?)(?=\n\n\*\*Why|\Z)", block, re.DOTALL)
+                why = re.search(r"\*\*Why It Matters\*\*:\s*(.*?)(?=\n\n---|\n---|\Z)", block, re.DOTALL)
+                priority = re.search(r"\*\*Priority\*\*:\s*([\d.]+)", block)
+                items.append(DigestItem(
+                    title=link.group(1).strip(),
+                    url=link.group(2).strip(),
+                    source=source_keys.get(source, source),
+                    category=category,
+                    summary=summary.group(1).strip() if summary else "",
+                    why_it_matters=why.group(1).strip() if why else "",
+                    tags=re.findall(r"`([^`]+)`", source_text),
+                    priority_score=min(100.0, float(priority.group(1))) if priority else 0.0,
+                ))
+        if not items:
+            return None
+        items = [i.model_copy(update={"rank": n}) for n, i in enumerate(items, 1)]
+        harvested = re.search(r"Total Harvested:\s*(\d+)", content)
+        generated = re.search(r"\*\*Generated At\*\*:\s*`([^`]+)`", content)
+        return TechDigest(
+            date=date_str,
+            items=items,
+            total_harvested=int(harvested.group(1)) if harvested else len(items),
+            total_curated=len(items),
+            generated_at=generated.group(1) if generated else f"{date_str}T00:00:00+00:00",
+        )
 
-        if total_digests > 0:
-            logger.info(f"Auto-hydrated database with {total_items} items across {total_digests} digests from markdown.")
+    @staticmethod
+    def _write_digest(cursor: sqlite3.Cursor, digest: TechDigest, created_at: str) -> None:
+        """Insert or update one digest row and replace its items. The caller owns the transaction."""
+        curated = len(digest.must_reads) + len(digest.inspirations)
+        cursor.execute("""
+            INSERT INTO digests (date, total_harvested, total_curated, ranking_backend, ranking_version, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(date) DO UPDATE SET
+                total_harvested = CASE WHEN excluded.total_harvested > 0 THEN excluded.total_harvested ELSE digests.total_harvested END,
+                total_curated = CASE WHEN excluded.total_curated > 0 THEN excluded.total_curated ELSE digests.total_curated END,
+                created_at = excluded.created_at;
+        """, (digest.date, digest.total_harvested, curated, digest.ranking_backend, digest.ranking_version, created_at))
+        if not digest.items:
+            return
+        cursor.execute("DELETE FROM digest_items WHERE digest_date = ?", (digest.date,))
+        for item in digest.items:
+            cursor.execute("""
+                INSERT INTO digest_items (
+                    digest_date, title, url, source, category, summary, why_it_matters,
+                    relevance_score, impact_score, freshness_score, novelty_score,
+                    confidence, priority_score, rank, published_at, tags, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                digest.date, item.title, item.url, item.source,
+                item.category, item.summary, item.why_it_matters,
+                item.relevance_score, item.impact_score, item.freshness_score,
+                item.novelty_score, item.confidence, item.priority_score, item.rank,
+                item.published_at, json.dumps(item.tags), created_at,
+            ))
 
     @staticmethod
     def hash_url(url: str) -> str:
@@ -286,7 +313,6 @@ class DigestDatabase:
 
     def record_digest(self, digest: TechDigest) -> None:
         """Persist a completed digest report and all its categorized items."""
-        now = datetime.now(timezone.utc).isoformat()
         with self._connection() as conn:
             cursor = conn.cursor()
 
@@ -299,40 +325,7 @@ class DigestDatabase:
                 logger.info(f"Preserving existing {existing_count} items for {digest.date} against empty harvest.")
                 return
 
-            curated_count = len(digest.must_reads) + len(digest.inspirations)
-            cursor.execute("""
-                INSERT INTO digests (date, total_harvested, total_curated, ranking_backend, ranking_version, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)
-                ON CONFLICT(date) DO UPDATE SET
-                    total_harvested = CASE WHEN excluded.total_harvested > 0 THEN excluded.total_harvested ELSE digests.total_harvested END,
-                    total_curated = CASE WHEN excluded.total_curated > 0 THEN excluded.total_curated ELSE digests.total_curated END,
-                    created_at = excluded.created_at;
-            """, (
-                digest.date,
-                digest.total_harvested,
-                curated_count,
-                digest.ranking_backend,
-                digest.ranking_version,
-                now,
-            ))
-
-            # Only replace items if new digest provides valid items
-            if len(digest.items) > 0:
-                cursor.execute("DELETE FROM digest_items WHERE digest_date = ?", (digest.date,))
-                for item in digest.items:
-                    cursor.execute("""
-                        INSERT INTO digest_items (
-                            digest_date, title, url, source, category, summary, why_it_matters,
-                            relevance_score, impact_score, freshness_score, novelty_score,
-                            confidence, priority_score, rank, created_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        digest.date, item.title, item.url, item.source,
-                        item.category, item.summary, item.why_it_matters,
-                        item.relevance_score, item.impact_score, item.freshness_score,
-                        item.novelty_score, item.confidence, item.priority_score, item.rank, now
-                    ))
-
+            self._write_digest(cursor, digest, digest.generated_at)
             conn.commit()
 
     # ─── Reader feedback ────────────────────────────────────────────────
@@ -513,13 +506,13 @@ class DigestDatabase:
             cursor.execute("""
                 SELECT title, url, source, category, summary, why_it_matters,
                        relevance_score, impact_score, freshness_score, novelty_score,
-                       confidence, priority_score, rank, created_at
+                       confidence, priority_score, rank, published_at, tags, created_at
                 FROM digest_items
                 WHERE digest_date = ?
                 ORDER BY CASE category WHEN 'Must Read' THEN 1 WHEN 'Inspiration' THEN 2 ELSE 3 END,
                          priority_score DESC, id ASC;
             """, (target_date,))
-            items = [dict(row) for row in cursor.fetchall()]
+            items = [{**dict(row), "tags": json.loads(row["tags"] or "[]")} for row in cursor.fetchall()]
 
             res = dict(digest_row)
             res["items"] = items

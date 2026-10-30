@@ -160,6 +160,7 @@ class ProcessorAgent:
             summary=raw.description[:320],
             why_it_matters=f"Affects {names}, which you run. Severity: {severity or 'unknown'}. {fix_text}",
             tags=["security", *sorted(packages)],
+            published_at=raw.published_at or "",
             relevance_score=1.0,
             impact_score=impact,
         )
@@ -296,6 +297,7 @@ class ProcessorAgent:
                     summary=item_dict.get("summary") or item_lookup[url].description or "No summary available.",
                     why_it_matters=item_dict.get("why_it_matters") or "Matches your general tech profile.",
                     tags=item_dict.get("tags") or [],
+                    published_at=item_lookup[url].published_at or "",
                     relevance_score=self._scale_score(item_dict.get("relevance")),
                     impact_score=self._scale_score(item_dict.get("impact")),
                 )
@@ -344,6 +346,7 @@ class ProcessorAgent:
             summary=raw.description or "Automated tech feed item.",
             why_it_matters=why,
             tags=[m.split()[0].lower() for m in matches[:3]],
+            published_at=raw.published_at or "",
         )
 
     def _heuristic_fallback(self, raw_items: List[RawItem], target_date: str) -> TechDigest:

@@ -48,6 +48,8 @@ class PublisherAgent:
 
         markdown_content = self.render_markdown(digest)
         output_file.write_text(markdown_content, encoding="utf-8")
+        # The JSON is the source of truth (dates, tags, filtered items); the Markdown is only for reading.
+        output_file.with_suffix(".json").write_text(digest.model_dump_json(indent=1), encoding="utf-8")
 
         logger.info(f"Agent 3 (Publisher): Digest saved to {output_file}")
         self._print_safe_summary(digest, output_file)

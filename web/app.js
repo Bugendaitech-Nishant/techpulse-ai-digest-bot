@@ -392,6 +392,16 @@ function categoryLabel(category) {
   return category === 'Must Read' ? 'Must Read' : category;
 }
 
+/** "5 h ago" from the source's own date; digests saved before dates were kept say so instead of guessing. */
+function ageLabel(item) {
+  return (item.published_at && relativeTime(item.published_at)) || 'date not recorded';
+}
+
+function metaLine(item) {
+  const tags = (item.tags || []).slice(0, 4).map((t) => `#${escapeHtml(String(t).replace(/\s+/g, '-'))}`).join(' ');
+  return `${escapeHtml(ageLabel(item))}${tags ? ` · ${tags}` : ''}`;
+}
+
 function buildSignalCard(item, index) {
   const card = document.createElement('div');
   card.setAttribute('role', 'listitem');
@@ -402,6 +412,7 @@ function buildSignalCard(item, index) {
     <span class="card-rank">${String(index + 1).padStart(2, '0')}</span>
     <div class="card-main">
       <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="card-title">${escapeHtml(item.title)}</a>
+      <p class="card-meta">${metaLine(item)}</p>
       <p class="card-desc">${escapeHtml(item.summary)}</p>
     </div>
     <div class="card-foot">
@@ -469,6 +480,7 @@ function buildInspectorHtml(item) {
 
     <dl class="meta-grid">
       <div><dt>Source</dt><dd>${escapeHtml(sourceName(item.source))}</dd></div>
+      <div><dt>Published</dt><dd>${item.published_at ? escapeHtml(new Date(item.published_at).toLocaleString()) : 'not recorded'}</dd></div>
       <div><dt>Category</dt><dd>${escapeHtml(categoryLabel(item.category))}</dd></div>
       ${item.priority_score ? `<div><dt>Priority score</dt><dd class="measured">${Number(item.priority_score).toFixed(1)}</dd></div>` : ''}
       <div class="wide"><dt>Link</dt><dd class="measured">${escapeHtml(item.url)}</dd></div>

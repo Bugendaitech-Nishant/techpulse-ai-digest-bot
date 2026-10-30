@@ -61,7 +61,11 @@ def main(argv=None) -> int:
             logger.exception("Email delivery failed")
             return 2
 
-    return 3 if problems else 0
+    # A single failed source is already named in the brief; only fail the run when the result is thin.
+    breakdown = result.get("harvest_stats", {}).get("collector_breakdown", {})
+    mostly_failed = len(result.get("failed_sources", [])) * 2 > max(len(breakdown), 1)
+    other_problems = [p for p in problems if not p.startswith("These sources failed")]
+    return 3 if (other_problems or mostly_failed) else 0
 
 
 if __name__ == "__main__":

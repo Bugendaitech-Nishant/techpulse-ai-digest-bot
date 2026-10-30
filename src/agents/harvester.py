@@ -5,6 +5,7 @@ enforces deduplication, tracks collection metrics, and persists items to SQLite.
 """
 
 import logging
+from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Tuple, Dict, Any
 
@@ -23,6 +24,23 @@ from src.storage.database import DigestDatabase
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
+
+
+# A trending repo is news because it trends today, however old it is; advisories matter until fixed.
+AGE_EXEMPT_SOURCES = {"github_trending", "security_advisories"}
+
+
+def is_too_old(item: RawItem, max_age_days: int, now: datetime) -> bool:
+    """True when the item has a parseable date older than the limit. Undated items are kept."""
+    if item.source in AGE_EXEMPT_SOURCES or not item.published_at:
+        return False
+    try:
+        published = datetime.fromisoformat(item.published_at.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if published.tzinfo is None:
+        published = published.replace(tzinfo=timezone.utc)
+    return now - published > timedelta(days=max_age_days)
 
 
 class HarvesterAgent:
@@ -71,6 +89,11 @@ class HarvesterAgent:
 
         total_collected = len(raw_items)
 
+        now = datetime.now(timezone.utc)
+        fresh = [i for i in raw_items if not is_too_old(i, settings.MAX_ITEM_AGE_DAYS, now)]
+        too_old = total_collected - len(fresh)
+        raw_items = fresh
+
         # 1. In-memory deduplication for current batch
         seen_batch_urls = set()
         deduped_batch: List[RawItem] = []
@@ -91,6 +114,7 @@ class HarvesterAgent:
 
         telemetry = {
             "total_harvested_raw": total_collected,
+            "too_old_dropped": too_old,
             "unique_in_batch": len(deduped_batch),
             "historical_duplicates_filtered": db_filtered_count,
             "novel_items_for_curation": len(unseen_items),

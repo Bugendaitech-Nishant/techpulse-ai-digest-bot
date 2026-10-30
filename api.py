@@ -371,7 +371,7 @@ def get_digest_markdown(target_date: str, request: Request):
             total_harvested=digest.get("total_harvested", len(items)),
             total_curated=digest.get("total_curated", len(items)),
         )
-        content = PublisherAgent()._render_markdown(d)
+        content = PublisherAgent().render_markdown(d)
     return {"date": target_date, "markdown": content}
 
 

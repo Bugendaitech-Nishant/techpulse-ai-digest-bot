@@ -64,4 +64,22 @@ class GitHubTrendingCollector(BaseCollector):
                     extra_metadata={"trending_lang": lang or "all"},
                 ))
 
+        self._add_push_dates(items)
         return items
+
+    def _add_push_dates(self, items: List[RawItem]) -> None:
+        """Trending pages carry no date, so ask the API when each repo was last pushed. Best effort."""
+        headers = {"User-Agent": settings.USER_AGENT, "Accept": "application/vnd.github.v3+json"}
+        if settings.GITHUB_API_TOKEN:
+            headers["Authorization"] = f"Bearer {settings.GITHUB_API_TOKEN}"
+        for item in items:
+            try:
+                resp = requests.get(
+                    f"https://api.github.com/repos/{item.url.removeprefix('https://github.com/')}",
+                    headers=headers, timeout=self.timeout,
+                )
+            except requests.RequestException:
+                return
+            if resp.status_code != 200:
+                return  # rate limited or gone: leave the rest undated rather than guess
+            item.published_at = resp.json().get("pushed_at") or ""

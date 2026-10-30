@@ -16,46 +16,41 @@ class GitHubSearchCollector(BaseCollector):
     name = "github_search"
 
     def _fetch_items(self) -> List[RawItem]:
-        items: List[RawItem] = []
-        # Query active repos created or updated recently with significant stars
         week_ago = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
-        query = f"(topic:ai-agents OR topic:llm OR topic:developer-tools) pushed:>{week_ago} stars:>50"
-        api_url = "https://api.github.com/search/repositories"
+        headers = {"User-Agent": settings.USER_AGENT, "Accept": "application/vnd.github.v3+json"}
+        if settings.GITHUB_API_TOKEN:
+            headers["Authorization"] = f"Bearer {settings.GITHUB_API_TOKEN}"
 
-        params = {
-            "q": query,
-            "sort": "stars",
-            "order": "desc",
-            "per_page": settings.LIMIT_GITHUB_SEARCH,
-        }
+        # GitHub's search treats "(topic:a OR topic:b)" as matching nothing, so ask once per topic.
+        repos: dict = {}
+        for topic in ("ai-agents", "llm", "developer-tools"):
+            resp = requests.get(
+                "https://api.github.com/search/repositories",
+                params={
+                    "q": f"topic:{topic} pushed:>{week_ago} stars:>50",
+                    "sort": "stars",
+                    "order": "desc",
+                    "per_page": settings.LIMIT_GITHUB_SEARCH,
+                },
+                headers=headers,
+                timeout=self.timeout,
+            )
+            if resp.status_code != 200:
+                raise RuntimeError(f"GitHub search returned HTTP {resp.status_code} for topic {topic}")
+            for repo in resp.json().get("items", []):
+                repos.setdefault(repo["html_url"], repo)
 
-        resp = requests.get(
-            api_url,
-            params=params,
-            headers={
-                "User-Agent": settings.USER_AGENT,
-                "Accept": "application/vnd.github.v3+json",
-            },
-            timeout=self.timeout,
-        )
-
-        if resp.status_code != 200:
-            return items
-
-        data = resp.json()
-        for repo in data.get("items", []):
-            items.append(RawItem(
+        top = sorted(repos.values(), key=lambda r: r.get("stargazers_count", 0), reverse=True)
+        return [
+            RawItem(
                 title=repo.get("full_name", ""),
                 url=repo.get("html_url", ""),
                 description=repo.get("description") or "",
                 source=self.name,
                 score=repo.get("stargazers_count", 0),
                 language=repo.get("language") or "Python",
-                published_at=repo.get("created_at"),
-                extra_metadata={
-                    "forks": repo.get("forks_count", 0),
-                    "topics": repo.get("topics", []),
-                },
-            ))
-
-        return items
+                published_at=repo.get("pushed_at") or "",  # last push: created_at can be years old
+                extra_metadata={"forks": repo.get("forks_count", 0), "topics": repo.get("topics", [])},
+            )
+            for repo in top[: settings.LIMIT_GITHUB_SEARCH]
+        ]

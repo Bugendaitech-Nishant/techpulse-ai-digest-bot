@@ -54,7 +54,7 @@ class Settings:
     LLM_MAX_ITEMS: int = int(os.getenv("LLM_MAX_ITEMS", "90"))  # per-run cap on items sent to the model
 
     # ─── Database & Deduplication ────────────────────────────────────────
-    DB_PATH: Path = DATA_DIR / "tech_digest.db"
+    DB_PATH: Path = Path(os.getenv("DB_PATH", str(DATA_DIR / "tech_digest.db")))
     DEDUP_WINDOW_DAYS: int = 30  # Don't resurface items seen in the last 30 days
 
     # ─── User Technical Profile ──────────────────────────────────────────
@@ -94,6 +94,7 @@ class Settings:
     LIMIT_HUGGINGFACE_PAPERS: int = 15
     LIMIT_DEVTO: int = 15
     LIMIT_ARXIV: int = 15
+    MAX_ITEM_AGE_DAYS: int = int(os.getenv("MAX_ITEM_AGE_DAYS", "7"))  # older items are dropped, except security advisories
     LIMIT_SECURITY: int = int(os.getenv("LIMIT_SECURITY", "5"))  # advisories per run
     SECURITY_LOOKBACK_DAYS: int = int(os.getenv("SECURITY_LOOKBACK_DAYS", "14"))
     GITHUB_API_TOKEN: str = os.getenv("GITHUB_TOKEN", "")  # optional, only raises the advisory API rate limit

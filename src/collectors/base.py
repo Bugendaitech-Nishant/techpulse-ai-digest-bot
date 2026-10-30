@@ -34,7 +34,12 @@ class BaseCollector(ABC):
         logger.info(f"Collector [{self.name}] starting harvest...")
 
         try:
-            items = self._fetch_items()
+            try:
+                items = self._fetch_items()
+            except Exception as first_error:  # one retry: free APIs time out now and then
+                logger.warning(f"Collector [{self.name}] failed once ({first_error}); retrying")
+                time.sleep(2)
+                items = self._fetch_items()
             elapsed = time.perf_counter() - start_time
             logger.info(f"Collector [{self.name}] harvested {len(items)} items in {elapsed:.2f}s")
             return CollectorResult(

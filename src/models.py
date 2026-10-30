@@ -53,6 +53,7 @@ class DigestItem(BaseModel):
     summary: str = Field(..., description="Punchy, factual 2-sentence summary of the item")
     why_it_matters: str = Field(..., description="1-sentence explanation of concrete value for technical engineers")
     tags: List[str] = Field(default_factory=list, description="Extracted tech tags (e.g. ['python', 'agent', 'rag'])")
+    published_at: str = Field(default="", description="When the source published or last updated it (ISO); empty when unknown")
     relevance_score: float = Field(default=0.0, ge=0.0, le=1.0)
     impact_score: float = Field(default=0.0, ge=0.0, le=1.0)
     freshness_score: float = Field(default=0.0, ge=0.0, le=1.0)
