@@ -19,7 +19,7 @@
     "devops"
    ],
    "next_step": "Patch",
-   "next_step_detail": "Review the incident page, apply any Linode‑provided patches, rotate credentials, and audit affected VMs.",
+   "next_step_detail": "Review the incident page, apply any Linode\u2011provided patches, rotate credentials, and audit affected VMs.",
    "story_id": "",
    "relevance_score": 1.0,
    "impact_score": 1.0,
@@ -34,8 +34,8 @@
    "url": "https://github.com/dbreunig/nesformer",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "A GitHub project that compresses a Qwen‑style LLM to ~1 GB and runs a Nintendo emulator using the model’s generation capabilities.",
-   "why_it_matters": "Demonstrates aggressive model compression techniques useful for edge‑deployed agents.",
+   "summary": "A GitHub project that compresses a Qwen\u2011style LLM to ~1\u202fGB and runs a Nintendo emulator using the model\u2019s generation capabilities.",
+   "why_it_matters": "Demonstrates aggressive model compression techniques useful for edge\u2011deployed agents.",
    "tags": [
     "qwen",
     "nesformer"
@@ -47,7 +47,7 @@
     "multimodal"
    ],
    "next_step": "Try",
-   "next_step_detail": "Clone the repo and run the provided demo on a machine with at least 2 GB RAM.",
+   "next_step_detail": "Clone the repo and run the provided demo on a machine with at least 2\u202fGB RAM.",
    "story_id": "",
    "relevance_score": 0.75,
    "impact_score": 0.75,
@@ -62,8 +62,8 @@
    "url": "https://www.firezone.dev/blog/introducing-sanstun",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "Firezone introduces sanstun, a Rust library that implements the WireGuard state machine using a sans‑IO design for better testability and parallelism. The API separates side‑effects from core logic, aiming for high security and performance.",
-   "why_it_matters": "Provides a modern, Rust‑based VPN component that can replace existing WireGuard stacks in cloud deployments.",
+   "summary": "Firezone introduces sanstun, a Rust library that implements the WireGuard state machine using a sans\u2011IO design for better testability and parallelism. The API separates side\u2011effects from core logic, aiming for high security and performance.",
+   "why_it_matters": "Provides a modern, Rust\u2011based VPN component that can replace existing WireGuard stacks in cloud deployments.",
    "tags": [
     "sanstun",
     "wireguard",
@@ -87,11 +87,11 @@
    "rank": 3
   },
   {
-   "title": "MoE Offloading Isn’t Always Faster: I Tested 5 Models on a 16GB GPU",
+   "title": "MoE Offloading Isn\u2019t Always Faster: I Tested 5 Models on a 16GB GPU",
    "url": "https://dev.to/sizzlebop/moe-offloading-isnt-always-faster-i-tested-5-models-on-a-16gb-gpu-498a",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "The author benchmarks Mixture‑of‑Experts offloading on a 16 GB GPU and finds mixed performance gains across five models.",
+   "summary": "The author benchmarks Mixture\u2011of\u2011Experts offloading on a 16\u202fGB GPU and finds mixed performance gains across five models.",
    "why_it_matters": "Directly informs how you should configure MoE offloading for local LLM deployments.",
    "tags": [
     "moe",
@@ -105,7 +105,7 @@
    ],
    "next_step": "Try",
    "next_step_detail": "Run the provided script on your GPU and compare latency with and without offloading.",
-   "story_id": "",
+   "story_id": "23b8635c7b",
    "relevance_score": 0.75,
    "impact_score": 0.75,
    "freshness_score": 0.8278,
@@ -119,8 +119,8 @@
    "url": "https://huggingface.co/papers/2610.38293",
    "source": "huggingface_papers",
    "category": "Must Read",
-   "summary": "Introduces EPSBench, a benchmark that evaluates LLM agents on quarterly earnings‑forecasting tasks across 149 firm‑quarters.",
-   "why_it_matters": "Provides a concrete evaluation suite for financial‑oriented agent workflows you may build.",
+   "summary": "Introduces EPSBench, a benchmark that evaluates LLM agents on quarterly earnings\u2011forecasting tasks across 149 firm\u2011quarters.",
+   "why_it_matters": "Provides a concrete evaluation suite for financial\u2011oriented agent workflows you may build.",
    "tags": [
     "epsbench",
     "huggingface"
@@ -147,8 +147,8 @@
    "url": "https://twitter.com/sgondala2/status/2115832070274723875",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "A thread shares lessons from building an AI‑native engineering organization at FurtherAI, including metrics on code throughput and the role of coding agents. It also lists questions for evaluating engineering managers on AI skills.",
-   "why_it_matters": "Provides practical ideas for structuring teams that ship AI‑driven tooling.",
+   "summary": "A thread shares lessons from building an AI\u2011native engineering organization at FurtherAI, including metrics on code throughput and the role of coding agents. It also lists questions for evaluating engineering managers on AI skills.",
+   "why_it_matters": "Provides practical ideas for structuring teams that ship AI\u2011driven tooling.",
    "tags": [
     "furtherai"
    ],
@@ -175,7 +175,7 @@
    "source": "hacker_news",
    "category": "Inspiration",
    "summary": "Google researchers propose a \"sleep\" phase that lets large language models integrate new facts after deployment, reducing catastrophic forgetting. The approach blends continual learning with a periodic offline update to keep model knowledge fresh.",
-   "why_it_matters": "Helps engineers design agents that stay up‑to‑date without full re‑training.",
+   "why_it_matters": "Helps engineers design agents that stay up\u2011to\u2011date without full re\u2011training.",
    "tags": [
     "google-research",
     "sleep-framework"
@@ -187,7 +187,7 @@
     "research"
    ],
    "next_step": "Read",
-   "next_step_detail": "Read the blog post to understand the algorithm and consider adding a sleep‑phase step to your agent pipeline.",
+   "next_step_detail": "Read the blog post to understand the algorithm and consider adding a sleep\u2011phase step to your agent pipeline.",
    "story_id": "",
    "relevance_score": 0.5,
    "impact_score": 0.5,
@@ -202,8 +202,8 @@
    "url": "https://www.techpolicy.press/breaking-the-open-web-wont-stop-the-bad-bots/",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Discusses policy and technical challenges of AI‑generated traffic that scrapes web content, referencing the Stealth Bot Prohibition Act.",
-   "why_it_matters": "Highlights security and compliance considerations for teams exposing APIs to large‑scale AI crawlers.",
+   "summary": "Discusses policy and technical challenges of AI\u2011generated traffic that scrapes web content, referencing the Stealth Bot Prohibition Act.",
+   "why_it_matters": "Highlights security and compliance considerations for teams exposing APIs to large\u2011scale AI crawlers.",
    "tags": [
     "stealth-bot-prohibition-act"
    ],
@@ -214,7 +214,7 @@
     "web"
    ],
    "next_step": "Read",
-   "next_step_detail": "Review the article to inform your bot‑mitigation strategy.",
+   "next_step_detail": "Review the article to inform your bot\u2011mitigation strategy.",
    "story_id": "",
    "relevance_score": 0.5,
    "impact_score": 0.25,
@@ -229,8 +229,8 @@
    "url": "https://huggingface.co/papers/2610.38681",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "Proposes a self‑distillation technique that weakens a model to create an on‑policy teacher for improving reasoning capabilities.",
-   "why_it_matters": "Suggests a novel fine‑tuning path that could be applied to reasoning‑focused LLMs you run locally.",
+   "summary": "Proposes a self\u2011distillation technique that weakens a model to create an on\u2011policy teacher for improving reasoning capabilities.",
+   "why_it_matters": "Suggests a novel fine\u2011tuning path that could be applied to reasoning\u2011focused LLMs you run locally.",
    "tags": [
     "self-distillation",
     "huggingface"
@@ -280,7 +280,7 @@
    "url": "https://www.bostonglobe.com/2026/10/29/metro/patrick-stewart-picard-star-trek-the-next-generation/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A tribute article about Patrick Stewart’s death and his role as Captain Picard.",
+   "summary": "A tribute article about Patrick Stewart\u2019s death and his role as Captain Picard.",
    "why_it_matters": "It is a cultural obituary with no technical content for AI engineers.",
    "tags": [],
    "published_at": "2026-10-30T20:23:30Z",
@@ -302,7 +302,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "The author describes porting classic Mac OS to PowerPC hardware found in Nintendo consoles.",
-   "why_it_matters": "It is an entertainment‑focused hardware hobby with no relevance to AI engineering.",
+   "why_it_matters": "It is an entertainment\u2011focused hardware hobby with no relevance to AI engineering.",
    "tags": [],
    "published_at": "2026-10-30T17:25:15Z",
    "topics": [],
@@ -322,7 +322,7 @@
    "url": "https://dev.to/nathan_tarbert/my-open-source-project-is-brand-new-and-already-has-contributors-heres-what-i-did-3fb4",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "A short story about launching an open‑source repo and attracting early contributors.",
+   "summary": "A short story about launching an open\u2011source repo and attracting early contributors.",
    "why_it_matters": "It offers no technical guidance for building agents or infrastructure.",
    "tags": [],
    "published_at": "2026-10-30T16:03:47Z",
@@ -365,7 +365,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "A Fortune article describes Cisco giving a young engineer unlimited AI tokens to refactor legacy code, framed as a corporate anecdote.",
-   "why_it_matters": "It's a business‑focused story with no technical detail relevant to building or operating AI agents.",
+   "why_it_matters": "It's a business\u2011focused story with no technical detail relevant to building or operating AI agents.",
    "tags": [],
    "published_at": "2026-10-30T14:08:20Z",
    "topics": [],
@@ -381,12 +381,12 @@
    "rank": 15
   },
   {
-   "title": "Day 28 of Building Crowdwide — More Personalization, Bug Fixes & Still Looking for a Brand Ambassador!",
+   "title": "Day 28 of Building Crowdwide \u2014 More Personalization, Bug Fixes & Still Looking for a Brand Ambassador!",
    "url": "https://dev.to/puneetkumar2010/day-28-of-building-crowdwide-more-personalization-bug-fixes-still-looking-for-a-brand-592b",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "Updates on a social‑media platform project focused on algorithmic personalization.",
-   "why_it_matters": "The post discusses product‑level features, not AI agent tooling or infrastructure.",
+   "summary": "Updates on a social\u2011media platform project focused on algorithmic personalization.",
+   "why_it_matters": "The post discusses product\u2011level features, not AI agent tooling or infrastructure.",
    "tags": [],
    "published_at": "2026-10-30T08:14:27Z",
    "topics": [],
@@ -507,11 +507,11 @@
    "rank": 21
   },
   {
-   "title": "Ofrenda: Yaadon ka Diya — Virtual Remembrance Altar with Open-Weight AI",
+   "title": "Ofrenda: Yaadon ka Diya \u2014 Virtual Remembrance Altar with Open-Weight AI",
    "url": "https://dev.to/vidisha_gupta_/ofrenda-yaadon-ka-diya-keeping-memories-alive-with-open-weight-ai-4oc7",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "A Hacktoberfest project that uses an open‑weight model to create a virtual remembrance altar.",
+   "summary": "A Hacktoberfest project that uses an open\u2011weight model to create a virtual remembrance altar.",
    "why_it_matters": "The demo is a niche UI project without relevance to agent workflows or production infrastructure.",
    "tags": [],
    "published_at": "2026-10-30T16:01:43Z",
@@ -595,7 +595,7 @@
    "url": "https://www.designboom.com/technology/tree-mounted-machines-web-app-users-knock-on-wood-remotely/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Design article about remote interaction with tree‑mounted machines via a web app.",
+   "summary": "Design article about remote interaction with tree\u2011mounted machines via a web app.",
    "why_it_matters": "Novel art project without relevance to AI engineering or infrastructure.",
    "tags": [],
    "published_at": "2026-10-27T13:00:04Z",
