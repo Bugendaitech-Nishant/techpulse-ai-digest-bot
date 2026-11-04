@@ -1,4 +1,5 @@
-# Who the digest is for. Edit this file; the curator reads it on every run.
+# Who the digest is for: describe your TEAM, not one person. The curator reads this on every run,
+# so a profile written for one engineer ranks items for one engineer. Edit it to match the team's stack.
 # Changes take effect at the next harvest. Keep each line short and concrete.
 
 summary = """

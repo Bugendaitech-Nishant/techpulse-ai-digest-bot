@@ -11,6 +11,22 @@
 
 ---
 
+## Working as a team
+
+The feed opens on **To do**: every Patch, Try or Evaluate item nobody has taken yet.
+
+- **Take it, finish it, or mark it "not for us".** The status and your name are stored on the server, so every teammate sees the same state. Taken items move to **In progress**, finished and dismissed ones to **Handled**, where they can be reopened. A note (ticket link, why not) can be added once an item has a decision.
+- **Copy brief** builds a Markdown standup brief for the shown day: what needs someone, who has what, what to read. Paste it into chat.
+- **Topics** narrow the feed to one area (security, inference, agents...), so each person can follow their own.
+- **Archive** searches every kept item across all days by word, topic or next step. Pipeline statistics sit under "Pipeline health".
+- Harvest controls are under **Admin** in the header.
+
+Names are self-declared and kept in the browser; there is no login. Set `HARVEST_API_KEY` if strangers can reach the server. Status survives restarts the same way ratings do: set `FEEDBACK_GITHUB_TOKEN` and `GITHUB_REPO` and it is appended to `data/triage.jsonl` on the `feedback` branch. Without them it lives in `data/triage.jsonl` on the server and is lost when a free host resets its disk.
+
+Endpoints: `GET/POST /api/triage`, `GET /api/search?q=&topic=&step=`, `GET /api/brief?date=`.
+
+---
+
 ## Web Observatory & Intelligence Cockpit
 
 TechPulse includes a local observatory web UI inspired by modern engineering cockpits (Linear, Raycast, Vercel design aesthetic):

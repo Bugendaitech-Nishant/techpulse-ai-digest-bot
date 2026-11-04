@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechPulse digest archive and statistics</title>
-  <meta name="description" content="Every daily digest TechPulse has produced, with how many items were harvested, how many were kept, and where they came from.">
+  <title>TechPulse archive, search every digest</title>
+  <meta name="description" content="Search every item TechPulse has kept, by word, topic or next step, and see what your team did about it.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -21,18 +21,23 @@
       </a>
 
       <nav class="nav-tabs" aria-label="Main">
-        <a href="/" class="nav-tab">Live feed</a>
-        <a href="/curated-digests" class="nav-tab" aria-current="page">Digests</a>
+        <a href="/" class="nav-tab">Feed</a>
+        <a href="/curated-digests" class="nav-tab" aria-current="page">Archive</a>
       </nav>
 
       <div class="bar-actions">
-        <div class="quota-pill" id="quota-pill" title="Hourly harvest budget">
-          <span class="quota-indicator-dot" id="quota-dot" aria-hidden="true"></span>
-          <span class="quota-text" id="quota-text">Quota ready</span>
-        </div>
-        <button type="button" class="btn btn-primary" id="btn-harvest" title="Run a harvest now">
-          <span>Run harvest</span>
-        </button>
+        <details class="admin-menu" id="admin-menu">
+          <summary class="btn" title="Harvest controls">Admin</summary>
+          <div class="admin-panel">
+            <div class="quota-pill" id="quota-pill" title="Hourly harvest budget">
+              <span class="quota-indicator-dot" id="quota-dot" aria-hidden="true"></span>
+              <span class="quota-text" id="quota-text">Quota ready</span>
+            </div>
+            <button type="button" class="btn btn-primary" id="btn-harvest" title="Collect and rank new items now">
+              <span>Run harvest</span>
+            </button>
+          </div>
+        </details>
       </div>
     </div>
   </header>
@@ -41,23 +46,44 @@
 
     <div class="page-head">
       <div>
-        <h1>Digest archive</h1>
-        <p id="page-sub">Loading the archive.</p>
+        <h1>Archive</h1>
+        <p id="page-sub">Every item the digest has kept, searchable across days.</p>
       </div>
     </div>
 
-    <section class="readings" id="readings" aria-label="Archive readings">
-      <div class="skeleton-row" style="grid-column: 1 / -1;"></div>
-    </section>
+    <form class="search-bar" id="search-form" role="search" aria-label="Search the archive">
+      <div class="search-wrapper">
+        <label class="visually-hidden" for="q">Search every digest</label>
+        <input type="search" id="q" name="q" class="field search-input" placeholder="Search every digest: litellm, rust, postgres" autocomplete="off" spellcheck="false">
+      </div>
+      <label class="visually-hidden" for="topic">Topic</label>
+      <select id="topic" class="field"><option value="">Any topic</option></select>
+      <label class="visually-hidden" for="step">What to do</label>
+      <select id="step" class="field">
+        <option value="">Any next step</option>
+        <option value="Patch">Patch</option>
+        <option value="Try">Try</option>
+        <option value="Evaluate">Evaluate</option>
+        <option value="Read">Read</option>
+        <option value="Watch">Watch</option>
+      </select>
+    </form>
 
-    <section id="history-region" aria-label="Digest history"></section>
+    <p class="result-meta" id="result-meta" role="status"></p>
+    <div id="results" class="cards-grid-view" aria-live="polite"></div>
 
-    <section id="runs-region" aria-label="Recent runs"></section>
-
-    <div class="split">
-      <section id="sources-region" aria-label="Items by source"></section>
-      <section id="top-region" aria-label="Top of the latest digest"></section>
-    </div>
+    <details class="health" id="health">
+      <summary>Pipeline health</summary>
+      <section class="readings" id="readings" aria-label="Archive readings">
+        <div class="skeleton-row" style="grid-column: 1 / -1;"></div>
+      </section>
+      <section id="history-region" aria-label="Digest history"></section>
+      <section id="runs-region" aria-label="Recent runs"></section>
+      <div class="split">
+        <section id="sources-region" aria-label="Items by source"></section>
+        <section id="top-region" aria-label="Top of the latest digest"></section>
+      </div>
+    </details>
 
     <p class="wake-note" id="wake-note" hidden>The server is waking from idle. The first load can take about 30 seconds.</p>
   </main>
@@ -80,6 +106,7 @@
   <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
 
   <script src="/static/shell.js"></script>
+  <script src="/static/triage.js"></script>
   <script src="/static/digests.js"></script>
 </body>
 </html>

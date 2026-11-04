@@ -217,3 +217,44 @@ table.data tr:last-child td { border-bottom: 0; }
   .action-link, .brand-monolith { min-height: 44px; display: inline-flex; align-items: center; }
   .meta-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Team triage ────────────────────────────────────────────────────────── */
+.control-bar .segmented-control { flex: 1 1 100%; }
+.rail-label { align-self: center; color: var(--color-muted); font-size: var(--text-xs); min-width: 3.5rem; }
+.admin-menu { position: relative; }
+.admin-menu > summary { list-style: none; color: var(--color-muted); }
+.admin-menu > summary::-webkit-details-marker { display: none; }
+.admin-menu[open] > summary { color: var(--color-ink); background: var(--color-rule); }
+.admin-panel { position: absolute; right: 0; top: calc(100% + var(--space-xs)); z-index: var(--z-dropdown); display: grid; gap: var(--space-xs); min-width: 13rem; padding: var(--space-sm); background: var(--color-paper-2); border: var(--rule-hair) solid var(--color-rule-2); border-radius: var(--radius-card); }
+.colophon { color: var(--color-muted); font-size: var(--text-xs); }
+
+.card-triage { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); margin-top: var(--space-2xs); }
+.triage-chip { display: inline-block; padding: 1px var(--space-xs); border-radius: 4px; font-size: var(--text-xs); font-weight: 500; border: var(--rule-hair) solid var(--color-rule-2); color: var(--color-ink-2); }
+.triage-chip.is-doing { background: var(--color-accent-soft); border-color: var(--color-accent-soft); color: var(--color-ink); }
+.triage-chip.is-done { background: var(--color-ok-soft); border-color: var(--color-ok-soft); color: var(--color-ink); }
+.triage-chip.is-dismissed { border-style: dashed; color: var(--color-muted); }
+.triage-btn { min-height: 28px; padding: 0 var(--space-sm); border: var(--rule-hair) solid var(--color-rule-2); border-radius: var(--radius-pill); background: transparent; color: var(--color-ink-2); font-size: var(--text-xs); font-weight: 500; cursor: pointer; white-space: nowrap; transition: background-color var(--dur-micro) var(--ease-out); }
+.triage-btn:hover { background: var(--color-paper-3); color: var(--color-ink); }
+.triage-btn:active { background: var(--color-paper); }
+.triage-btn.is-primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-accent-ink); }
+.triage-btn.is-primary:hover { background: color-mix(in oklab, var(--color-accent) 88%, var(--color-ink)); }
+.triage-note { color: var(--color-muted); font-size: var(--text-xs); font-style: italic; overflow-wrap: anywhere; }
+.signal-card.is-handled .card-title, .signal-card.is-handled .card-desc { opacity: 0.6; }
+.note-box { display: grid; gap: var(--space-xs); justify-items: start; }
+.note-field { width: 100%; height: auto; padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-pill); resize: vertical; line-height: 1.4; }
+.team-section .card-triage { margin-top: 0; }
+@media (max-width: 60rem) { .triage-btn { min-height: 44px; } .admin-panel { right: auto; left: 0; } }
+
+/* ── Archive search ─────────────────────────────────────────────────────── */
+.search-bar { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.search-bar .search-wrapper { flex: 2 1 20rem; }
+.search-bar select.field { flex: 0 1 11rem; }
+.result-meta { color: var(--color-muted); font-size: var(--text-sm); }
+.result-day { max-width: none; display: flex; justify-content: space-between; align-items: baseline; grid-column: 1 / -1; padding: var(--space-sm) var(--space-lg); background: var(--color-paper-3); border-bottom: var(--rule-hair) solid var(--color-rule); color: var(--color-ink-2); font-size: var(--text-sm); font-weight: 500; }
+.result-row { display: grid; gap: var(--space-2xs); padding: var(--space-md) var(--space-lg); border-bottom: var(--rule-hair) solid var(--color-rule); }
+.result-row:last-child { border-bottom: 0; }
+.result-row .card-title { font-size: var(--text-md); }
+.health { border-top: var(--rule-hair) solid var(--color-rule); padding-top: var(--space-md); }
+.health > summary { cursor: pointer; font-weight: 500; font-size: var(--text-lg); letter-spacing: var(--tracking-display); }
+.health[open] > summary { margin-bottom: var(--space-md); }
+.health .readings, .health section { margin-top: var(--space-md); }

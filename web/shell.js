@@ -25,6 +25,11 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+/** Advisory text arrives as Markdown ("### Summary ..."); show it as plain words. */
+function plainText(str) {
+  return String(str || '').replace(/^#+\s*/gm, '').replace(/[`*_]{1,3}/g, '').replace(/\s+/g, ' ').trim();
+}
+
 function sourceName(key) {
   return SOURCE_NAMES[key] || key;
 }

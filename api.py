@@ -38,11 +38,13 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from src.agent_api import attach_agent_api
+from src.models import TOPICS
 from src.orchestrator import DigestOrchestrator
 from src.storage.database import DigestDatabase
 from src.security.quota_manager import quota_manager
 from src.security.cache_manager import cache_manager
 from src import feedback as feedback_store
+from src import triage as triage_store
 from src import runlog
 from config.settings import settings
 
@@ -94,6 +96,9 @@ def _hydrate_feedback_from_remote() -> None:
         applied = db.load_feedback_events(feedback_store.fetch_remote_events())
         if applied:
             logger.info(f"Loaded {applied} ratings from the feedback branch.")
+        handled = db.load_triage_events(triage_store.fetch_remote_events())
+        if handled:
+            logger.info(f"Loaded {handled} triage updates from the feedback branch.")
     except Exception as error:  # never block start-up on this
         logger.warning(f"Feedback hydration failed: {error}")
 
@@ -480,6 +485,73 @@ document.getElementById('go').addEventListener('click', async (e) => {{
 }});
 </script></body></html>"""
     return HTMLResponse(body)
+
+
+# ─── Team triage, search and brief ───────────────────────────────────────────
+
+class TriageIn(BaseModel):
+    url: str = Field(..., max_length=2000)
+    status: str = Field(..., pattern="^(open|doing|done|dismissed)$")
+    owner: str = Field(default="", max_length=triage_store.MAX_OWNER)
+    note: str = Field(default="", max_length=triage_store.MAX_NOTE)
+
+
+@app.get("/api/triage")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def get_triage(request: Request) -> Dict[str, Any]:
+    """What the team is doing about each item, and whether that survives a server restart."""
+    return {
+        "items": db.get_triage_map(),
+        "persistent": feedback_store.github_sync_enabled(),
+        "write_requires_key": bool(quota_manager.api_key),
+    }
+
+
+@app.post("/api/triage")
+@limiter.limit("60/minute")
+def post_triage(
+    request: Request,
+    payload: TriageIn,
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+):
+    """Take, finish, dismiss or reopen an item. Taking an item needs a name."""
+    if not quota_manager.check_auth(x_api_key):
+        return JSONResponse(status_code=401, content={"ok": False, "error": "Unauthorized: invalid or missing X-API-Key."})
+    owner = " ".join(payload.owner.split())
+    if payload.status == "doing" and not owner:
+        raise HTTPException(status_code=422, detail="Say who is taking this item.")
+    item = db.find_item_by_url(payload.url)
+    if item is None:
+        raise HTTPException(status_code=404, detail="That item is not in any digest.")
+    current = db.get_triage_map().get(payload.url, {"status": "open", "owner": "", "note": ""})
+    if (current["status"], current["owner"], current["note"]) == (payload.status, owner, payload.note.strip()):
+        return {"ok": True, "changed": False, "persisted": feedback_store.github_sync_enabled()}
+    event = triage_store.make_event(
+        payload.url, payload.status, owner, payload.note, item["title"], item["source"], item.get("next_step", "")
+    )
+    db.record_triage(event)
+    triage_store.append_event(event)
+    persisted = triage_store.push_event(event)
+    return {"ok": True, "changed": True, "persisted": persisted, "item": {**event}}
+
+
+@app.get("/api/search")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def search_archive(request: Request, q: str = "", topic: str = "", step: str = "", limit: int = 60):
+    """Search every kept item from every day. Words in `q` must all match; topic and step narrow further."""
+    q = q.strip()[:200]
+    results = db.search_items(q, topic.strip()[:40], step.strip()[:20], limit)
+    return {"query": q, "count": len(results), "items": results, "topics": list(TOPICS)}
+
+
+@app.get("/api/brief")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def get_brief(request: Request, date: str = "latest"):
+    """A paste-ready Markdown brief of one day: what needs someone, who has what, what to read."""
+    digest = db.get_latest_digest() if date == "latest" else db.get_digest_by_date(date)
+    if not digest:
+        raise HTTPException(status_code=404, detail="No digest for that date.")
+    return {"date": digest["date"], "markdown": triage_store.build_brief(digest, db.get_triage_map())}
 
 
 # ─── Harvest Pipeline Execution (Governed by Rate Limits & Quotas) ────────────

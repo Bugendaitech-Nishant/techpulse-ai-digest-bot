@@ -5,7 +5,10 @@
  * Shared helpers (escapeHtml, toasts, quota, harvest, export) live in shell.js.
  */
 
-const CATEGORY_LABELS = { curated: 'High signal', 'Must Read': 'Must read', Inspiration: 'Inspiration', Skip: 'Safe to ignore' };
+const CATEGORY_LABELS = {
+  todo: 'To do', doing: 'In progress', curated: 'All signal', 'Must Read': 'Must read',
+  Inspiration: 'Inspiration', handled: 'Handled', Skip: 'Safe to ignore',
+};
 const STEP_ORDER = ['Patch', 'Try', 'Evaluate', 'Read', 'Watch'];
 const STEP_HEADINGS = { Patch: 'Needs action', Try: 'Try this', Evaluate: 'Worth comparing', Read: 'Worth knowing', Watch: 'Keep an eye on' };
 const VALID_CATEGORIES = Object.keys(CATEGORY_LABELS);
@@ -19,8 +22,9 @@ const state = {
   ratings: {}, // url -> 1 useful, -1 not useful
   feedback: { persistent: false, write_requires_key: false },
   viewMode: 'grid', // 'grid' (ranked list) | 'cockpit' (split view)
-  activeCategory: 'curated',
+  activeCategory: null, // chosen after the first load: To do when something needs someone, else All signal
   activeSource: 'all',
+  activeTopic: 'all',
   searchQuery: '',
   selectedIndex: 0,
   filteredItems: [],
@@ -33,6 +37,7 @@ function readUrlState() {
   const cat = p.get('cat');
   if (cat && VALID_CATEGORIES.includes(cat)) state.activeCategory = cat;
   state.activeSource = p.get('src') || 'all';
+  state.activeTopic = p.get('topic') || 'all';
   state.searchQuery = (p.get('q') || '').toLowerCase().trim();
   state.selectedDate = p.get('date') || 'latest';
   state.viewMode = p.get('view') === 'split' ? 'cockpit' : 'grid';
@@ -40,8 +45,9 @@ function readUrlState() {
 
 function writeUrlState() {
   const p = new URLSearchParams();
-  if (state.activeCategory !== 'curated') p.set('cat', state.activeCategory);
+  if (state.activeCategory) p.set('cat', state.activeCategory);
   if (state.activeSource !== 'all') p.set('src', state.activeSource);
+  if (state.activeTopic !== 'all') p.set('topic', state.activeTopic);
   if (state.searchQuery) p.set('q', state.searchQuery);
   if (state.selectedDate !== 'latest') p.set('date', state.selectedDate);
   if (state.viewMode === 'cockpit') p.set('view', 'split');
@@ -53,6 +59,7 @@ function writeUrlState() {
 function syncControls() {
   document.getElementById('search-input').value = state.searchQuery;
   document.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('is-active', b.dataset.category === state.activeCategory));
+  renderNameButton();
   const cockpit = state.viewMode === 'cockpit';
   document.getElementById('view-cockpit-btn').classList.toggle('is-active', cockpit);
   document.getElementById('view-cards-btn').classList.toggle('is-active', !cockpit);
@@ -67,7 +74,25 @@ document.addEventListener('DOMContentLoaded', () => {
   setupHandlers();
   initHarvest(loadData);
   loadData();
+  // Teammates act while this page is open: refresh their changes quietly.
+  setInterval(refreshTriage, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshTriage(); });
 });
+
+async function refreshTriage() {
+  const editing = document.activeElement && ['TEXTAREA', 'INPUT'].includes(document.activeElement.tagName);
+  if (document.hidden || editing || document.getElementById('grid-modal')) return;
+  if (await loadTriage()) rerenderAll();
+}
+
+function rerenderAll() {
+  if (!state.digest) return;
+  renderReadings();
+  renderCategoryBadges();
+  renderSpectrumRail();
+  renderTopicRail();
+  renderContent();
+}
 
 function setupHandlers() {
   const searchInput = document.getElementById('search-input');
@@ -121,9 +146,18 @@ function setupHandlers() {
     btn.addEventListener('click', () => switchCategoryTab(btn.dataset.category));
   });
 
-  document.getElementById('kpi-card-corpus').addEventListener('click', () => switchCategoryTab('curated'));
+  document.getElementById('kpi-card-open').addEventListener('click', () => switchCategoryTab('todo'));
+  document.getElementById('kpi-card-doing').addEventListener('click', () => switchCategoryTab('doing'));
+  document.getElementById('kpi-card-done').addEventListener('click', () => switchCategoryTab('handled'));
   document.getElementById('kpi-card-must-read').addEventListener('click', () => switchCategoryTab('Must Read'));
-  document.getElementById('kpi-card-inspiration').addEventListener('click', () => switchCategoryTab('Inspiration'));
+
+  document.getElementById('btn-brief').addEventListener('click', copyBrief);
+  document.getElementById('btn-name').addEventListener('click', async () => { if (await askName()) rerenderAll(); });
+  document.addEventListener('triage-changed', () => { rerenderAll(); refreshOpenPanel(); });
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('admin-menu');
+    if (menu && menu.open && !menu.contains(e.target)) menu.open = false;
+  });
 
   document.getElementById('view-cards-btn').addEventListener('click', () => setViewMode('grid'));
   document.getElementById('view-cockpit-btn').addEventListener('click', () => setViewMode('cockpit'));
@@ -142,7 +176,28 @@ function switchCategoryTab(category) {
   syncControls();
   writeUrlState();
   renderSpectrumRail();
+  renderTopicRail();
   renderContent();
+}
+
+/** The brief a team pastes into chat. Falls back to a box the reader can copy from. */
+async function copyBrief() {
+  if (!state.digest) { showToast('There is no digest to brief on yet.'); return; }
+  let markdown;
+  try {
+    markdown = (await getJson(`/api/brief?date=${encodeURIComponent(state.digest.date)}`, 20000)).markdown;
+  } catch (err) {
+    showToast('Could not build the brief.');
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(markdown);
+    showToast('Brief copied. Paste it into chat or your standup notes.');
+  } catch (err) {
+    openModal({ title: 'Brief' }, null, `<h2 class="inspector-title">Brief</h2><textarea class="field note-field" rows="14" readonly aria-label="Brief">${escapeHtml(markdown)}</textarea>`);
+    const box = document.querySelector('#grid-modal textarea');
+    if (box) box.select();
+  }
 }
 
 // ─── Data loading ──────────────────────────────────────────────────────────
@@ -163,6 +218,7 @@ async function loadData() {
       getJson('/api/digests').catch(() => []),
       getJson('/api/insights').catch(() => null),
       getJson('/api/feedback').catch(() => null),
+      loadTriage(),
     ]);
     state.stats = stats;
     if (feedback) {
@@ -199,10 +255,16 @@ async function loadDigest() {
     return;
   }
   populateDateSelect();
-  renderReadings();
-  renderCategoryBadges();
-  renderSpectrumRail();
-  renderContent();
+  if (!state.activeCategory) state.activeCategory = defaultCategory();
+  syncControls();
+  writeUrlState();
+  rerenderAll();
+}
+
+/** Open on what needs doing; fall back to everything when the queue is empty. */
+function defaultCategory() {
+  const items = (state.digest && state.digest.items) || [];
+  return items.some((i) => inCategory(i, 'todo')) ? 'todo' : 'curated';
 }
 
 function populateDateSelect() {
@@ -222,39 +284,72 @@ function populateDateSelect() {
 
 function renderReadings() {
   const items = (state.digest && state.digest.items) || [];
-  const mustReads = items.filter((i) => i.category === 'Must Read').length;
-  const inspirations = items.filter((i) => i.category === 'Inspiration').length;
-  const curated = items.filter((i) => i.category !== 'Skip').length;
+  const kept = items.filter((i) => i.category !== 'Skip');
+  const count = (cat) => items.filter((i) => inCategory(i, cat)).length;
 
-  const seen = state.insights ? state.insights.seen_in_window : (state.stats && state.stats.total_seen_urls);
-  document.getElementById('kpi-tracked').textContent = Number.isFinite(seen) ? seen : '--';
-  document.getElementById('kpi-must-read').textContent = state.digest ? mustReads : '--';
-  document.getElementById('kpi-inspiration').textContent = state.digest ? inspirations : '--';
-  document.getElementById('kpi-must-note').textContent = curated ? `of ${curated} curated` : 'of the curated set';
+  const doing = {};
+  kept.filter((i) => triageOf(i).status === 'doing').forEach((i) => {
+    const who = triageOf(i).owner || 'someone';
+    doing[who] = (doing[who] || 0) + 1;
+  });
+  const done = kept.filter((i) => triageOf(i).status === 'done').length;
+  const dismissed = kept.filter((i) => triageOf(i).status === 'dismissed').length;
+  const have = !!state.digest;
 
-  const model = state.stats && state.stats.llm_model;
-  document.getElementById('kpi-engine').textContent = model ? (model.includes('/') ? model.split('/')[1] : model) : '--';
-  const backend = state.digest && state.digest.ranking_backend;
-  const version = state.digest && state.digest.ranking_version;
-  document.getElementById('kpi-latency').textContent = backend ? `ranked by ${backend} ${version || ''}`.trim() : 'ranking backend';
+  document.getElementById('kpi-open').textContent = have ? count('todo') : '--';
+  document.getElementById('kpi-doing').textContent = have ? count('doing') : '--';
+  document.getElementById('kpi-doing-note').textContent = Object.keys(doing).length
+    ? Object.entries(doing).sort((a, b) => b[1] - a[1]).map(([who, n]) => `${who} ${n}`).join(' · ')
+    : 'nobody has taken anything yet';
+  document.getElementById('kpi-done').textContent = have ? done + dismissed : '--';
+  document.getElementById('kpi-done-note').textContent = `${done} done, ${dismissed} not for us`;
+  document.getElementById('kpi-must-read').textContent = have ? count('Must Read') : '--';
+  document.getElementById('kpi-must-note').textContent = kept.length ? `of ${kept.length} curated` : 'of the curated set';
 
   renderFeedbackNote();
+  renderColophon();
   const sub = document.getElementById('page-sub');
+  const title = document.getElementById('page-title');
   if (state.digest) {
-    const kept = state.digest.total_harvested ? ` from ${state.digest.total_harvested} harvested` : '';
+    title.textContent = state.selectedDate === 'latest' ? 'Today’s digest' : `Digest of ${state.digest.date}`;
+    const from = state.digest.total_harvested ? ` from ${state.digest.total_harvested} harvested` : '';
     const when = state.digest.created_at ? `, built ${relativeTime(state.digest.created_at)}` : '';
-    sub.textContent = `${state.digest.date}: ${curated} curated${kept}${when}.`;
+    sub.textContent = `${state.digest.date}: ${kept.length} curated${from}${when}.`;
   } else {
     sub.textContent = 'No digest to show.';
   }
 }
 
+/** How the digest was made: for whoever audits it, kept out of the way of the work. */
+function renderColophon() {
+  const parts = [];
+  const model = state.stats && state.stats.llm_model;
+  if (model) parts.push(`Curated by ${model.includes('/') ? model.split('/')[1] : model}`);
+  if (state.digest && state.digest.ranking_backend) parts.push(`ranked by ${state.digest.ranking_backend} ${state.digest.ranking_version || ''}`.trim());
+  const seen = state.insights ? state.insights.seen_in_window : (state.stats && state.stats.total_seen_urls);
+  if (Number.isFinite(seen)) parts.push(`${seen} URLs tracked over 30 days`);
+  if (state.digest) parts.push(triageState.persistent ? 'team status is saved to GitHub' : 'team status is kept on this server and resets if it restarts');
+  document.getElementById('colophon').textContent = parts.join(' · ');
+}
+
 function renderCategoryBadges() {
   const items = (state.digest && state.digest.items) || [];
-  document.getElementById('count-curated').textContent = items.filter((i) => i.category !== 'Skip').length;
-  document.getElementById('count-must-read').textContent = items.filter((i) => i.category === 'Must Read').length;
-  document.getElementById('count-inspiration').textContent = items.filter((i) => i.category === 'Inspiration').length;
-  document.getElementById('count-skip').textContent = items.filter((i) => i.category === 'Skip').length;
+  const ids = { todo: 'count-todo', doing: 'count-doing', curated: 'count-curated', 'Must Read': 'count-must-read', Inspiration: 'count-inspiration', handled: 'count-handled', Skip: 'count-skip' };
+  Object.entries(ids).forEach(([cat, id]) => {
+    document.getElementById(id).textContent = items.filter((i) => inCategory(i, cat)).length;
+  });
+}
+
+/** Which tab an item belongs to. Handled items stay in the category tabs, dimmed, so nothing vanishes. */
+function inCategory(item, cat) {
+  const status = triageOf(item).status;
+  switch (cat) {
+    case 'todo': return isActionable(item) && status === 'open';
+    case 'doing': return item.category !== 'Skip' && status === 'doing';
+    case 'handled': return item.category !== 'Skip' && (status === 'done' || status === 'dismissed');
+    case 'curated': return item.category !== 'Skip';
+    default: return item.category === cat;
+  }
 }
 
 // ─── Source filter rail ────────────────────────────────────────────────────
@@ -264,17 +359,59 @@ function renderSpectrumRail() {
   rail.innerHTML = '';
   if (!state.digest || !state.digest.items) return;
 
-  const relevant = state.digest.items.filter((i) => {
-    if (state.activeCategory === 'curated') return i.category !== 'Skip';
-    return i.category === state.activeCategory;
-  });
+  const relevant = state.digest.items.filter((i) => inCategory(i, state.activeCategory));
   const counts = {};
   relevant.forEach((item) => { counts[item.source] = (counts[item.source] || 0) + 1; });
+  if (state.activeSource !== 'all' && !counts[state.activeSource]) counts[state.activeSource] = 0;
 
+  rail.appendChild(railLabel('Source'));
   rail.appendChild(createSpectrumPill('all', 'All sources', relevant.length));
   Object.keys(counts)
     .sort((a, b) => counts[b] - counts[a])
     .forEach((key) => rail.appendChild(createSpectrumPill(key, sourceName(key), counts[key])));
+}
+
+function railLabel(text) {
+  const label = document.createElement('span');
+  label.className = 'rail-label';
+  label.textContent = text;
+  return label;
+}
+
+/** Topics let a teammate follow only their area: security for one person, inference for another. */
+function renderTopicRail() {
+  const rail = document.getElementById('topic-rail');
+  rail.innerHTML = '';
+  if (!state.digest || !state.digest.items) return;
+
+  const counts = {};
+  state.digest.items.filter((i) => inCategory(i, state.activeCategory))
+    .forEach((item) => (item.topics || []).forEach((t) => { counts[t] = (counts[t] || 0) + 1; }));
+  if (state.activeTopic !== 'all' && !counts[state.activeTopic]) counts[state.activeTopic] = 0;
+  const topics = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
+  if (!topics.length) return;
+
+  rail.appendChild(railLabel('Topic'));
+  rail.appendChild(createTopicPill('all', 'All topics', null));
+  topics.slice(0, 12).concat(topics.slice(12).filter((t) => t === state.activeTopic))
+    .forEach((t) => rail.appendChild(createTopicPill(t, t.replace(/-/g, ' '), counts[t])));
+}
+
+function createTopicPill(key, label, count) {
+  const pill = document.createElement('button');
+  pill.type = 'button';
+  pill.className = `spectrum-pill ${state.activeTopic === key ? 'is-active' : ''}`;
+  pill.setAttribute('aria-pressed', state.activeTopic === key ? 'true' : 'false');
+  pill.dataset.topic = key;
+  pill.innerHTML = `<span>${escapeHtml(label)}</span>${count === null ? '' : `<span class="spectrum-count">${count}</span>`}`;
+  pill.addEventListener('click', () => {
+    state.activeTopic = key;
+    state.selectedIndex = 0;
+    writeUrlState();
+    renderTopicRail();
+    renderContent();
+  });
+  return pill;
 }
 
 function createSpectrumPill(key, label, count) {
@@ -288,6 +425,7 @@ function createSpectrumPill(key, label, count) {
     state.selectedIndex = 0;
     writeUrlState();
     renderSpectrumRail();
+    renderTopicRail();
     renderContent();
   });
   return pill;
@@ -298,15 +436,12 @@ function createSpectrumPill(key, label, count) {
 function computeFilteredItems() {
   if (!state.digest || !state.digest.items) return [];
   return state.digest.items.filter((item) => {
-    if (state.activeCategory === 'curated') {
-      if (item.category === 'Skip') return false;
-    } else if (item.category !== state.activeCategory) {
-      return false;
-    }
+    if (!inCategory(item, state.activeCategory)) return false;
     if (state.activeSource !== 'all' && item.source !== state.activeSource) return false;
+    if (state.activeTopic !== 'all' && !(item.topics || []).includes(state.activeTopic)) return false;
     if (state.searchQuery) {
-      const text = `${item.title} ${item.summary} ${item.why_it_matters} ${item.source} ${item.category}`.toLowerCase();
-      if (!text.includes(state.searchQuery)) return false;
+      const text = `${item.title} ${item.summary} ${item.why_it_matters} ${item.next_step_detail} ${item.source} ${(item.topics || []).join(' ')} ${triageOf(item).owner} ${triageOf(item).note}`.toLowerCase();
+      if (!state.searchQuery.split(/\s+/).every((word) => text.includes(word))) return false;
     }
     return true;
   }).sort((a, b) => stepRank(a) - stepRank(b)); // stable: keeps the ranking inside each group
@@ -323,7 +458,8 @@ function renderContent() {
   state.filteredItems = computeFilteredItems();
 
   if (state.filteredItems.length === 0) {
-    renderEmpty(container, 'Nothing matches these filters', 'Clear the search or switch back to High signal.', true);
+    const [title, body] = emptyMessage();
+    renderEmpty(container, title, body, true);
     return;
   }
   if (state.selectedIndex >= state.filteredItems.length) state.selectedIndex = 0;
@@ -338,10 +474,21 @@ function renderEmpty(container, title, body, withReset = false) {
     <div class="state-panel">
       <h3>${escapeHtml(title)}</h3>
       <p>${escapeHtml(body)}</p>
-      ${withReset ? '<button type="button" class="btn" id="btn-reset">Reset filters</button>' : ''}
+      ${withReset ? '<button type="button" class="btn" id="btn-reset">Show all signal</button>' : ''}
     </div>`;
   const reset = document.getElementById('btn-reset');
   if (reset) reset.addEventListener('click', resetFilters);
+}
+
+/** What an empty tab means, so an empty queue reads as good news rather than a fault. */
+function emptyMessage() {
+  const filtered = state.searchQuery || state.activeSource !== 'all' || state.activeTopic !== 'all';
+  if (filtered) return ['Nothing matches these filters', 'Clear the search, source or topic, or look at all signal.'];
+  return {
+    todo: ['Nothing is waiting on anyone', 'Every Patch, Try and Evaluate item today has an owner or was handled. Read the rest under All signal.'],
+    doing: ['Nobody has taken anything yet', 'Take an item from To do and it shows here for the whole team.'],
+    handled: ['Nothing handled yet', 'Items marked done, or not for us, collect here so they can be reopened.'],
+  }[state.activeCategory] || ['Nothing here', 'Try another view.'];
 }
 
 function renderError(container, retry) {
@@ -358,18 +505,18 @@ function renderError(container, retry) {
 function resetFilters() {
   state.searchQuery = '';
   state.activeSource = 'all';
+  state.activeTopic = 'all';
   state.activeCategory = 'curated';
   state.selectedIndex = 0;
   syncControls();
   writeUrlState();
-  renderSpectrumRail();
-  renderContent();
+  rerenderAll();
 }
 
 function renderListView(container) {
   container.className = 'cards-grid-view';
   container.innerHTML = '';
-  const grouped = state.activeCategory === 'curated' && new Set(state.filteredItems.map((i) => i.next_step)).size > 1;
+  const grouped = ['curated', 'todo'].includes(state.activeCategory) && new Set(state.filteredItems.map((i) => i.next_step)).size > 1;
   let lastStep = null;
   state.filteredItems.forEach((item, index) => {
     if (grouped && item.next_step !== lastStep) {
@@ -454,7 +601,8 @@ async function openStory(storyId) {
 function buildSignalCard(item, index) {
   const card = document.createElement('div');
   card.setAttribute('role', 'listitem');
-  card.className = `signal-card ${state.selectedIndex === index ? 'is-selected' : ''} ${item.category === 'Skip' ? 'is-skip' : ''}`;
+  const handled = ['done', 'dismissed'].includes(triageOf(item).status);
+  card.className = `signal-card ${state.selectedIndex === index ? 'is-selected' : ''} ${item.category === 'Skip' ? 'is-skip' : ''} ${handled ? 'is-handled' : ''}`;
   card.tabIndex = 0;
 
   card.innerHTML = `
@@ -462,8 +610,9 @@ function buildSignalCard(item, index) {
     <div class="card-main">
       <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="card-title">${escapeHtml(item.title)}</a>
       <p class="card-meta">${metaLine(item)}</p>
-      <p class="card-desc">${escapeHtml(item.category === 'Skip' ? item.why_it_matters : item.summary)}</p>
+      <p class="card-desc">${escapeHtml(plainText(item.category === 'Skip' ? item.why_it_matters : item.summary))}</p>
       ${nextStepLine(item)}
+      ${triageControls(item)}
       ${verificationLine(item)}
     </div>
     <div class="card-foot">
@@ -487,7 +636,7 @@ function buildSignalCard(item, index) {
     }
   };
   card.addEventListener('click', (e) => {
-    if (e.target.closest('.rate') || e.target.closest('.story-btn')) return; // rating a row must not also open it
+    if (e.target.closest('.rate') || e.target.closest('.story-btn') || e.target.closest('.card-triage')) return; // acting on a row must not also open it
     activate();
   });
   card.addEventListener('keydown', (e) => {
@@ -518,9 +667,15 @@ function buildInspectorHtml(item) {
       ${rateButtons(item.url)}
     </div>
 
+    <div class="inspector-section team-section">
+      <span class="inspector-heading">Team</span>
+      ${triageControls(item) || '<p class="inspector-text">Filtered-out items are not triaged.</p>'}
+      ${noteBox(item)}
+    </div>
+
     <div class="inspector-section">
       <span class="inspector-heading">Summary</span>
-      <p class="inspector-text">${escapeHtml(item.summary)}</p>
+      <p class="inspector-text">${escapeHtml(plainText(item.summary))}</p>
     </div>
 
     ${item.next_step_detail ? `
@@ -542,6 +697,22 @@ function buildInspectorHtml(item) {
       ${item.priority_score ? `<div><dt>Priority score</dt><dd class="measured">${Number(item.priority_score).toFixed(1)}</dd></div>` : ''}
       <div class="wide"><dt>Link</dt><dd class="measured">${escapeHtml(item.url)}</dd></div>
     </dl>`;
+}
+
+/** A note belongs to a decision, so it appears once somebody has taken, finished or dismissed the item. */
+function noteBox(item) {
+  const t = triageOf(item);
+  if (item.category === 'Skip' || t.status === 'open') return '';
+  return `
+    <div class="note-box">
+      <label class="visually-hidden" for="triage-note">Note for the team</label>
+      <textarea id="triage-note" class="field note-field" rows="2" maxlength="500" placeholder="Note for the team: ticket link, what you found, why not" data-url="${escapeHtml(item.url)}">${escapeHtml(t.note)}</textarea>
+      <button type="button" class="btn" data-note-save data-url="${escapeHtml(item.url)}">Save note</button>
+    </div>`;
+}
+
+function findItem(url) {
+  return ((state.digest && state.digest.items) || []).find((i) => i.url === url);
 }
 
 // ─── Ratings ───────────────────────────────────────────────────────────────
@@ -606,7 +777,23 @@ async function submitRating(url, rating) {
   renderFeedbackNote();
 }
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
+  const act = e.target.closest('[data-triage]');
+  if (act) {
+    e.stopPropagation();
+    const item = findItem(act.dataset.url);
+    if (!item) return;
+    const ok = await setTriage(item, act.dataset.triage);
+    if (ok && act.dataset.triage === 'doing') showToast('Yours now. Teammates see it in In progress.');
+    return;
+  }
+  const save = e.target.closest('[data-note-save]');
+  if (save) {
+    const item = findItem(save.dataset.url);
+    const box = document.getElementById('triage-note');
+    if (item && box && await setTriage(item, triageOf(item).status, { note: box.value.trim() })) showToast('Note saved.');
+    return;
+  }
   const rate = e.target.closest('.rate-btn');
   if (rate) {
     e.stopPropagation();
@@ -638,6 +825,7 @@ function openModal(item, returnTo, bodyHtml) {
   modal.setAttribute('role', 'dialog');
   modal.setAttribute('aria-modal', 'true');
   modal.setAttribute('aria-label', item.title);
+  if (item.url && !bodyHtml) modal.dataset.url = item.url;
   modal.innerHTML = `
     <div class="modal-panel">
       <button type="button" class="btn modal-close" id="modal-close" aria-label="Close">Close</button>
@@ -647,6 +835,19 @@ function openModal(item, returnTo, bodyHtml) {
   document.body.appendChild(modal);
   modal.querySelector('#modal-close').addEventListener('click', closeModal);
   modal.querySelector('#modal-close').focus();
+}
+
+/** After a status change the open reader (modal or split pane) must show the new status and note box. */
+function refreshOpenPanel() {
+  const item = state.filteredItems[state.selectedIndex];
+  const modal = document.getElementById('grid-modal');
+  const panel = modal ? modal.querySelector('.modal-panel') : null;
+  if (!panel || !panel.querySelector('.team-section') || !modal.dataset.url) return;
+  const current = findItem(modal.dataset.url) || item;
+  const close = panel.querySelector('#modal-close');
+  panel.innerHTML = '';
+  panel.appendChild(close);
+  panel.insertAdjacentHTML('beforeend', buildInspectorHtml(current));
 }
 
 function closeModal() {

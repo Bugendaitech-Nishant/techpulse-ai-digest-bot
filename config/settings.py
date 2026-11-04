@@ -82,6 +82,7 @@ class Settings:
 
     # ─── Reader feedback (thumbs up / down) ──────────────────────────────
     FEEDBACK_FILE: Path = Path(os.getenv("FEEDBACK_FILE", str(DATA_DIR / "feedback.jsonl")))
+    TRIAGE_FILE: Path = Path(os.getenv("TRIAGE_FILE", str(DATA_DIR / "triage.jsonl")))
     FEEDBACK_SECRET: str = os.getenv("FEEDBACK_SECRET", "")  # signs the one-click email links
     FEEDBACK_GITHUB_TOKEN: str = os.getenv("FEEDBACK_GITHUB_TOKEN", "")  # fine-grained token, Contents read/write
     GITHUB_REPO: str = os.getenv("GITHUB_REPO", "Bugendaitech-Nishant/techpulse-ai-digest-bot")

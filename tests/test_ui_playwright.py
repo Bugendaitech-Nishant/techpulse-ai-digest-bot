@@ -41,19 +41,18 @@ def test_ui_telemetry_and_kpis(browser_page):
     expect(browser_page.locator(".brand-monolith")).to_be_visible()
     expect(browser_page.locator(".beacon-pulse")).to_be_visible()
 
-    # Check 4 KPI cards
-    tracked = browser_page.locator("#kpi-tracked")
+    # The four team readings: what needs someone, what is under way, what is handled, what to read
+    open_items = browser_page.locator("#kpi-open")
+    doing = browser_page.locator("#kpi-doing")
+    done = browser_page.locator("#kpi-done")
     must_read = browser_page.locator("#kpi-must-read")
-    inspiration = browser_page.locator("#kpi-inspiration")
-    engine = browser_page.locator("#kpi-engine")
 
-    expect(tracked).to_be_visible()
-    expect(must_read).to_be_visible()
-    expect(inspiration).to_be_visible()
-    expect(engine).to_be_visible()
+    for reading in (open_items, doing, done, must_read):
+        expect(reading).to_be_visible()
 
     # Ensure numbers are rendered (not empty or '--')
-    assert tracked.inner_text().strip() not in ("", "--")
+    assert open_items.inner_text().strip() not in ("", "--")
+    assert doing.inner_text().strip() not in ("", "--")
     assert must_read.inner_text().strip() not in ("", "--")
     assert int(must_read.inner_text().strip()) >= 0
 
@@ -76,10 +75,12 @@ def test_interactive_kpi_filter(browser_page):
     filtered_count = browser_page.locator(".signal-card").count()
     assert filtered_count == must_read_count
 
-    # Click on Corpus KPI card to return to High Signal
-    browser_page.locator("#kpi-card-corpus").click()
+    # The queue reading opens the To do tab, and its count is the number of cards shown
+    open_count = int(browser_page.locator("#kpi-open").inner_text().strip())
+    browser_page.locator("#kpi-card-open").click()
     browser_page.wait_for_timeout(300)
-    expect(browser_page.locator("#tab-curated")).to_have_class("seg-btn is-active")
+    expect(browser_page.locator("#tab-todo")).to_have_class("seg-btn is-active")
+    assert browser_page.locator(".signal-card").count() == open_count
 
 
 def test_category_tabs_and_noise_separation(browser_page):
@@ -210,6 +211,7 @@ def test_keyboard_flight_navigation(browser_page):
 
 def test_quota_and_cooldown_indicator(browser_page):
     """Verify that quota pill in header displays rate limit and cooldown metrics."""
+    browser_page.locator("#admin-menu > summary").click()  # harvest controls live under Admin
     quota_pill = browser_page.locator("#quota-pill")
     quota_dot = browser_page.locator("#quota-dot")
     quota_text = browser_page.locator("#quota-text")

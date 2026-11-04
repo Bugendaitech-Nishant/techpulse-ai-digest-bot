@@ -2,6 +2,7 @@
  * TechPulse digest archive.
  * Every figure comes from /api/insights (aggregated in SQLite) or /api/digest/latest.
  * Nothing here is estimated: delivery, reach and engagement are not tracked, so they are not shown.
+ * The search and the status of items come from /api/search and /api/triage.
  */
 
 const regions = {
@@ -13,9 +14,102 @@ const regions = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  initHarvest(load);
+  initHarvest(() => { load(); runSearch(); });
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('admin-menu');
+    if (menu && menu.open && !menu.contains(e.target)) menu.open = false;
+  });
+  setupSearch();
   load();
 });
+
+// ─── Search across every day ───────────────────────────────────────────────
+
+let searchTimer = null;
+let searchSeq = 0;
+
+function setupSearch() {
+  const params = new URLSearchParams(window.location.search);
+  document.getElementById('q').value = params.get('q') || '';
+  document.getElementById('step').value = params.get('step') || '';
+  document.getElementById('search-form').addEventListener('submit', (e) => { e.preventDefault(); runSearch(); });
+  document.getElementById('q').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(runSearch, 250); });
+  ['topic', 'step'].forEach((id) => document.getElementById(id).addEventListener('change', runSearch));
+  runSearch(params.get('topic') || '');
+}
+
+async function runSearch(initialTopic) {
+  const q = document.getElementById('q').value.trim();
+  const topicSelect = document.getElementById('topic');
+  const topic = typeof initialTopic === 'string' ? initialTopic : topicSelect.value;
+  const step = document.getElementById('step').value;
+  const results = document.getElementById('results');
+  const meta = document.getElementById('result-meta');
+  const seq = ++searchSeq;
+
+  const p = new URLSearchParams();
+  if (q) p.set('q', q);
+  if (topic) p.set('topic', topic);
+  if (step) p.set('step', step);
+  history.replaceState(null, '', p.toString() ? `?${p}` : window.location.pathname);
+
+  try {
+    const [data] = await Promise.all([getJson(`/api/search?${p}`), loadTriage()]);
+    if (seq !== searchSeq) return; // a newer search is already on its way
+    if (!topicSelect.dataset.ready) {
+      (data.topics || []).forEach((t) => topicSelect.appendChild(new Option(t.replace(/-/g, ' '), t)));
+      topicSelect.dataset.ready = '1';
+      topicSelect.value = topic;
+    }
+    renderResults(data, q || topic || step);
+  } catch (err) {
+    if (seq !== searchSeq) return;
+    console.error('Search failed:', err);
+    meta.textContent = '';
+    results.className = 'cards-grid-view';
+    results.innerHTML = `
+      <div class="state-panel is-error">
+        <h3>Search did not load</h3>
+        <p>The server did not answer in time. If it was idle, it needs about 30 seconds to wake.</p>
+        <button type="button" class="btn btn-primary" id="btn-search-retry">Try again</button>
+      </div>`;
+    document.getElementById('btn-search-retry').addEventListener('click', () => runSearch());
+  }
+}
+
+function renderResults(data, filtered) {
+  const results = document.getElementById('results');
+  const meta = document.getElementById('result-meta');
+  results.className = 'cards-grid-view';
+  if (!data.items.length) {
+    meta.textContent = '';
+    results.innerHTML = `
+      <div class="state-panel">
+        <h3>${filtered ? 'Nothing matches that' : 'The archive is empty'}</h3>
+        <p>${filtered ? 'Try fewer words, another topic, or any next step.' : 'It fills as harvests run.'}</p>
+      </div>`;
+    return;
+  }
+  const days = new Set(data.items.map((i) => i.date)).size;
+  meta.textContent = `${data.count}${data.count >= 60 ? '+' : ''} ${data.count === 1 ? 'item' : 'items'} across ${days} ${days === 1 ? 'day' : 'days'}${filtered ? '' : ', newest first'}.`;
+
+  let day = '';
+  results.innerHTML = data.items.map((item) => {
+    const header = item.date !== day ? `<h2 class="result-day">${escapeHtml(item.date)} <a href="/?date=${encodeURIComponent(item.date)}" class="action-link">open this day</a></h2>` : '';
+    day = item.date;
+    const topics = (item.topics || []).map((t) => `#${escapeHtml(t)}`).join(' ');
+    const detail = item.next_step_detail ? `<p class="card-next"><strong>${escapeHtml(item.next_step)}:</strong> ${escapeHtml(item.next_step_detail)}</p>` : '';
+    const note = triageOf(item).note ? `<span class="triage-note">${escapeHtml(triageOf(item).note)}</span>` : '';
+    return `${header}
+      <article class="result-row">
+        <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="card-title">${escapeHtml(item.title)}</a>
+        <p class="card-meta">${escapeHtml(sourceName(item.source))}${topics ? ` · ${topics}` : ''}</p>
+        <p class="card-desc">${escapeHtml(plainText(item.summary))}</p>
+        ${detail}
+        <div class="card-triage">${triageChip(item)}${note}</div>
+      </article>`;
+  }).join('');
+}
 
 async function load() {
   const archive = document.getElementById('archive');
@@ -83,7 +177,7 @@ function render(insights, latest) {
     </div>
     <div class="reading-cell">
       <span class="reading-label">Useful rate</span>
-      <span class="reading-value">${pct(fb.useful_rate)}</span>
+      <span class="reading-value">${(fb.up || 0) + (fb.down || 0) >= 10 ? pct(fb.useful_rate) : '--'}</span>
       <span class="reading-note">${ratingNote(fb)}</span>
     </div>
     <div class="reading-cell">
@@ -101,6 +195,7 @@ function render(insights, latest) {
 function ratingNote(fb) {
   const rated = (fb.up || 0) + (fb.down || 0);
   if (!rated) return 'rate items on the feed to start measuring';
+  if (rated < 10) return `only ${rated} rated, a rate needs 10 or more`;
   const top = fb.top10_useful_rate === null || fb.top10_useful_rate === undefined
     ? ''
     : `, ${pct(fb.top10_useful_rate)} within the top 10`;

@@ -34,6 +34,8 @@ class DigestDatabase:
             # The rating log (local file, or the feedback branch checked out by CI) is replayed on every start.
             from src.feedback import read_events
             self.load_feedback_events(read_events())
+            from src import triage
+            self.load_triage_events(triage.read_events())
 
     @contextmanager
     def _connection(self):
@@ -103,6 +105,19 @@ class DigestDatabase:
                     summary TEXT NOT NULL DEFAULT '',
                     category TEXT NOT NULL DEFAULT '',
                     rated_at TEXT NOT NULL
+                );
+            """)
+            # Table 5: team triage (who is handling an item); the latest event per URL wins
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS triage (
+                    url TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    owner TEXT NOT NULL DEFAULT '',
+                    note TEXT NOT NULL DEFAULT '',
+                    title TEXT NOT NULL DEFAULT '',
+                    source TEXT NOT NULL DEFAULT '',
+                    next_step TEXT NOT NULL DEFAULT '',
+                    updated_at TEXT NOT NULL
                 );
             """)
             for column in (
@@ -390,6 +405,72 @@ class DigestDatabase:
             rows = conn.execute("SELECT rating, COUNT(*) AS n FROM feedback WHERE rating != 0 GROUP BY rating;").fetchall()
         counts = {row["rating"]: row["n"] for row in rows}
         return {"up": counts.get(1, 0), "down": counts.get(-1, 0)}
+
+    # ─── Team triage ────────────────────────────────────────────────────
+
+    def record_triage(self, event: Dict[str, Any]) -> bool:
+        """Store a triage event; an older event never overwrites a newer one. Returns True if stored."""
+        with self._connection() as conn:
+            row = conn.execute("SELECT updated_at FROM triage WHERE url = ?;", (event["url"],)).fetchone()
+            if row and row["updated_at"] > event["at"]:
+                return False
+            conn.execute(
+                """
+                INSERT INTO triage (url, status, owner, note, title, source, next_step, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(url) DO UPDATE SET
+                    status = excluded.status, owner = excluded.owner, note = excluded.note, title = excluded.title,
+                    source = excluded.source, next_step = excluded.next_step, updated_at = excluded.updated_at;
+                """,
+                (event["url"], event["status"], event.get("owner", ""), event.get("note", ""), event.get("title", ""),
+                 event.get("source", ""), event.get("next_step", ""), event["at"]),
+            )
+            conn.commit()
+            return True
+
+    def load_triage_events(self, events: List[Dict[str, Any]]) -> int:
+        return sum(1 for event in events if self.record_triage(event))
+
+    def get_triage_map(self) -> Dict[str, Dict[str, Any]]:
+        """Current triage per URL; items nobody touched are absent (they are 'open')."""
+        with self._connection() as conn:
+            rows = conn.execute(
+                "SELECT url, status, owner, note, updated_at FROM triage WHERE status != 'open';"
+            ).fetchall()
+        return {row["url"]: {k: row[k] for k in ("status", "owner", "note", "updated_at")} for row in rows}
+
+    def find_item_by_url(self, url: str) -> Optional[Dict[str, Any]]:
+        with self._connection() as conn:
+            row = conn.execute(
+                "SELECT title, url, source, category, summary, next_step FROM digest_items WHERE url = ? ORDER BY id DESC LIMIT 1;",
+                (url,),
+            ).fetchone()
+        return dict(row) if row else None
+
+    def search_items(self, query: str = "", topic: str = "", step: str = "", limit: int = 60) -> List[Dict[str, Any]]:
+        """Kept items from every day, newest first. All words of `query` must appear somewhere in the item."""
+        where, args = ["category != 'Skip'"], []
+        for word in query.lower().split()[:8]:
+            like = "%" + word.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+            where.append(
+                "(LOWER(title || ' ' || summary || ' ' || why_it_matters || ' ' || next_step_detail || ' ' || tags || ' ' || topics)"
+                " LIKE ? ESCAPE '\\')"
+            )
+            args.append(like)
+        if topic:
+            where.append("topics LIKE ?")
+            args.append(f'%"{topic}"%')
+        if step:
+            where.append("next_step = ?")
+            args.append(step)
+        sql = (
+            "SELECT title, url, source, category, summary, why_it_matters, tags, topics, next_step, next_step_detail, "
+            "published_at, verification, priority_score, story_id, digest_date AS date FROM digest_items WHERE "
+            + " AND ".join(where) + " ORDER BY digest_date DESC, rank ASC LIMIT ?;"
+        )
+        with self._connection() as conn:
+            rows = conn.execute(sql, (*args, max(1, min(limit, 200)))).fetchall()
+        return [{**dict(r), "tags": json.loads(r["tags"] or "[]"), "topics": json.loads(r["topics"] or "[]")} for r in rows]
 
     def find_item_by_hash(self, url_hash: str) -> Optional[Dict[str, Any]]:
         """Look a digest item up by the hash of its URL (email links carry the hash, not the URL)."""
