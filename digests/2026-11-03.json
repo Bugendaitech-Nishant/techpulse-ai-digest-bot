@@ -19,7 +19,7 @@
     "vulnerabilities"
    ],
    "next_step": "Patch",
-   "next_step_detail": "Apply the latest kernel update from Ubuntu (`sudo apt update && sudo apt upgrade -y`) and verify the kernel version is ≥ patched release.",
+   "next_step_detail": "Apply the latest kernel update from Ubuntu (`sudo apt update && sudo apt upgrade -y`) and verify the kernel version is \u2265 patched release.",
    "story_id": "",
    "verification": "corrected",
    "verification_note": "",
@@ -122,12 +122,12 @@
    "rank": 4
   },
   {
-   "title": "Launch HN: Momentic (YC W24) – Agents that catch bugs by using your app",
+   "title": "Launch HN: Momentic (YC W24) \u2013 Agents that catch bugs by using your app",
    "url": "https://momentic.ai/",
    "source": "hacker_news",
    "category": "Must Read",
    "summary": "Momentic offers AI agents that interact with a target application to discover bugs and security regressions through automated usage.",
-   "why_it_matters": "Shows a concrete production‑grade agent use‑case that can be adapted for internal tooling or security testing.",
+   "why_it_matters": "Shows a concrete production\u2011grade agent use\u2011case that can be adapted for internal tooling or security testing.",
    "tags": [
     "momentic"
    ],
@@ -155,7 +155,7 @@
    "url": "https://github.com/vercel-labs/agent-desktop",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "Agent‑Desktop is a Rust‑based CLI that lets AI agents control a computer, offering file‑system and browser access from the command line. It provides a lightweight runtime for building autonomous agent workflows.",
+   "summary": "Agent\u2011Desktop is a Rust\u2011based CLI that lets AI agents control a computer, offering file\u2011system and browser access from the command line. It provides a lightweight runtime for building autonomous agent workflows.",
    "why_it_matters": "Enables rapid prototyping of autonomous agents without needing a full web stack.",
    "tags": [
     "vercel",
@@ -216,8 +216,8 @@
    "url": "https://dev.to/kenielzep97/my-agent-gave-the-right-answer-then-it-wrote-down-that-it-was-wrong-311d",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "The author describes an LLM‑driven agent that correctly answered a query but then self‑reported the answer as incorrect, exposing a mismatch between internal confidence and external reporting. The post analyzes why the agent’s self‑assessment failed and suggests debugging strategies.",
-   "why_it_matters": "Understanding this failure mode helps engineers build more reliable self‑monitoring agents.",
+   "summary": "The author describes an LLM\u2011driven agent that correctly answered a query but then self\u2011reported the answer as incorrect, exposing a mismatch between internal confidence and external reporting. The post analyzes why the agent\u2019s self\u2011assessment failed and suggests debugging strategies.",
+   "why_it_matters": "Understanding this failure mode helps engineers build more reliable self\u2011monitoring agents.",
    "tags": [
     "devto"
    ],
@@ -245,7 +245,7 @@
    "url": "https://github.com/max-sixty/worktrunk",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "Worktrunk is a Rust‑based CLI that simplifies Git worktree management, enabling parallel execution of multiple AI agent workflows in separate directories. It automates creation, cleanup, and switching of worktrees with a concise command set.",
+   "summary": "Worktrunk is a Rust\u2011based CLI that simplifies Git worktree management, enabling parallel execution of multiple AI agent workflows in separate directories. It automates creation, cleanup, and switching of worktrees with a concise command set.",
    "why_it_matters": "Streamlines repo handling for teams running many concurrent agent instances.",
    "tags": [
     "worktrunk",
@@ -307,7 +307,7 @@
    "source": "arxiv_ai",
    "category": "Must Read",
    "summary": "LoRAForge presents a joint compression and execution strategy that reduces memory and latency when serving many LoRA adapters on a shared base model.",
-   "why_it_matters": "Directly impacts how the engineer can scale adapter‑based LLM serving in production.",
+   "why_it_matters": "Directly impacts how the engineer can scale adapter\u2011based LLM serving in production.",
    "tags": [
     "loraforge",
     "lora"
@@ -337,7 +337,7 @@
    "source": "github_trending",
    "category": "Must Read",
    "summary": "NanoChat is a lightweight Python web UI that lets you run any LLM locally behind a simple chat interface, costing roughly $100 in hardware. It includes minimal server code and easy model loading.",
-   "why_it_matters": "Provides a quick, low‑cost way to prototype and test LLM‑backed agents on‑premise.",
+   "why_it_matters": "Provides a quick, low\u2011cost way to prototype and test LLM\u2011backed agents on\u2011premise.",
    "tags": [
     "karpathy",
     "nanochat"
@@ -367,7 +367,7 @@
    "source": "arxiv_ai",
    "category": "Must Read",
    "summary": "STLT proposes a framework that dynamically partitions inference workloads across edge devices, satellites, and cloud servers to respect energy budgets.",
-   "why_it_matters": "It offers design patterns for low‑latency, energy‑constrained LLM inference that can be adopted in production pipelines.",
+   "why_it_matters": "It offers design patterns for low\u2011latency, energy\u2011constrained LLM inference that can be adopted in production pipelines.",
    "tags": [
     "stlt",
     "energy-aware-inference"
@@ -395,8 +395,8 @@
    "url": "https://arxiv.org/abs/2611.01245v1",
    "source": "arxiv_ai",
    "category": "Must Read",
-   "summary": "The paper proposes a Bayesian‑style agent that learns to ask informative questions and update beliefs, then distills this behavior into a language model.",
-   "why_it_matters": "It provides a concrete approach to add uncertainty‑aware querying to LLM‑based autonomous agents.",
+   "summary": "The paper proposes a Bayesian\u2011style agent that learns to ask informative questions and update beliefs, then distills this behavior into a language model.",
+   "why_it_matters": "It provides a concrete approach to add uncertainty\u2011aware querying to LLM\u2011based autonomous agents.",
    "tags": [
     "variational-bayesian-agent",
     "llm"
@@ -408,7 +408,7 @@
     "ai-safety"
    ],
    "next_step": "Read",
-   "next_step_detail": "Download the PDF and skim sections 3‑4 for the distillation method.",
+   "next_step_detail": "Download the PDF and skim sections 3\u20114 for the distillation method.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -425,7 +425,7 @@
    "url": "https://huggingface.co/papers/2610.40293",
    "source": "huggingface_papers",
    "category": "Must Read",
-   "summary": "The paper introduces MAServeBench, a benchmark suite for evaluating multi‑agent LLM serving systems under hierarchical collaboration workloads. It measures latency, throughput, and coordination overhead when agents depend on each other's outputs.",
+   "summary": "The paper introduces MAServeBench, a benchmark suite for evaluating multi\u2011agent LLM serving systems under hierarchical collaboration workloads. It measures latency, throughput, and coordination overhead when agents depend on each other's outputs.",
    "why_it_matters": "Helps engineers choose or tune serving stacks for complex agent pipelines.",
    "tags": [
     "maservebench",
@@ -452,12 +452,12 @@
    "rank": 15
   },
   {
-   "title": "I Built a Visual System Design Reference — Switch Any Architecture Between AWS, Azure, GCP & Open Source",
+   "title": "I Built a Visual System Design Reference \u2014 Switch Any Architecture Between AWS, Azure, GCP & Open Source",
    "url": "https://dev.to/amananandrai/i-built-a-visual-system-design-reference-switch-any-architecture-between-aws-azure-gcp-open-55og",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "The author shares a visual reference diagram for mapping cloud architectures across AWS, Azure, GCP, and open‑source equivalents.",
-   "why_it_matters": "Helps engineers quickly compare cloud services when designing multi‑cloud or hybrid deployments for AI workloads.",
+   "summary": "The author shares a visual reference diagram for mapping cloud architectures across AWS, Azure, GCP, and open\u2011source equivalents.",
+   "why_it_matters": "Helps engineers quickly compare cloud services when designing multi\u2011cloud or hybrid deployments for AI workloads.",
    "tags": [
     "aws",
     "azure",
@@ -488,7 +488,7 @@
    "source": "devto_articles",
    "category": "Inspiration",
    "summary": "A dev.to post linking to a collection of interactive notebooks that walk through LLM fundamentals, tokenization, and simple agent constructions.",
-   "why_it_matters": "Provides quick, hands‑on demos that can accelerate onboarding to agent development.",
+   "why_it_matters": "Provides quick, hands\u2011on demos that can accelerate onboarding to agent development.",
    "tags": [
     "devto"
    ],
@@ -516,8 +516,8 @@
    "url": "https://rikiyat.github.io/blog/weight-space-programming/",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "The blog describes experiments where a frontier LLM (GPT‑6 Astra) interprets raw neural‑network weights and can generate improved small networks without gradient feedback. It hints at weight‑space programming for optimization and interpretability.",
-   "why_it_matters": "Shows a novel direction for model‑level editing that could influence future fine‑tuning pipelines.",
+   "summary": "The blog describes experiments where a frontier LLM (GPT\u20116 Astra) interprets raw neural\u2011network weights and can generate improved small networks without gradient feedback. It hints at weight\u2011space programming for optimization and interpretability.",
+   "why_it_matters": "Shows a novel direction for model\u2011level editing that could influence future fine\u2011tuning pipelines.",
    "tags": [
     "astra",
     "qwen"
@@ -530,7 +530,7 @@
    ],
    "next_step": "Read",
    "next_step_detail": "",
-   "story_id": "",
+   "story_id": "435a4449f9",
    "verification": "not_checked",
    "verification_note": "",
    "relevance_score": 0.5,
@@ -547,7 +547,7 @@
    "source": "hacker_news",
    "category": "Inspiration",
    "summary": "An article describing how OpenAI scaled its internal Git workflows to handle massive codebases and rapid iteration.",
-   "why_it_matters": "Provides architectural ideas for large‑scale version‑control pipelines that could inform cloud‑native AI development.",
+   "why_it_matters": "Provides architectural ideas for large\u2011scale version\u2011control pipelines that could inform cloud\u2011native AI development.",
    "tags": [
     "openai"
    ],
@@ -571,12 +571,12 @@
    "rank": 19
   },
   {
-   "title": "Show HN: Subvocal – Talk to your computer without making noise",
+   "title": "Show HN: Subvocal \u2013 Talk to your computer without making noise",
    "url": "https://news.ycombinator.com/item?id=50340088",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Discussion of Subvocal, a system that lets users issue voice‑like commands to a computer silently via a wearable sensor.",
-   "why_it_matters": "Introduces a novel interaction modality that could be integrated into agent‑driven workflows.",
+   "summary": "Discussion of Subvocal, a system that lets users issue voice\u2011like commands to a computer silently via a wearable sensor.",
+   "why_it_matters": "Introduces a novel interaction modality that could be integrated into agent\u2011driven workflows.",
    "tags": [
     "subvocal"
    ],
@@ -602,7 +602,7 @@
    "url": "https://huggingface.co/papers/2610.37826",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "DeFT‑RAG proposes splitting multi‑hop queries into independent sub‑questions and reusing retrieved answers to improve retrieval‑augmented generation.",
+   "summary": "DeFT\u2011RAG proposes splitting multi\u2011hop queries into independent sub\u2011questions and reusing retrieved answers to improve retrieval\u2011augmented generation.",
    "why_it_matters": "Offers a practical pattern that can be integrated into RAG pipelines the engineer may be building.",
    "tags": [
     "deft-rag"
@@ -631,8 +631,8 @@
    "url": "https://arxiv.org/abs/2611.01284v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "The paper quantifies how LLM‑generated fiction over‑uses a small set of character names and proposes mitigation strategies that require logit‑level access or post‑processing.",
-   "why_it_matters": "Highlights a quality issue that can affect agent‑generated narratives and may inspire better output filtering.",
+   "summary": "The paper quantifies how LLM\u2011generated fiction over\u2011uses a small set of character names and proposes mitigation strategies that require logit\u2011level access or post\u2011processing.",
+   "why_it_matters": "Highlights a quality issue that can affect agent\u2011generated narratives and may inspire better output filtering.",
    "tags": [
     "arxiv"
    ],
@@ -660,7 +660,7 @@
    "url": "https://arxiv.org/abs/2611.01272v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "The paper studies why small LLMs either refuse or confabulate when faced with unanswerable questions, introducing the ConfabQA benchmark. It explores hidden‑state signals that predict these behaviors.",
+   "summary": "The paper studies why small LLMs either refuse or confabulate when faced with unanswerable questions, introducing the ConfabQA benchmark. It explores hidden\u2011state signals that predict these behaviors.",
    "why_it_matters": "Offers insights for building safer agent memory and response handling.",
    "tags": [
     "confabqa",
@@ -673,7 +673,7 @@
     "research"
    ],
    "next_step": "Read",
-   "next_step_detail": "Skim the abstract and results to inform your own refusal‑handling logic.",
+   "next_step_detail": "Skim the abstract and results to inform your own refusal\u2011handling logic.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -690,7 +690,7 @@
    "url": "https://huggingface.co/papers/2610.41296",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "The paper investigates auxiliary trajectory‑level rewards to guide self‑improvement in small language models, comparing confidence‑based and entropy‑based signals. It shows modest transfer gains on limited supervision.",
+   "summary": "The paper investigates auxiliary trajectory\u2011level rewards to guide self\u2011improvement in small language models, comparing confidence\u2011based and entropy\u2011based signals. It shows modest transfer gains on limited supervision.",
    "why_it_matters": "Suggests alternative reward signals that could be leveraged in agent training loops.",
    "tags": [
     "auxiliary-rewards",
@@ -720,8 +720,8 @@
    "url": "https://huggingface.co/papers/2610.38637",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "The work proposes On‑Policy Self‑Distillation, where a model iteratively becomes its own teacher using privileged context to improve token‑level predictions. It aims to address reward sparsity in sequence‑level fine‑tuning.",
-   "why_it_matters": "May inspire new self‑training loops for custom agent models.",
+   "summary": "The work proposes On\u2011Policy Self\u2011Distillation, where a model iteratively becomes its own teacher using privileged context to improve token\u2011level predictions. It aims to address reward sparsity in sequence\u2011level fine\u2011tuning.",
+   "why_it_matters": "May inspire new self\u2011training loops for custom agent models.",
    "tags": [
     "opsd",
     "huggingface"
@@ -733,7 +733,7 @@
     "research"
    ],
    "next_step": "Read",
-   "next_step_detail": "Review the methodology section for ideas to apply to your own fine‑tuning pipeline.",
+   "next_step_detail": "Review the methodology section for ideas to apply to your own fine\u2011tuning pipeline.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -750,7 +750,7 @@
    "url": "https://huggingface.co/papers/2610.41216",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "Paper proposes compressing the harness (tools, memory, recovery logic) of large vision‑language robot agents into a tiny, low‑compute model.",
+   "summary": "Paper proposes compressing the harness (tools, memory, recovery logic) of large vision\u2011language robot agents into a tiny, low\u2011compute model.",
    "why_it_matters": "Suggests a path to lightweight agent runtimes that could run on edge hardware.",
    "tags": [
     "tinyastral",
@@ -781,7 +781,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "NIST publishes a general cybersecurity checklist aimed at individual freelancers and small businesses.",
-   "why_it_matters": "The guidance is high‑level and not specific to the Python/LLM stack the engineer uses.",
+   "why_it_matters": "The guidance is high\u2011level and not specific to the Python/LLM stack the engineer uses.",
    "tags": [
     "nist"
    ],
@@ -807,7 +807,7 @@
    "url": "https://www.techpolicy.press/the-sec-should-block-anthropics-ipo-to-protect-the-public/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Opinion piece arguing that the SEC should deny Anthropic's IPO on public‑interest grounds.",
+   "summary": "Opinion piece arguing that the SEC should deny Anthropic's IPO on public\u2011interest grounds.",
    "why_it_matters": "Policy commentary without technical guidance for engineers.",
    "tags": [],
    "published_at": "2026-11-02T22:30:47Z",
@@ -830,7 +830,7 @@
    "url": "https://arxiv.org/abs/2611.01230v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "The authors replicate INP-Former, a reconstruction‑based model for detecting anomalies in industrial images.",
+   "summary": "The authors replicate INP-Former, a reconstruction\u2011based model for detecting anomalies in industrial images.",
    "why_it_matters": "Anomaly detection is peripheral to the core focus on autonomous agents and LLM serving.",
    "tags": [
     "inp-former"
@@ -876,11 +876,11 @@
    "rank": 30
   },
   {
-   "title": "I shipped my biggest project ever and felt… nothing",
+   "title": "I shipped my biggest project ever and felt\u2026 nothing",
    "url": "https://dev.to/dhananjay_mundhada_02c326/i-shipped-my-biggest-project-ever-and-felt-nothing-585f",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "A personal reflection about releasing a large open‑source framework with minimal emotional impact.",
+   "summary": "A personal reflection about releasing a large open\u2011source framework with minimal emotional impact.",
    "why_it_matters": "Lacks technical detail or relevance to AI agent workflows or infrastructure.",
    "tags": [],
    "published_at": "2026-11-02T03:44:26Z",
@@ -903,7 +903,7 @@
    "url": "https://namedaisy.com/blog/boy-names-that-became-girl-names",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A discussion of gender‑neutral name trends in the United States.",
+   "summary": "A discussion of gender\u2011neutral name trends in the United States.",
    "why_it_matters": "No relevance to AI agents, infrastructure, or security for engineers.",
    "tags": [],
    "published_at": "2026-11-02T16:34:36Z",
@@ -922,11 +922,11 @@
    "rank": 32
   },
   {
-   "title": "Show HN: Warsaw in voxels – An interactive 3D map of the city centre",
+   "title": "Show HN: Warsaw in voxels \u2013 An interactive 3D map of the city centre",
    "url": "https://p.migdal.pl/warsaw-vibe-voxel/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A showcase of an interactive voxel‑based 3D map of Warsaw's city centre.",
+   "summary": "A showcase of an interactive voxel\u2011based 3D map of Warsaw's city centre.",
    "why_it_matters": "Entertainment/visualization project with no relevance to AI agent workflows or infrastructure.",
    "tags": [],
    "published_at": "2026-11-02T16:25:26Z",
@@ -972,7 +972,7 @@
    "url": "https://dev.to/deborahemeni1/i-built-a-3d-game-about-my-nigerian-childhood-and-im-not-a-game-developer-281g",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "The author created a browser‑based 3D game to reminisce about childhood memories in Nigeria.",
+   "summary": "The author created a browser\u2011based 3D game to reminisce about childhood memories in Nigeria.",
    "why_it_matters": "Game development content unrelated to AI agents, infrastructure, or security.",
    "tags": [],
    "published_at": "2026-11-02T13:31:20Z",
@@ -995,8 +995,8 @@
    "url": "https://blog.cloudflare.com/dns-targeted-zone-builds/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Cloudflare describes engineering improvements that reduced DNS zone‑build latency and memory consumption.",
-   "why_it_matters": "The content is about DNS infrastructure, not AI agents or Python‑centric cloud tooling.",
+   "summary": "Cloudflare describes engineering improvements that reduced DNS zone\u2011build latency and memory consumption.",
+   "why_it_matters": "The content is about DNS infrastructure, not AI agents or Python\u2011centric cloud tooling.",
    "tags": [],
    "published_at": "2026-11-02T14:47:28Z",
    "topics": [],
@@ -1066,8 +1066,8 @@
    "url": "https://github.com/derv82/wifit3",
    "source": "github_trending",
    "category": "Skip",
-   "summary": "A cross‑platform, USB‑only rewrite of the Wi‑Fi cracking tool Wifite.",
-   "why_it_matters": "Security tool for Wi‑Fi auditing, not related to Python AI agents or cloud infrastructure.",
+   "summary": "A cross\u2011platform, USB\u2011only rewrite of the Wi\u2011Fi cracking tool Wifite.",
+   "why_it_matters": "Security tool for Wi\u2011Fi auditing, not related to Python AI agents or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-03T01:32:46Z",
    "topics": [],
@@ -1135,7 +1135,7 @@
    "url": "https://dev.to/kylekeon/build-a-high-speed-duplicate-file-finder-disk-analyzer-in-pure-python-hk1",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "A tutorial showing how to write a pure‑Python utility for finding duplicate files and analyzing disk usage.",
+   "summary": "A tutorial showing how to write a pure\u2011Python utility for finding duplicate files and analyzing disk usage.",
    "why_it_matters": "Focus is general file management, not AI or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-02T07:21:11Z",
@@ -1181,8 +1181,8 @@
    "url": "https://dev.to/axrisi/ai-coding-and-open-source-crm-the-salesforce-replacement-test-4on2",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "The article describes OccupySaaS's early Salesforce alternative built with AI‑assisted coding and outlines the operator responsibilities.",
-   "why_it_matters": "It focuses on CRM use‑cases rather than agent workflows or infrastructure the target engineer needs.",
+   "summary": "The article describes OccupySaaS's early Salesforce alternative built with AI\u2011assisted coding and outlines the operator responsibilities.",
+   "why_it_matters": "It focuses on CRM use\u2011cases rather than agent workflows or infrastructure the target engineer needs.",
    "tags": [],
    "published_at": "2026-11-02T17:00:00Z",
    "topics": [
@@ -1206,7 +1206,7 @@
    "url": "https://hackertimes.ca/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A site presenting a news aggregator styled after the New York Times, linked to a brief mention of GPT‑6 research.",
+   "summary": "A site presenting a news aggregator styled after the New York Times, linked to a brief mention of GPT\u20116 research.",
    "why_it_matters": "The article is a product showcase with no technical depth for AI agent engineering.",
    "tags": [],
    "published_at": "2026-11-03T01:53:34Z",
@@ -1298,7 +1298,7 @@
    "url": "https://github.com/mealie-recipes/mealie",
    "source": "github_trending",
    "category": "Skip",
-   "summary": "Mealie is a self‑hosted recipe manager with a REST API and Vue frontend for personal meal planning.",
+   "summary": "Mealie is a self\u2011hosted recipe manager with a REST API and Vue frontend for personal meal planning.",
    "why_it_matters": "Unrelated to AI agents, LLM serving, or infrastructure tooling.",
    "tags": [],
    "published_at": "2026-11-03T03:14:20Z",
@@ -1386,7 +1386,7 @@
    "rank": 52
   },
   {
-   "title": "I held a séance for dead GitHub repos (and gave their ghosts a voice)",
+   "title": "I held a s\u00e9ance for dead GitHub repos (and gave their ghosts a voice)",
    "url": "https://dev.to/wathsalaggg/i-held-a-seance-for-dead-github-repos-and-gave-their-ghosts-a-voice-1bjm",
    "source": "devto_articles",
    "category": "Skip",
@@ -1416,7 +1416,7 @@
    "source": "devto_articles",
    "category": "Skip",
    "summary": "A reflective post marking a year of development for the Logtide project.",
-   "why_it_matters": "It offers no new tools, security info, or agent‑related techniques for the target audience.",
+   "why_it_matters": "It offers no new tools, security info, or agent\u2011related techniques for the target audience.",
    "tags": [],
    "published_at": "2026-11-02T15:16:13Z",
    "topics": [
@@ -1441,7 +1441,7 @@
    "source": "devto_articles",
    "category": "Skip",
    "summary": "A curated list of GitHub repos for learning AI concepts.",
-   "why_it_matters": "Broad beginner‑oriented list without focus on agents, serving, or security.",
+   "why_it_matters": "Broad beginner\u2011oriented list without focus on agents, serving, or security.",
    "tags": [],
    "published_at": "2026-11-02T09:09:51Z",
    "topics": [],
@@ -1464,7 +1464,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "An essay reflecting on the tendency to accept AI agent outputs without critical evaluation.",
-   "why_it_matters": "While thought‑provoking, it offers no actionable technical guidance for building or securing agents.",
+   "why_it_matters": "While thought\u2011provoking, it offers no actionable technical guidance for building or securing agents.",
    "tags": [],
    "published_at": "2026-11-01T06:13:30Z",
    "topics": [],
@@ -1486,7 +1486,7 @@
    "url": "https://arxiv.org/abs/2611.01262v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "The paper investigates whether random search can uncover task‑specific experts hidden within pretrained models.",
+   "summary": "The paper investigates whether random search can uncover task\u2011specific experts hidden within pretrained models.",
    "why_it_matters": "Primarily a theoretical study with no immediate impact on agent workflows or production tooling.",
    "tags": [],
    "published_at": "2026-10-31T21:01:08Z",
@@ -1511,7 +1511,7 @@
    "url": "https://arxiv.org/abs/2611.01276v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Introduces OntoDoc, a system that generates natural‑language descriptions for ontology terms using language models.",
+   "summary": "Introduces OntoDoc, a system that generates natural\u2011language descriptions for ontology terms using language models.",
    "why_it_matters": "Focuses on ontology documentation, which is peripheral to agent workflows and cloud AI infrastructure.",
    "tags": [],
    "published_at": "2026-10-31T21:23:13Z",
@@ -1534,7 +1534,7 @@
    "url": "https://arxiv.org/abs/2611.01269v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Research on incorporating physics‑based Hamiltonian priors into neural networks to improve modeling of dynamical systems.",
+   "summary": "Research on incorporating physics\u2011based Hamiltonian priors into neural networks to improve modeling of dynamical systems.",
    "why_it_matters": "Focuses on physics modeling, not on AI agents or infrastructure.",
    "tags": [],
    "published_at": "2026-10-31T21:10:28Z",
@@ -1557,7 +1557,7 @@
    "url": "https://arxiv.org/abs/2611.01234v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "The paper studies ε‑approximate Nash equilibria in nonatomic congestion games to assess how relaxing equilibrium conditions affects social cost. It analyzes the impact of approximate equilibria on routing efficiency.",
+   "summary": "The paper studies \u03b5\u2011approximate Nash equilibria in nonatomic congestion games to assess how relaxing equilibrium conditions affects social cost. It analyzes the impact of approximate equilibria on routing efficiency.",
    "why_it_matters": "The work focuses on game theory and routing economics, not on AI agents, LLM tooling, or cloud infrastructure relevant to the target profile.",
    "tags": [],
    "published_at": "2026-10-31T20:01:59Z",
@@ -1582,8 +1582,8 @@
    "url": "https://arxiv.org/abs/2611.01295v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "The paper revisits a claim that adding pure‑noise images to minority classes improves classification on imbalanced datasets. It presents experimental results on image benchmarks.",
-   "why_it_matters": "The work focuses on image‑only classification techniques with no clear path to agent or infrastructure tooling.",
+   "summary": "The paper revisits a claim that adding pure\u2011noise images to minority classes improves classification on imbalanced datasets. It presents experimental results on image benchmarks.",
+   "why_it_matters": "The work focuses on image\u2011only classification techniques with no clear path to agent or infrastructure tooling.",
    "tags": [],
    "published_at": "2026-10-31T21:49:39Z",
    "topics": [],
@@ -1630,7 +1630,7 @@
    "url": "https://arxiv.org/abs/2611.01300v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Research paper on using score‑based diffusion models to speed up Bayesian posterior sampling for inverse problems.",
+   "summary": "Research paper on using score\u2011based diffusion models to speed up Bayesian posterior sampling for inverse problems.",
    "why_it_matters": "Focuses on Bayesian inference rather than agent tooling or production AI infrastructure.",
    "tags": [],
    "published_at": "2026-10-31T21:59:44Z",
@@ -1654,7 +1654,7 @@
    "source": "arxiv_ai",
    "category": "Skip",
    "summary": "The paper studies algorithms for linear bandits that achieve optimal regret in both adversarial and stochastic settings.",
-   "why_it_matters": "Bandit theory is peripheral to the reader’s focus on agent infrastructure and production AI systems.",
+   "why_it_matters": "Bandit theory is peripheral to the reader\u2019s focus on agent infrastructure and production AI systems.",
    "tags": [],
    "published_at": "2026-10-31T21:58:28Z",
    "topics": [],
@@ -1699,8 +1699,8 @@
    "url": "https://huggingface.co/papers/2610.41278",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "AuditFL introduces a blockchain‑based layer to make federated learning deployments auditable and trustless.",
-   "why_it_matters": "Federated learning is peripheral to the engineer’s core stack and the paper lacks immediate tooling guidance.",
+   "summary": "AuditFL introduces a blockchain\u2011based layer to make federated learning deployments auditable and trustless.",
+   "why_it_matters": "Federated learning is peripheral to the engineer\u2019s core stack and the paper lacks immediate tooling guidance.",
    "tags": [
     "auditfl"
    ],
@@ -1751,7 +1751,7 @@
    "url": "https://huggingface.co/papers/2610.40191",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Paper proposes an agent‑centric approach to video generation, combining planning, tool use, and feedback loops.",
+   "summary": "Paper proposes an agent\u2011centric approach to video generation, combining planning, tool use, and feedback loops.",
    "why_it_matters": "Conceptual video research without immediate tooling or infrastructure relevance for production AI agents.",
    "tags": [],
    "published_at": "2026-10-29T14:47:39.000Z",
@@ -1774,8 +1774,8 @@
    "url": "https://huggingface.co/papers/2610.39419",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "The paper studies why multimodal LLMs struggle with multi‑step visual reasoning and evaluates visual scaffolding techniques.",
-   "why_it_matters": "It is pure multimodal research without actionable impact for Python‑based agent workflows.",
+   "summary": "The paper studies why multimodal LLMs struggle with multi\u2011step visual reasoning and evaluates visual scaffolding techniques.",
+   "why_it_matters": "It is pure multimodal research without actionable impact for Python\u2011based agent workflows.",
    "tags": [],
    "published_at": "2026-10-29T06:00:35.000Z",
    "topics": [],
@@ -1797,8 +1797,8 @@
    "url": "https://huggingface.co/papers/2610.40901",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "TSFLab is a benchmark suite for time‑series forecasting that is agnostic to the forecasting agent used.",
-   "why_it_matters": "Time‑series focus is outside the engineer's core interests in LLM agents and infrastructure.",
+   "summary": "TSFLab is a benchmark suite for time\u2011series forecasting that is agnostic to the forecasting agent used.",
+   "why_it_matters": "Time\u2011series focus is outside the engineer's core interests in LLM agents and infrastructure.",
    "tags": [],
    "published_at": "2026-10-29T00:00:00.000Z",
    "topics": [],
