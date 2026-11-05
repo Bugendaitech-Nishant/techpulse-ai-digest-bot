@@ -98,17 +98,18 @@ def test_search_endpoint(client):
     assert data["count"] == 1 and data["items"][0]["next_step"] == "Try"
 
 
-def test_brief_lists_open_actions_then_progress_and_leaves_out_finished_work(client):
-    client.post("/api/triage", json={"url": "https://example.com/2", "status": "doing", "owner": "Priya"})
-    client.post("/api/triage", json={"url": "https://example.com/5", "status": "done"})
-    text = client.get("/api/brief").json()["markdown"]
+def test_brief_shows_open_work_and_progress_and_leaves_out_finished_work(client):
+    client.post("/api/triage", json={"url": "https://example.com/1", "status": "doing", "owner": "Priya"})
+    text = client.get("/api/brief", params={"date": "2026-11-03"}).json()["markdown"]
     assert "## In progress (1)" in text and "[Priya]" in text
-    assert "Rust 100%" not in text  # done work is not repeated
-    assert "## Needs someone" not in text  # the only other action item is finished
-    assert "Item 4" not in text  # skips never appear
+    client.post("/api/triage", json={"url": "https://example.com/1", "status": "done"})
+    text = client.get("/api/brief", params={"date": "2026-11-03"}).json()["markdown"]
+    assert "Item 1" not in text  # finished work is not repeated
+    assert "Item 4" not in client.get("/api/brief").json()["markdown"]  # skips never appear
 
 
 def test_brief_for_an_idle_day_says_so_and_unknown_date_is_404(client, db):
-    db.record_digest(TechDigest(date="2026-11-05", items=[_item(9, "Read", "Inspiration")], total_harvested=1))
+    quiet = _item(9, "Read", "Inspiration").model_copy(update={"summary": "A paper about protein folding"})
+    db.record_digest(TechDigest(date="2026-11-05", items=[quiet], total_harvested=1))
     assert "Nothing needs the team today." in client.get("/api/brief", params={"date": "2026-11-05"}).json()["markdown"]
     assert client.get("/api/brief", params={"date": "1999-01-01"}).status_code == 404

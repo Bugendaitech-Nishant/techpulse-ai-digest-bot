@@ -26,5 +26,15 @@ avoid = [
   "Marketing posts, launch announcements without technical detail, tutorials for beginners",
 ]
 
-# Tools and packages you run; used to rank security items first (Phase 3).
+# The stack your team runs. This drives the briefing: anything that mentions one of these is
+# pulled to the top as "touches your stack", and security advisories are matched against it.
+# Use package names. PLACEHOLDER: replace with what you actually deploy.
 tools = ["python", "litellm", "langchain", "fastapi", "pydantic", "postgresql", "docker"]
+
+# Other spellings that mean the same tool.
+[aliases]
+postgresql = ["postgres"]
+
+# Too common to mean anything on their own: shown in the stack strip, never promoted by themselves.
+[meta]
+broad = ["python"]

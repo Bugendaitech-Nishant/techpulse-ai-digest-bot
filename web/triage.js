@@ -158,5 +158,7 @@ function triageControls(item) {
   else if (t.status === 'open') actions = btn('doing', STEP_VERBS[item.next_step] || "I'll take it", 'is-primary') + btn('dismissed', 'Not for us');
   else actions = btn('open', 'Reopen');
   const note = t.note ? `<span class="triage-note">${escapeHtml(t.note)}</span>` : '';
-  return `<div class="card-triage">${triageChip(item)}${actions}${note}</div>`;
+  // A note belongs to a decision, so the button appears once somebody has taken, finished or dismissed the item.
+  const noteBtn = t.status === 'open' ? '' : btn('', t.note ? 'Edit note' : 'Add note').replace('data-triage=""', 'data-note-edit');
+  return `<div class="card-triage">${triageChip(item)}${actions}${noteBtn}${note}</div>`;
 }

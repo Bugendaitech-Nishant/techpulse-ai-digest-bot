@@ -7,7 +7,7 @@ and storage paths.
 import os
 import tomllib
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 from dotenv import load_dotenv
 
 # Load local environment variables from .env
@@ -74,6 +74,9 @@ class Settings:
     ]
     USER_AVOID: List[str] = _PROFILE.get("avoid") or []
     USER_TOOLS: List[str] = _PROFILE.get("tools") or []
+    # Other spellings of a tool ("postgres" for "postgresql") and tools too common to mean anything alone ("python").
+    STACK_ALIASES: Dict[str, List[str]] = _PROFILE.get("aliases") or {}
+    STACK_BROAD: List[str] = (_PROFILE.get("meta") or {}).get("broad") or []
     USER_PROFILE: str = " ".join((_PROFILE.get("summary") or (
         "Staff Software Engineer & AI Architect specializing in autonomous agent workflows, "
         "Python ecosystems, open-source AI models, developer productivity tools, "

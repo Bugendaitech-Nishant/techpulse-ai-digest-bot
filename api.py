@@ -44,6 +44,7 @@ from src.storage.database import DigestDatabase
 from src.security.quota_manager import quota_manager
 from src.security.cache_manager import cache_manager
 from src import feedback as feedback_store
+from src import radar
 from src import triage as triage_store
 from src import runlog
 from config.settings import settings
@@ -544,14 +545,35 @@ def search_archive(request: Request, q: str = "", topic: str = "", step: str = "
     return {"query": q, "count": len(results), "items": results, "topics": list(TOPICS)}
 
 
-@app.get("/api/brief")
-@limiter.limit(settings.RATE_LIMIT_READ)
-def get_brief(request: Request, date: str = "latest"):
-    """A paste-ready Markdown brief of one day: what needs someone, who has what, what to read."""
+def _briefing_for(date: str) -> Dict[str, Any]:
     digest = db.get_latest_digest() if date == "latest" else db.get_digest_by_date(date)
     if not digest:
         raise HTTPException(status_code=404, detail="No digest for that date.")
-    return {"date": digest["date"], "markdown": triage_store.build_brief(digest, db.get_triage_map())}
+    stack = radar.load_stack()
+    items = radar.annotate(digest.get("items", []), stack)
+    return {
+        "date": digest["date"],
+        "created_at": digest.get("created_at"),
+        "total_harvested": digest.get("total_harvested", 0),
+        "items": items,
+        "stack": radar.stack_strip(items, stack),
+        "counts": radar.headline(items),
+    }
+
+
+@app.get("/api/briefing")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def get_briefing(request: Request, date: str = "latest"):
+    """One day sorted for a team: what touches the stack, the best few reads, and everything else."""
+    return _briefing_for(date)
+
+
+@app.get("/api/brief")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def get_brief(request: Request, date: str = "latest"):
+    """The same day as paste-ready Markdown: what to act on, who has what, what to read."""
+    briefing = _briefing_for(date)
+    return {"date": briefing["date"], "markdown": triage_store.build_brief(briefing["date"], briefing["items"], db.get_triage_map())}
 
 
 # ─── Harvest Pipeline Execution (Governed by Rate Limits & Quotas) ────────────

@@ -1,191 +1,320 @@
 /**
- * TechPulse live feed controller.
- * Ranked list and split view, filters kept in the URL, four data states
- * (loading, empty, error, full) and readings drawn from /api/insights.
- * Shared helpers (escapeHtml, toasts, quota, harvest, export) live in shell.js.
+ * TechPulse briefing.
+ * One day, sorted by the server (/api/briefing) into what touches the team's stack, the best few
+ * reads, and everything else. Triage and names live in triage.js; shared helpers in shell.js.
  */
 
-const CATEGORY_LABELS = {
-  todo: 'To do', doing: 'In progress', curated: 'All signal', 'Must Read': 'Must read',
-  Inspiration: 'Inspiration', handled: 'Handled', Skip: 'Safe to ignore',
-};
-const STEP_ORDER = ['Patch', 'Try', 'Evaluate', 'Read', 'Watch'];
-const STEP_HEADINGS = { Patch: 'Needs action', Try: 'Try this', Evaluate: 'Worth comparing', Read: 'Worth knowing', Watch: 'Keep an eye on' };
-const VALID_CATEGORIES = Object.keys(CATEGORY_LABELS);
-
 const state = {
-  digest: null,
-  availableDigests: [],
-  selectedDate: 'latest',
-  stats: null,
-  insights: null,
+  briefing: null,
+  days: [], // digest dates, newest first
+  date: 'latest',
   ratings: {}, // url -> 1 useful, -1 not useful
   feedback: { persistent: false, write_requires_key: false },
-  viewMode: 'grid', // 'grid' (ranked list) | 'cockpit' (split view)
-  activeCategory: null, // chosen after the first load: To do when something needs someone, else All signal
-  activeSource: 'all',
-  activeTopic: 'all',
-  searchQuery: '',
-  selectedIndex: 0,
-  filteredItems: [],
+  stats: null,
 };
 
-// ─── URL state ─────────────────────────────────────────────────────────────
+const SECTIONS = [
+  { tier: 'alert', title: 'Act on', note: 'Touches what you run and asks for something.' },
+  { tier: 'stack', title: 'Touches your stack', note: 'Good to know. Nothing to do yet.' },
+  { tier: 'pick', title: 'Worth your time', note: 'Not about your stack, but the best of the day.' },
+];
 
-function readUrlState() {
-  const p = new URLSearchParams(window.location.search);
-  const cat = p.get('cat');
-  if (cat && VALID_CATEGORIES.includes(cat)) state.activeCategory = cat;
-  state.activeSource = p.get('src') || 'all';
-  state.activeTopic = p.get('topic') || 'all';
-  state.searchQuery = (p.get('q') || '').toLowerCase().trim();
-  state.selectedDate = p.get('date') || 'latest';
-  state.viewMode = p.get('view') === 'split' ? 'cockpit' : 'grid';
-}
-
-function writeUrlState() {
-  const p = new URLSearchParams();
-  if (state.activeCategory) p.set('cat', state.activeCategory);
-  if (state.activeSource !== 'all') p.set('src', state.activeSource);
-  if (state.activeTopic !== 'all') p.set('topic', state.activeTopic);
-  if (state.searchQuery) p.set('q', state.searchQuery);
-  if (state.selectedDate !== 'latest') p.set('date', state.selectedDate);
-  if (state.viewMode === 'cockpit') p.set('view', 'split');
-  const qs = p.toString();
-  history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
-}
-
-/** Reflect state into the controls so a shared link opens exactly as it was saved. */
-function syncControls() {
-  document.getElementById('search-input').value = state.searchQuery;
-  document.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('is-active', b.dataset.category === state.activeCategory));
-  renderNameButton();
-  const cockpit = state.viewMode === 'cockpit';
-  document.getElementById('view-cockpit-btn').classList.toggle('is-active', cockpit);
-  document.getElementById('view-cards-btn').classList.toggle('is-active', !cockpit);
-  document.getElementById('keyboard-hint').style.display = cockpit ? 'flex' : 'none';
-}
-
-// ─── Initialization ────────────────────────────────────────────────────────
+// ─── Start ─────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-  readUrlState();
-  syncControls();
+  state.date = new URLSearchParams(window.location.search).get('date') || 'latest';
+  renderNameButton();
   setupHandlers();
-  initHarvest(loadData);
-  loadData();
-  // Teammates act while this page is open: refresh their changes quietly.
-  setInterval(refreshTriage, 60000);
+  initHarvest(loadAll);
+  loadAll();
+  setInterval(refreshTriage, 60000); // teammates act while this page is open
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshTriage(); });
 });
 
+function setupHandlers() {
+  document.getElementById('btn-brief').addEventListener('click', copyBrief);
+  document.getElementById('btn-name').addEventListener('click', async () => { if (await askName()) render(); });
+  document.getElementById('btn-export').addEventListener('click', () => {
+    if (state.briefing) downloadMarkdown(state.briefing.date);
+  });
+  document.getElementById('day-prev').addEventListener('click', () => stepDay(1));
+  document.getElementById('day-next').addEventListener('click', () => stepDay(-1));
+  document.addEventListener('triage-changed', render);
+  document.addEventListener('click', onClick);
+  document.addEventListener('submit', onSubmit);
+}
+
 async function refreshTriage() {
   const editing = document.activeElement && ['TEXTAREA', 'INPUT'].includes(document.activeElement.tagName);
-  if (document.hidden || editing || document.getElementById('grid-modal')) return;
-  if (await loadTriage()) rerenderAll();
+  if (document.hidden || editing) return;
+  if (await loadTriage()) render();
 }
 
-function rerenderAll() {
-  if (!state.digest) return;
-  renderReadings();
-  renderCategoryBadges();
-  renderSpectrumRail();
-  renderTopicRail();
-  renderContent();
+// ─── Data ──────────────────────────────────────────────────────────────────
+
+function setBusy(busy) {
+  document.getElementById('briefing').setAttribute('aria-busy', busy ? 'true' : 'false');
 }
 
-function setupHandlers() {
-  const searchInput = document.getElementById('search-input');
-  searchInput.addEventListener('input', (e) => {
-    state.searchQuery = e.target.value.toLowerCase().trim();
-    state.selectedIndex = 0;
-    writeUrlState();
-    renderContent();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      searchInput.focus();
-      return;
-    }
-
-    const typing = ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement && document.activeElement.tagName);
-    if (typing) {
-      if (e.key === 'Escape') document.activeElement.blur();
-      return;
-    }
-
-    if (e.key === 'Escape') closeModal();
-
-    if (e.key === 'ArrowDown' || e.key === 'j') {
-      e.preventDefault();
-      moveSelection(1);
-    } else if (e.key === 'ArrowUp' || e.key === 'k') {
-      e.preventDefault();
-      moveSelection(-1);
-    } else if ((e.key === 'Enter' || e.key === 'o') && document.activeElement === document.body) {
-      const cur = state.filteredItems[state.selectedIndex];
-      if (cur && cur.url) window.open(cur.url, '_blank', 'noopener');
-    }
-  });
-
-  document.getElementById('date-select').addEventListener('change', async (e) => {
-    state.selectedDate = e.target.value;
-    state.selectedIndex = 0;
-    writeUrlState();
-    await loadDigest();
-  });
-
-  document.getElementById('btn-export').addEventListener('click', () => {
-    const date = state.digest && state.digest.date ? state.digest.date : new Date().toISOString().split('T')[0];
-    downloadMarkdown(date);
-  });
-
-  document.querySelectorAll('.seg-btn').forEach((btn) => {
-    btn.addEventListener('click', () => switchCategoryTab(btn.dataset.category));
-  });
-
-  document.getElementById('kpi-card-open').addEventListener('click', () => switchCategoryTab('todo'));
-  document.getElementById('kpi-card-doing').addEventListener('click', () => switchCategoryTab('doing'));
-  document.getElementById('kpi-card-done').addEventListener('click', () => switchCategoryTab('handled'));
-  document.getElementById('kpi-card-must-read').addEventListener('click', () => switchCategoryTab('Must Read'));
-
-  document.getElementById('btn-brief').addEventListener('click', copyBrief);
-  document.getElementById('btn-name').addEventListener('click', async () => { if (await askName()) rerenderAll(); });
-  document.addEventListener('triage-changed', () => { rerenderAll(); refreshOpenPanel(); });
-  document.addEventListener('click', (e) => {
-    const menu = document.getElementById('admin-menu');
-    if (menu && menu.open && !menu.contains(e.target)) menu.open = false;
-  });
-
-  document.getElementById('view-cards-btn').addEventListener('click', () => setViewMode('grid'));
-  document.getElementById('view-cockpit-btn').addEventListener('click', () => setViewMode('cockpit'));
+async function loadAll() {
+  const wake = document.getElementById('wake-note');
+  const wakeTimer = setTimeout(() => { wake.hidden = false; }, 3000);
+  setBusy(true);
+  try {
+    const [stats, days, feedback] = await Promise.all([
+      refreshQuota(),
+      getJson('/api/digests').catch(() => []),
+      getJson('/api/feedback').catch(() => null),
+      loadTriage(),
+    ]);
+    state.stats = stats;
+    state.days = Array.isArray(days) ? days.map((d) => d.date) : [];
+    if (feedback) { state.ratings = feedback.ratings || {}; state.feedback = feedback; }
+    await loadDay();
+  } catch (err) {
+    console.error('Failed to load the briefing:', err);
+    renderError(() => loadAll());
+  } finally {
+    clearTimeout(wakeTimer);
+    wake.hidden = true;
+    setBusy(false);
+  }
 }
 
-function setViewMode(mode) {
-  state.viewMode = mode;
-  syncControls();
-  writeUrlState();
-  renderContent();
+async function loadDay() {
+  try {
+    state.briefing = await getJson(`/api/briefing?date=${encodeURIComponent(state.date)}`);
+  } catch (err) {
+    state.briefing = null;
+    if (String(err.message).includes('404')) renderNone();
+    else renderError(() => loadDay());
+    return;
+  }
+  render();
 }
 
-function switchCategoryTab(category) {
-  state.activeCategory = category;
-  state.selectedIndex = 0;
-  syncControls();
-  writeUrlState();
-  renderSpectrumRail();
-  renderTopicRail();
-  renderContent();
+function stepDay(direction) {
+  if (!state.briefing) return;
+  const next = state.days[state.days.indexOf(state.briefing.date) + direction];
+  if (!next) return;
+  state.date = next === state.days[0] ? 'latest' : next;
+  history.replaceState(null, '', state.date === 'latest' ? window.location.pathname : `?date=${next}`);
+  loadDay();
 }
 
-/** The brief a team pastes into chat. Falls back to a box the reader can copy from. */
+// ─── Render ────────────────────────────────────────────────────────────────
+
+function itemsOf(tier) {
+  return ((state.briefing && state.briefing.items) || []).filter((i) => i.tier === tier);
+}
+
+function render() {
+  const b = state.briefing;
+  if (!b) return;
+  renderDayNav();
+  renderLede();
+  renderStack();
+
+  const focus = document.activeElement && document.activeElement.closest && document.activeElement.closest('.note-form');
+  if (focus) return; // do not rebuild the page under someone who is typing a note
+
+  const content = document.getElementById('content');
+  const parts = SECTIONS.map((s) => renderSection(s, itemsOf(s.tier))).join('');
+  const quiet = !itemsOf('alert').length && !itemsOf('stack').length
+    ? '<p class="quiet">Nothing here touches the tools you run. That is a result, not a gap: you can stop at the reading list.</p>'
+    : '';
+  content.innerHTML = quiet + parts + renderRest('more', 'Also kept', itemsOf('more')) + renderRest('filtered', 'Filtered out, with the reason', itemsOf('filtered'));
+  renderColophon();
+}
+
+function renderDayNav() {
+  const b = state.briefing;
+  const i = state.days.indexOf(b.date);
+  document.getElementById('day-prev').disabled = i === -1 || i >= state.days.length - 1;
+  document.getElementById('day-next').disabled = i <= 0;
+  const when = new Date(`${b.date}T12:00:00`);
+  const label = Number.isNaN(when.getTime()) ? b.date : when.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+  document.getElementById('day-label').textContent = i === 0 || state.date === 'latest' ? `${label}, latest` : label;
+}
+
+function plural(n, one, many) {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
+function renderLede() {
+  const b = state.briefing;
+  const c = b.counts;
+  let headline;
+  if (c.alerts) headline = `${plural(c.alerts, 'thing needs', 'things need')} your attention.`;
+  else if (c.stack) headline = `Nothing to patch. ${plural(c.stack, 'item touches', 'items touch')} your stack.`;
+  else headline = 'Quiet day for your stack.';
+  document.getElementById('headline').textContent = headline;
+
+  const when = b.created_at ? ` Built ${relativeTime(b.created_at)}.` : '';
+  const from = b.total_harvested ? ` of ${b.total_harvested} harvested` : '';
+  document.getElementById('lede-sub').textContent =
+    `${c.picks} worth your time, ${c.more} more kept, ${c.filtered} filtered out${from}.${when}`;
+}
+
+function renderStack() {
+  const strip = document.getElementById('stack-strip');
+  const stack = state.briefing.stack || [];
+  if (!stack.length) {
+    strip.innerHTML = '<p class="muted">No stack defined, so nothing can be matched. Set <code>tools</code> in config/profile.toml.</p>';
+    return;
+  }
+  strip.innerHTML = '<span class="rail-label">Your stack</span>' + stack.map((s) => {
+    const cls = s.hits && !s.broad ? 'is-hit' : '';
+    const title = s.broad ? 'Too common to count on its own' : s.hits ? `${plural(s.hits, 'item mentions', 'items mention')} ${s.name} today` : `Nothing about ${s.name} today`;
+    return `<span class="stack-chip ${cls}" title="${escapeHtml(title)}">${escapeHtml(s.name)}${s.hits ? `<b>${s.hits}</b>` : ''}</span>`;
+  }).join('');
+}
+
+function renderSection(section, items) {
+  if (!items.length) return '';
+  return `
+    <section class="tier tier-${section.tier}" aria-labelledby="h-${section.tier}">
+      <header class="tier-head">
+        <h2 id="h-${section.tier}">${section.title} <span class="tier-count">${items.length}</span></h2>
+        <p>${section.note}</p>
+      </header>
+      ${items.map(card).join('')}
+    </section>`;
+}
+
+function renderRest(id, title, items) {
+  if (!items.length) return '';
+  const rows = items.map((i) => `
+    <li>
+      <a href="${escapeHtml(i.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(i.title)}</a>
+      <span class="muted">${escapeHtml(sourceName(i.source))}</span>
+      <p>${escapeHtml(plainText(i.category === 'Skip' ? i.why_it_matters : i.summary))}</p>
+    </li>`).join('');
+  return `
+    <details class="rest" id="rest-${id}">
+      <summary>${title} <span class="tier-count">${items.length}</span></summary>
+      <ul class="rest-list">${rows}</ul>
+    </details>`;
+}
+
+function ageLabel(item) {
+  return (item.published_at && relativeTime(item.published_at)) || '';
+}
+
+function checkLine(item) {
+  if (item.verification === 'unverified') return `<span class="check check-warn" title="${escapeHtml(item.verification_note)}">Not fully backed by its source</span>`;
+  if (item.verification === 'verified' || item.verification === 'corrected') return '<span class="check">Checked against source</span>';
+  return '';
+}
+
+function card(item) {
+  const meta = [sourceName(item.source), ageLabel(item)].filter(Boolean).map(escapeHtml).join(' · ');
+  const touches = item.stack_hits && item.stack_hits.length
+    ? `<p class="touches">Touches ${item.stack_hits.map((h) => `<b>${escapeHtml(h)}</b>`).join(', ')}</p>` : '';
+  const action = item.action
+    ? `<p class="action"><strong>${escapeHtml(item.next_step)}</strong> ${escapeHtml(item.action)}</p>` : '';
+  const story = item.story_id ? `<button type="button" class="story-btn" data-story="${escapeHtml(item.story_id)}">Follow the story</button>` : '';
+  const handled = ['done', 'dismissed'].includes(triageOf(item).status);
+  return `
+    <article class="brief-card ${handled ? 'is-handled' : ''}">
+      <p class="kicker">${meta}</p>
+      <h3><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.title)}</a></h3>
+      ${touches}
+      <p class="summary">${escapeHtml(plainText(item.summary))}</p>
+      ${action}
+      <div class="brief-foot">
+        ${item.actionable ? triageControls(item) : ''}
+        ${rateButtons(item.url)}
+        ${story}
+        ${checkLine(item)}
+      </div>
+    </article>`;
+}
+
+function renderColophon() {
+  const parts = [];
+  const model = state.stats && state.stats.llm_model;
+  if (model) parts.push(`Curated by ${model.includes('/') ? model.split('/')[1] : model}`);
+  parts.push(triageState.persistent ? 'team status is saved to GitHub' : 'team status resets if the server restarts');
+  parts.push('stack is set in config/profile.toml');
+  document.getElementById('colophon').textContent = parts.join(' · ');
+}
+
+function renderNone() {
+  document.getElementById('headline').textContent = 'No briefing yet.';
+  document.getElementById('lede-sub').textContent = 'Run a harvest from the Admin menu to build the first one.';
+  document.getElementById('content').innerHTML = '';
+  document.getElementById('stack-strip').innerHTML = '';
+  document.getElementById('day-label').textContent = 'No digest';
+}
+
+function renderError(retry) {
+  document.getElementById('content').innerHTML = `
+    <div class="state-panel is-error">
+      <h3>The briefing did not load</h3>
+      <p>The server did not answer in time. If it was idle, it needs about 30 seconds to wake. Nothing is lost.</p>
+      <button type="button" class="btn btn-primary" id="btn-retry">Try again</button>
+    </div>`;
+  document.getElementById('btn-retry').addEventListener('click', retry);
+}
+
+// ─── Actions ───────────────────────────────────────────────────────────────
+
+function findItem(url) {
+  return ((state.briefing && state.briefing.items) || []).find((i) => i.url === url);
+}
+
+async function onClick(e) {
+  const act = e.target.closest('[data-triage]');
+  if (act) {
+    const item = findItem(act.dataset.url);
+    if (item && (await setTriage(item, act.dataset.triage)) && act.dataset.triage === 'doing') showToast('Yours now. Your team sees it in the brief.');
+    return;
+  }
+  const edit = e.target.closest('[data-note-edit]');
+  if (edit) {
+    const item = findItem(edit.dataset.url);
+    const slot = edit.closest('.card-triage');
+    if (!item || !slot) return;
+    slot.insertAdjacentHTML('afterend', `
+      <form class="note-form" data-url="${escapeHtml(item.url)}">
+        <label class="visually-hidden" for="note-input">Note for the team</label>
+        <input id="note-input" class="field" maxlength="500" value="${escapeHtml(triageOf(item).note)}" placeholder="Ticket link, what you found, why not">
+        <button type="submit" class="btn">Save</button>
+      </form>`);
+    edit.hidden = true;
+    slot.parentElement.querySelector('.note-form input').focus();
+    return;
+  }
+  const rate = e.target.closest('.rate-btn');
+  if (rate) {
+    const next = Number(rate.dataset.rate);
+    submitRating(rate.dataset.url, (state.ratings[rate.dataset.url] || 0) === next ? 0 : next);
+    return;
+  }
+  const story = e.target.closest('.story-btn');
+  if (story) { openStory(story.dataset.story); return; }
+  const menu = document.getElementById('admin-menu');
+  if (menu && menu.open && !menu.contains(e.target)) menu.open = false;
+}
+
+async function onSubmit(e) {
+  const form = e.target.closest('.note-form');
+  if (!form) return;
+  e.preventDefault();
+  const item = findItem(form.dataset.url);
+  if (!item) return;
+  const note = form.querySelector('input').value.trim();
+  form.remove();
+  if (await setTriage(item, triageOf(item).status, { note })) showToast('Note saved.');
+  render();
+}
+
 async function copyBrief() {
-  if (!state.digest) { showToast('There is no digest to brief on yet.'); return; }
+  if (!state.briefing) { showToast('There is no briefing to copy yet.'); return; }
   let markdown;
   try {
-    markdown = (await getJson(`/api/brief?date=${encodeURIComponent(state.digest.date)}`, 20000)).markdown;
+    markdown = (await getJson(`/api/brief?date=${encodeURIComponent(state.briefing.date)}`, 20000)).markdown;
   } catch (err) {
     showToast('Could not build the brief.');
     return;
@@ -194,391 +323,8 @@ async function copyBrief() {
     await navigator.clipboard.writeText(markdown);
     showToast('Brief copied. Paste it into chat or your standup notes.');
   } catch (err) {
-    openModal({ title: 'Brief' }, null, `<h2 class="inspector-title">Brief</h2><textarea class="field note-field" rows="14" readonly aria-label="Brief">${escapeHtml(markdown)}</textarea>`);
-    const box = document.querySelector('#grid-modal textarea');
-    if (box) box.select();
+    showToast('Your browser blocked copying. Open the Markdown export under Admin instead.');
   }
-}
-
-// ─── Data loading ──────────────────────────────────────────────────────────
-
-function setBusy(busy) {
-  document.getElementById('content-container').setAttribute('aria-busy', busy ? 'true' : 'false');
-}
-
-async function loadData() {
-  const container = document.getElementById('content-container');
-  const wake = document.getElementById('wake-note');
-  const wakeTimer = setTimeout(() => { wake.hidden = false; }, 3000);
-  setBusy(true);
-
-  try {
-    const [stats, digests, insights, feedback] = await Promise.all([
-      refreshQuota(),
-      getJson('/api/digests').catch(() => []),
-      getJson('/api/insights').catch(() => null),
-      getJson('/api/feedback').catch(() => null),
-      loadTriage(),
-    ]);
-    state.stats = stats;
-    if (feedback) {
-      state.ratings = feedback.ratings || {};
-      state.feedback = feedback;
-    }
-    state.availableDigests = Array.isArray(digests) ? digests : [];
-    state.insights = insights;
-    await loadDigest();
-  } catch (err) {
-    console.error('Failed to load the digest:', err);
-    renderError(container, () => loadData());
-  } finally {
-    clearTimeout(wakeTimer);
-    wake.hidden = true;
-    setBusy(false);
-  }
-}
-
-async function loadDigest() {
-  const container = document.getElementById('content-container');
-  try {
-    const path = state.selectedDate === 'latest' ? '/api/digest/latest' : `/api/digest/${encodeURIComponent(state.selectedDate)}`;
-    state.digest = await getJson(path);
-  } catch (err) {
-    state.digest = null;
-    if (String(err.message).includes('404')) {
-      renderEmpty(container, 'No digest yet', 'Run a harvest to collect and rank the first one.');
-    } else {
-      renderError(container, () => loadDigest());
-    }
-    populateDateSelect();
-    renderReadings();
-    return;
-  }
-  populateDateSelect();
-  if (!state.activeCategory) state.activeCategory = defaultCategory();
-  syncControls();
-  writeUrlState();
-  rerenderAll();
-}
-
-/** Open on what needs doing; fall back to everything when the queue is empty. */
-function defaultCategory() {
-  const items = (state.digest && state.digest.items) || [];
-  return items.some((i) => inCategory(i, 'todo')) ? 'todo' : 'curated';
-}
-
-function populateDateSelect() {
-  const select = document.getElementById('date-select');
-  select.innerHTML = '<option value="latest">Latest digest</option>';
-  state.availableDigests.forEach((d) => {
-    const opt = document.createElement('option');
-    opt.value = d.date;
-    opt.textContent = `${d.date}, ${d.total_curated || 0} curated`;
-    select.appendChild(opt);
-  });
-  select.value = state.selectedDate;
-  if (select.value !== state.selectedDate) select.value = 'latest';
-}
-
-// ─── Readings (real figures only) ──────────────────────────────────────────
-
-function renderReadings() {
-  const items = (state.digest && state.digest.items) || [];
-  const kept = items.filter((i) => i.category !== 'Skip');
-  const count = (cat) => items.filter((i) => inCategory(i, cat)).length;
-
-  const doing = {};
-  kept.filter((i) => triageOf(i).status === 'doing').forEach((i) => {
-    const who = triageOf(i).owner || 'someone';
-    doing[who] = (doing[who] || 0) + 1;
-  });
-  const done = kept.filter((i) => triageOf(i).status === 'done').length;
-  const dismissed = kept.filter((i) => triageOf(i).status === 'dismissed').length;
-  const have = !!state.digest;
-
-  document.getElementById('kpi-open').textContent = have ? count('todo') : '--';
-  document.getElementById('kpi-doing').textContent = have ? count('doing') : '--';
-  document.getElementById('kpi-doing-note').textContent = Object.keys(doing).length
-    ? Object.entries(doing).sort((a, b) => b[1] - a[1]).map(([who, n]) => `${who} ${n}`).join(' · ')
-    : 'nobody has taken anything yet';
-  document.getElementById('kpi-done').textContent = have ? done + dismissed : '--';
-  document.getElementById('kpi-done-note').textContent = `${done} done, ${dismissed} not for us`;
-  document.getElementById('kpi-must-read').textContent = have ? count('Must Read') : '--';
-  document.getElementById('kpi-must-note').textContent = kept.length ? `of ${kept.length} curated` : 'of the curated set';
-
-  renderFeedbackNote();
-  renderColophon();
-  const sub = document.getElementById('page-sub');
-  const title = document.getElementById('page-title');
-  if (state.digest) {
-    title.textContent = state.selectedDate === 'latest' ? 'Today’s digest' : `Digest of ${state.digest.date}`;
-    const from = state.digest.total_harvested ? ` from ${state.digest.total_harvested} harvested` : '';
-    const when = state.digest.created_at ? `, built ${relativeTime(state.digest.created_at)}` : '';
-    sub.textContent = `${state.digest.date}: ${kept.length} curated${from}${when}.`;
-  } else {
-    sub.textContent = 'No digest to show.';
-  }
-}
-
-/** How the digest was made: for whoever audits it, kept out of the way of the work. */
-function renderColophon() {
-  const parts = [];
-  const model = state.stats && state.stats.llm_model;
-  if (model) parts.push(`Curated by ${model.includes('/') ? model.split('/')[1] : model}`);
-  if (state.digest && state.digest.ranking_backend) parts.push(`ranked by ${state.digest.ranking_backend} ${state.digest.ranking_version || ''}`.trim());
-  const seen = state.insights ? state.insights.seen_in_window : (state.stats && state.stats.total_seen_urls);
-  if (Number.isFinite(seen)) parts.push(`${seen} URLs tracked over 30 days`);
-  if (state.digest) parts.push(triageState.persistent ? 'team status is saved to GitHub' : 'team status is kept on this server and resets if it restarts');
-  document.getElementById('colophon').textContent = parts.join(' · ');
-}
-
-function renderCategoryBadges() {
-  const items = (state.digest && state.digest.items) || [];
-  const ids = { todo: 'count-todo', doing: 'count-doing', curated: 'count-curated', 'Must Read': 'count-must-read', Inspiration: 'count-inspiration', handled: 'count-handled', Skip: 'count-skip' };
-  Object.entries(ids).forEach(([cat, id]) => {
-    document.getElementById(id).textContent = items.filter((i) => inCategory(i, cat)).length;
-  });
-}
-
-/** Which tab an item belongs to. Handled items stay in the category tabs, dimmed, so nothing vanishes. */
-function inCategory(item, cat) {
-  const status = triageOf(item).status;
-  switch (cat) {
-    case 'todo': return isActionable(item) && status === 'open';
-    case 'doing': return item.category !== 'Skip' && status === 'doing';
-    case 'handled': return item.category !== 'Skip' && (status === 'done' || status === 'dismissed');
-    case 'curated': return item.category !== 'Skip';
-    default: return item.category === cat;
-  }
-}
-
-// ─── Source filter rail ────────────────────────────────────────────────────
-
-function renderSpectrumRail() {
-  const rail = document.getElementById('spectrum-rail');
-  rail.innerHTML = '';
-  if (!state.digest || !state.digest.items) return;
-
-  const relevant = state.digest.items.filter((i) => inCategory(i, state.activeCategory));
-  const counts = {};
-  relevant.forEach((item) => { counts[item.source] = (counts[item.source] || 0) + 1; });
-  if (state.activeSource !== 'all' && !counts[state.activeSource]) counts[state.activeSource] = 0;
-
-  rail.appendChild(railLabel('Source'));
-  rail.appendChild(createSpectrumPill('all', 'All sources', relevant.length));
-  Object.keys(counts)
-    .sort((a, b) => counts[b] - counts[a])
-    .forEach((key) => rail.appendChild(createSpectrumPill(key, sourceName(key), counts[key])));
-}
-
-function railLabel(text) {
-  const label = document.createElement('span');
-  label.className = 'rail-label';
-  label.textContent = text;
-  return label;
-}
-
-/** Topics let a teammate follow only their area: security for one person, inference for another. */
-function renderTopicRail() {
-  const rail = document.getElementById('topic-rail');
-  rail.innerHTML = '';
-  if (!state.digest || !state.digest.items) return;
-
-  const counts = {};
-  state.digest.items.filter((i) => inCategory(i, state.activeCategory))
-    .forEach((item) => (item.topics || []).forEach((t) => { counts[t] = (counts[t] || 0) + 1; }));
-  if (state.activeTopic !== 'all' && !counts[state.activeTopic]) counts[state.activeTopic] = 0;
-  const topics = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
-  if (!topics.length) return;
-
-  rail.appendChild(railLabel('Topic'));
-  rail.appendChild(createTopicPill('all', 'All topics', null));
-  topics.slice(0, 12).concat(topics.slice(12).filter((t) => t === state.activeTopic))
-    .forEach((t) => rail.appendChild(createTopicPill(t, t.replace(/-/g, ' '), counts[t])));
-}
-
-function createTopicPill(key, label, count) {
-  const pill = document.createElement('button');
-  pill.type = 'button';
-  pill.className = `spectrum-pill ${state.activeTopic === key ? 'is-active' : ''}`;
-  pill.setAttribute('aria-pressed', state.activeTopic === key ? 'true' : 'false');
-  pill.dataset.topic = key;
-  pill.innerHTML = `<span>${escapeHtml(label)}</span>${count === null ? '' : `<span class="spectrum-count">${count}</span>`}`;
-  pill.addEventListener('click', () => {
-    state.activeTopic = key;
-    state.selectedIndex = 0;
-    writeUrlState();
-    renderTopicRail();
-    renderContent();
-  });
-  return pill;
-}
-
-function createSpectrumPill(key, label, count) {
-  const pill = document.createElement('button');
-  pill.type = 'button';
-  pill.className = `spectrum-pill ${state.activeSource === key ? 'is-active' : ''}`;
-  pill.setAttribute('aria-pressed', state.activeSource === key ? 'true' : 'false');
-  pill.innerHTML = `<span>${escapeHtml(label)}</span><span class="spectrum-count">${count}</span>`;
-  pill.addEventListener('click', () => {
-    state.activeSource = key;
-    state.selectedIndex = 0;
-    writeUrlState();
-    renderSpectrumRail();
-    renderTopicRail();
-    renderContent();
-  });
-  return pill;
-}
-
-// ─── Filtering and rendering ───────────────────────────────────────────────
-
-function computeFilteredItems() {
-  if (!state.digest || !state.digest.items) return [];
-  return state.digest.items.filter((item) => {
-    if (!inCategory(item, state.activeCategory)) return false;
-    if (state.activeSource !== 'all' && item.source !== state.activeSource) return false;
-    if (state.activeTopic !== 'all' && !(item.topics || []).includes(state.activeTopic)) return false;
-    if (state.searchQuery) {
-      const text = `${item.title} ${item.summary} ${item.why_it_matters} ${item.next_step_detail} ${item.source} ${(item.topics || []).join(' ')} ${triageOf(item).owner} ${triageOf(item).note}`.toLowerCase();
-      if (!state.searchQuery.split(/\s+/).every((word) => text.includes(word))) return false;
-    }
-    return true;
-  }).sort((a, b) => stepRank(a) - stepRank(b)); // stable: keeps the ranking inside each group
-}
-
-function stepRank(item) {
-  const i = STEP_ORDER.indexOf(item.next_step);
-  return i === -1 ? STEP_ORDER.length : i;
-}
-
-function renderContent() {
-  const container = document.getElementById('content-container');
-  if (!state.digest) return;
-  state.filteredItems = computeFilteredItems();
-
-  if (state.filteredItems.length === 0) {
-    const [title, body] = emptyMessage();
-    renderEmpty(container, title, body, true);
-    return;
-  }
-  if (state.selectedIndex >= state.filteredItems.length) state.selectedIndex = 0;
-
-  if (state.viewMode === 'grid') renderListView(container);
-  else renderSplitView(container);
-}
-
-function renderEmpty(container, title, body, withReset = false) {
-  container.className = 'cards-grid-view';
-  container.innerHTML = `
-    <div class="state-panel">
-      <h3>${escapeHtml(title)}</h3>
-      <p>${escapeHtml(body)}</p>
-      ${withReset ? '<button type="button" class="btn" id="btn-reset">Show all signal</button>' : ''}
-    </div>`;
-  const reset = document.getElementById('btn-reset');
-  if (reset) reset.addEventListener('click', resetFilters);
-}
-
-/** What an empty tab means, so an empty queue reads as good news rather than a fault. */
-function emptyMessage() {
-  const filtered = state.searchQuery || state.activeSource !== 'all' || state.activeTopic !== 'all';
-  if (filtered) return ['Nothing matches these filters', 'Clear the search, source or topic, or look at all signal.'];
-  return {
-    todo: ['Nothing is waiting on anyone', 'Every Patch, Try and Evaluate item today has an owner or was handled. Read the rest under All signal.'],
-    doing: ['Nobody has taken anything yet', 'Take an item from To do and it shows here for the whole team.'],
-    handled: ['Nothing handled yet', 'Items marked done, or not for us, collect here so they can be reopened.'],
-  }[state.activeCategory] || ['Nothing here', 'Try another view.'];
-}
-
-function renderError(container, retry) {
-  container.className = 'cards-grid-view';
-  container.innerHTML = `
-    <div class="state-panel is-error">
-      <h3>The digest did not load</h3>
-      <p>The server did not answer in time. If it was idle, it needs about 30 seconds to wake. Nothing is lost.</p>
-      <button type="button" class="btn btn-primary" id="btn-retry">Try again</button>
-    </div>`;
-  document.getElementById('btn-retry').addEventListener('click', retry);
-}
-
-function resetFilters() {
-  state.searchQuery = '';
-  state.activeSource = 'all';
-  state.activeTopic = 'all';
-  state.activeCategory = 'curated';
-  state.selectedIndex = 0;
-  syncControls();
-  writeUrlState();
-  rerenderAll();
-}
-
-function renderListView(container) {
-  container.className = 'cards-grid-view';
-  container.innerHTML = '';
-  const grouped = ['curated', 'todo'].includes(state.activeCategory) && new Set(state.filteredItems.map((i) => i.next_step)).size > 1;
-  let lastStep = null;
-  state.filteredItems.forEach((item, index) => {
-    if (grouped && item.next_step !== lastStep) {
-      lastStep = item.next_step;
-      const h = document.createElement('h2');
-      h.className = 'step-heading';
-      h.textContent = STEP_HEADINGS[lastStep] || 'Worth knowing';
-      container.appendChild(h);
-    }
-    container.appendChild(buildSignalCard(item, index));
-  });
-}
-
-function renderSplitView(container) {
-  container.className = 'cockpit-split-view';
-  container.innerHTML = '';
-
-  const feedPane = document.createElement('div');
-  feedPane.className = 'scrollable-feed-pane';
-  feedPane.setAttribute('role', 'list');
-  state.filteredItems.forEach((item, index) => feedPane.appendChild(buildSignalCard(item, index)));
-
-  const inspector = document.createElement('aside');
-  inspector.className = 'sticky-inspector-pane';
-  inspector.id = 'sticky-inspector';
-  inspector.setAttribute('aria-label', 'Selected item');
-  inspector.innerHTML = buildInspectorHtml(state.filteredItems[state.selectedIndex] || state.filteredItems[0]);
-
-  container.appendChild(feedPane);
-  container.appendChild(inspector);
-}
-
-function badgeClass(category) {
-  return category === 'Must Read' ? 'must-read' : category === 'Inspiration' ? 'inspiration' : 'skip';
-}
-
-function categoryLabel(category) {
-  return category === 'Must Read' ? 'Must Read' : category;
-}
-
-/** "5 h ago" from the source's own date; digests saved before dates were kept say so instead of guessing. */
-function ageLabel(item) {
-  return (item.published_at && relativeTime(item.published_at)) || 'date not recorded';
-}
-
-function metaLine(item) {
-  const tags = [...(item.topics || []), ...(item.tags || [])].slice(0, 5).map((t) => `#${escapeHtml(String(t).replace(/\s+/g, '-'))}`).join(' ');
-  return `${escapeHtml(ageLabel(item))}${tags ? ` · ${tags}` : ''}`;
-}
-
-function verificationLine(item) {
-  if (item.verification === 'verified') return '<span class="check-mark">Checked against source</span>';
-  if (item.verification === 'corrected') return '<span class="check-mark">Corrected against source</span>';
-  if (item.verification === 'unverified') return `<span class="check-mark check-warn" title="${escapeHtml(item.verification_note)}">Not fully backed by source</span>`;
-  return '';
-}
-
-function nextStepLine(item) {
-  const story = item.story_id ? ` <button type="button" class="story-btn" data-story="${escapeHtml(item.story_id)}">Follow the story</button>` : '';
-  if (item.category === 'Skip' || (!item.next_step_detail && !story)) return story ? `<p class="card-next">${story}</p>` : '';
-  const detail = item.next_step_detail ? `<strong>${escapeHtml(item.next_step)}:</strong> ${escapeHtml(item.next_step_detail)}` : '';
-  return `<p class="card-next">${detail}${story}</p>`;
 }
 
 async function openStory(storyId) {
@@ -589,138 +335,21 @@ async function openStory(storyId) {
     showToast('Could not load the story.');
     return;
   }
-  const rows = items.map((i) => `
+  document.getElementById('story-list').innerHTML = items.map((i) => `
     <li>
       <span class="measured">${escapeHtml((i.published_at || i.digest_date || '').slice(0, 10))}</span>
       <a href="${escapeHtml(i.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(i.title)}</a>
-      <p>${escapeHtml(i.next_step_detail || i.summary)}</p>
+      <p>${escapeHtml(plainText(i.next_step_detail || i.summary))}</p>
     </li>`).join('');
-  openModal({ title: 'Story', url: '', summary: '' }, null, `<h2 class="inspector-title">The story so far</h2><ol class="story-list">${rows}</ol>`);
+  document.getElementById('story-dialog').showModal();
 }
 
-function buildSignalCard(item, index) {
-  const card = document.createElement('div');
-  card.setAttribute('role', 'listitem');
-  const handled = ['done', 'dismissed'].includes(triageOf(item).status);
-  card.className = `signal-card ${state.selectedIndex === index ? 'is-selected' : ''} ${item.category === 'Skip' ? 'is-skip' : ''} ${handled ? 'is-handled' : ''}`;
-  card.tabIndex = 0;
-
-  card.innerHTML = `
-    <span class="card-rank">${String(index + 1).padStart(2, '0')}</span>
-    <div class="card-main">
-      <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="card-title">${escapeHtml(item.title)}</a>
-      <p class="card-meta">${metaLine(item)}</p>
-      <p class="card-desc">${escapeHtml(plainText(item.category === 'Skip' ? item.why_it_matters : item.summary))}</p>
-      ${nextStepLine(item)}
-      ${triageControls(item)}
-      ${verificationLine(item)}
-    </div>
-    <div class="card-foot">
-      <span class="badge-source">${escapeHtml(sourceName(item.source))}</span>
-      <span class="score-badge ${badgeClass(item.category)}">${escapeHtml(categoryLabel(item.category))}</span>
-      ${rateButtons(item.url)}
-      <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="action-link">Open</a>
-    </div>`;
-
-  card.querySelectorAll('a').forEach((a) => a.addEventListener('click', (e) => e.stopPropagation()));
-
-  const activate = () => {
-    state.selectedIndex = index;
-    if (state.viewMode === 'cockpit') {
-      document.querySelectorAll('.signal-card').forEach((c) => c.classList.remove('is-selected'));
-      card.classList.add('is-selected');
-      const insp = document.getElementById('sticky-inspector');
-      if (insp) insp.innerHTML = buildInspectorHtml(item);
-    } else {
-      openModal(item, card);
-    }
-  };
-  card.addEventListener('click', (e) => {
-    if (e.target.closest('.rate') || e.target.closest('.story-btn') || e.target.closest('.card-triage')) return; // acting on a row must not also open it
-    activate();
-  });
-  card.addEventListener('keydown', (e) => {
-    if (e.target !== card) return;
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      activate();
-    }
-  });
-  return card;
-}
-
-// ─── Inspector and quick reader ────────────────────────────────────────────
-
-function buildInspectorHtml(item) {
-  if (!item) return '<p class="empty-canvas">Select an item to read it here.</p>';
-  return `
-    <div class="inspector-header">
-      <div class="inspector-meta">
-        <span class="badge-source">${escapeHtml(sourceName(item.source))}</span>
-        <span class="score-badge ${badgeClass(item.category)}">${escapeHtml(categoryLabel(item.category))}</span>
-      </div>
-      <h2 class="inspector-title">${escapeHtml(item.title)}</h2>
-      <div class="inspector-actions">
-        <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open source</a>
-        <button type="button" class="btn" data-copy="${escapeHtml(item.url)}">Copy link</button>
-      </div>
-      ${rateButtons(item.url)}
-    </div>
-
-    <div class="inspector-section team-section">
-      <span class="inspector-heading">Team</span>
-      ${triageControls(item) || '<p class="inspector-text">Filtered-out items are not triaged.</p>'}
-      ${noteBox(item)}
-    </div>
-
-    <div class="inspector-section">
-      <span class="inspector-heading">Summary</span>
-      <p class="inspector-text">${escapeHtml(plainText(item.summary))}</p>
-    </div>
-
-    ${item.next_step_detail ? `
-      <div class="inspector-section">
-        <span class="inspector-heading">${escapeHtml(item.next_step)}</span>
-        <p class="inspector-text">${escapeHtml(item.next_step_detail)}</p>
-      </div>` : ''}
-
-    ${item.why_it_matters ? `
-      <div class="inspector-section">
-        <span class="inspector-heading">Why it was kept</span>
-        <p class="inspector-text">${escapeHtml(item.why_it_matters)}</p>
-      </div>` : ''}
-
-    <dl class="meta-grid">
-      <div><dt>Source</dt><dd>${escapeHtml(sourceName(item.source))}</dd></div>
-      <div><dt>Published</dt><dd>${item.published_at ? escapeHtml(new Date(item.published_at).toLocaleString()) : 'not recorded'}</dd></div>
-      <div><dt>Category</dt><dd>${escapeHtml(categoryLabel(item.category))}</dd></div>
-      ${item.priority_score ? `<div><dt>Priority score</dt><dd class="measured">${Number(item.priority_score).toFixed(1)}</dd></div>` : ''}
-      <div class="wide"><dt>Link</dt><dd class="measured">${escapeHtml(item.url)}</dd></div>
-    </dl>`;
-}
-
-/** A note belongs to a decision, so it appears once somebody has taken, finished or dismissed the item. */
-function noteBox(item) {
-  const t = triageOf(item);
-  if (item.category === 'Skip' || t.status === 'open') return '';
-  return `
-    <div class="note-box">
-      <label class="visually-hidden" for="triage-note">Note for the team</label>
-      <textarea id="triage-note" class="field note-field" rows="2" maxlength="500" placeholder="Note for the team: ticket link, what you found, why not" data-url="${escapeHtml(item.url)}">${escapeHtml(t.note)}</textarea>
-      <button type="button" class="btn" data-note-save data-url="${escapeHtml(item.url)}">Save note</button>
-    </div>`;
-}
-
-function findItem(url) {
-  return ((state.digest && state.digest.items) || []).find((i) => i.url === url);
-}
-
-// ─── Ratings ───────────────────────────────────────────────────────────────
+// ─── Ratings: they teach tomorrow's curator ────────────────────────────────
 
 function rateButtons(url) {
   const current = state.ratings[url] || 0;
   const u = escapeHtml(url);
-  return `<span class="rate" role="group" aria-label="Rate this item">
+  return `<span class="rate" role="group" aria-label="Was this useful?">
     <button type="button" class="rate-btn" data-rate="1" data-url="${u}" aria-pressed="${current === 1}">Useful</button>
     <button type="button" class="rate-btn" data-rate="-1" data-url="${u}" aria-pressed="${current === -1}">Not useful</button>
   </span>`;
@@ -731,18 +360,6 @@ function paintRatings(url) {
   document.querySelectorAll('.rate-btn').forEach((b) => {
     if (b.dataset.url === url) b.setAttribute('aria-pressed', String(Number(b.dataset.rate) === current));
   });
-  renderFeedbackNote();
-}
-
-function renderFeedbackNote() {
-  const values = Object.values(state.ratings);
-  const up = values.filter((v) => v === 1).length;
-  const down = values.filter((v) => v === -1).length;
-  const note = document.getElementById('feedback-note');
-  if (!note) return;
-  note.textContent = values.length
-    ? `Your ratings: ${up} useful, ${down} not useful. They steer the next harvest.`
-    : 'Rate items as useful or not useful and the next harvest learns from them.';
 }
 
 async function submitRating(url, rating) {
@@ -753,7 +370,7 @@ async function submitRating(url, rating) {
     if (!key) return;
     storeHarvestKey(key);
   }
-  state.ratings[url] = rating; // optimistic; rolled back below on failure
+  if (rating) state.ratings[url] = rating; else delete state.ratings[url]; // optimistic; rolled back below on failure
   paintRatings(url);
   try {
     const res = await fetch('/api/feedback', {
@@ -766,110 +383,10 @@ async function submitRating(url, rating) {
       if (res.status === 401) storeHarvestKey('');
       throw new Error(data.error || data.detail || `Rating failed (${res.status})`);
     }
-    if (rating === 0) delete state.ratings[url];
-    showToast(data.persisted ? 'Saved.' : 'Saved on this server only. It resets if the server restarts.');
+    showToast(data.persisted ? 'Saved. It steers the next harvest.' : 'Saved on this server only. It resets if the server restarts.');
   } catch (err) {
-    if (previous) state.ratings[url] = previous;
-    else delete state.ratings[url];
+    if (previous) state.ratings[url] = previous; else delete state.ratings[url];
     paintRatings(url);
     showToast(err.message || 'Could not save the rating.');
   }
-  renderFeedbackNote();
-}
-
-document.addEventListener('click', async (e) => {
-  const act = e.target.closest('[data-triage]');
-  if (act) {
-    e.stopPropagation();
-    const item = findItem(act.dataset.url);
-    if (!item) return;
-    const ok = await setTriage(item, act.dataset.triage);
-    if (ok && act.dataset.triage === 'doing') showToast('Yours now. Teammates see it in In progress.');
-    return;
-  }
-  const save = e.target.closest('[data-note-save]');
-  if (save) {
-    const item = findItem(save.dataset.url);
-    const box = document.getElementById('triage-note');
-    if (item && box && await setTriage(item, triageOf(item).status, { note: box.value.trim() })) showToast('Note saved.');
-    return;
-  }
-  const rate = e.target.closest('.rate-btn');
-  if (rate) {
-    e.stopPropagation();
-    const next = Number(rate.dataset.rate);
-    submitRating(rate.dataset.url, (state.ratings[rate.dataset.url] || 0) === next ? 0 : next);
-    return;
-  }
-  const story = e.target.closest('.story-btn');
-  if (story) {
-    e.stopPropagation();
-    openStory(story.dataset.story);
-    return;
-  }
-  const btn = e.target.closest('[data-copy]');
-  if (!btn) return;
-  navigator.clipboard.writeText(btn.dataset.copy).then(
-    () => showToast('Link copied.'),
-    () => showToast('Could not copy the link.')
-  );
-});
-
-let modalReturnFocus = null;
-
-function openModal(item, returnTo, bodyHtml) {
-  closeModal();
-  modalReturnFocus = returnTo || null;
-  const modal = document.createElement('div');
-  modal.id = 'grid-modal';
-  modal.setAttribute('role', 'dialog');
-  modal.setAttribute('aria-modal', 'true');
-  modal.setAttribute('aria-label', item.title);
-  if (item.url && !bodyHtml) modal.dataset.url = item.url;
-  modal.innerHTML = `
-    <div class="modal-panel">
-      <button type="button" class="btn modal-close" id="modal-close" aria-label="Close">Close</button>
-      ${bodyHtml || buildInspectorHtml(item)}
-    </div>`;
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.body.appendChild(modal);
-  modal.querySelector('#modal-close').addEventListener('click', closeModal);
-  modal.querySelector('#modal-close').focus();
-}
-
-/** After a status change the open reader (modal or split pane) must show the new status and note box. */
-function refreshOpenPanel() {
-  const item = state.filteredItems[state.selectedIndex];
-  const modal = document.getElementById('grid-modal');
-  const panel = modal ? modal.querySelector('.modal-panel') : null;
-  if (!panel || !panel.querySelector('.team-section') || !modal.dataset.url) return;
-  const current = findItem(modal.dataset.url) || item;
-  const close = panel.querySelector('#modal-close');
-  panel.innerHTML = '';
-  panel.appendChild(close);
-  panel.insertAdjacentHTML('beforeend', buildInspectorHtml(current));
-}
-
-function closeModal() {
-  const modal = document.getElementById('grid-modal');
-  if (!modal) return;
-  modal.remove();
-  if (modalReturnFocus && document.contains(modalReturnFocus)) modalReturnFocus.focus();
-  modalReturnFocus = null;
-}
-
-// ─── Keyboard selection ────────────────────────────────────────────────────
-
-function moveSelection(step) {
-  const n = state.filteredItems.length;
-  if (!n) return;
-  state.selectedIndex = (state.selectedIndex + step + n) % n;
-  const cards = document.querySelectorAll('.signal-card');
-  cards.forEach((c, idx) => {
-    const on = idx === state.selectedIndex;
-    c.classList.toggle('is-selected', on);
-    if (on) c.scrollIntoView({ block: 'nearest', behavior: 'auto' });
-  });
-  const insp = document.getElementById('sticky-inspector');
-  if (insp) insp.innerHTML = buildInspectorHtml(state.filteredItems[state.selectedIndex]);
 }

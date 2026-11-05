@@ -11,34 +11,31 @@
 
 ---
 
-## Working as a team
+## The briefing: what changed for the tools you run
 
-The feed opens on **To do**: every Patch, Try or Evaluate item nobody has taken yet.
+Most of what public sources publish changes nothing for a given team (in our own archive only 4% of kept items mentioned anything the stack runs). So the page is a short briefing, not a feed:
 
-- **Take it, finish it, or mark it "not for us".** The status and your name are stored on the server, so every teammate sees the same state. Taken items move to **In progress**, finished and dismissed ones to **Handled**, where they can be reopened. A note (ticket link, why not) can be added once an item has a decision.
-- **Copy brief** builds a Markdown standup brief for the shown day: what needs someone, who has what, what to read. Paste it into chat.
-- **Topics** narrow the feed to one area (security, inference, agents...), so each person can follow their own.
-- **Archive** searches every kept item across all days by word, topic or next step. Pipeline statistics sit under "Pipeline health".
-- Harvest controls are under **Admin** in the header.
+- **Act on**: touches your stack and asks for something (a patch, an evaluation, a security advisory). These can be taken by a teammate.
+- **Touches your stack**: worth knowing, nothing to do yet.
+- **Worth your time**: the best few reads of the day, capped so the briefing fits in a coffee. Total featured is about 7; alerts are never cut.
+- **Also kept** and **Filtered out, with the reason** stay collapsed underneath.
+- A quiet day says so. "Nothing touches your stack" is a result, not an empty page.
 
-Names are self-declared and kept in the browser; there is no login. Set `HARVEST_API_KEY` if strangers can reach the server. Status survives restarts the same way ratings do: set `FEEDBACK_GITHUB_TOKEN` and `GITHUB_REPO` and it is appended to `data/triage.jsonl` on the `feedback` branch. Without them it lives in `data/triage.jsonl` on the server and is lost when a free host resets its disk.
+**Set your stack** in `config/profile.toml` (`tools`, optional `[aliases]`, and `broad` for terms like `python` that are too common to promote anything alone). The shipped list is a placeholder. The same list drives the security-advisory collector.
 
-Endpoints: `GET/POST /api/triage`, `GET /api/search?q=&topic=&step=`, `GET /api/brief?date=`.
+Team features: take an item ("I'll patch it"), finish it or mark it "not for us", with an owner and a note, shared through the server. "Copy brief" produces a Markdown standup brief. The archive searches every kept item across all days. A boilerplate action such as "clone the repo and run the example" is shown as a suggestion, never as a task.
+
+Names are self-declared and kept in the browser; there is no login. Set `HARVEST_API_KEY` if strangers can reach the server. Status survives restarts like ratings do: set `FEEDBACK_GITHUB_TOKEN` and `GITHUB_REPO` and it is appended to `data/triage.jsonl` on the `feedback` branch.
+
+Endpoints: `GET /api/briefing?date=`, `GET /api/brief?date=`, `GET /api/search?q=&topic=&step=`, `GET/POST /api/triage`.
 
 ---
 
-## Web Observatory & Intelligence Cockpit
+## Running the web app
 
-TechPulse includes a local observatory web UI inspired by modern engineering cockpits (Linear, Raycast, Vercel design aesthetic):
+Pages: **Briefing** (`/`) and **Archive** (`/curated-digests`, search plus pipeline health). Harvest, quota and Markdown export are under **Admin**.
 
-- **Zero-Scroll Cockpit Flight Mode**: Viewport-contained master-detail layout with keyboard flight controls (`↑`/`↓` or `J`/`K` navigation, `↵` to launch source).
-- **Responsive Auto-Fill Bento Cards**: High-density 3-column card grid with glowing category accents and executive takeaways.
-- **High-Signal Filtering & Noise Audit**: Keeps rejected noise quarantined in an audit tab while presenting only high-conviction signals by default.
-- **Historical Date Switcher**: Browse historical digest editions directly through an integrated dropdown.
-- **Markdown Export**: Direct one-click download of `TechPulse-Digest-YYYY-MM-DD.md`.
-- **On-Demand Live Harvesting**: Trigger a real-time multi-source crawl and Groq curation cycle with live progress toasts.
-
-Launch the cockpit:
+Start it:
 ```bash
 python -m uvicorn api:app --host 127.0.0.1 --port 8000 --reload
 ```

@@ -80,32 +80,31 @@ def fetch_remote_events() -> List[Dict[str, Any]]:
 # ─── Standup brief ──────────────────────────────────────────────────────────
 
 def _line(item: Dict[str, Any], state: Optional[Dict[str, Any]]) -> str:
-    detail = (item.get("next_step_detail") or "").strip()
+    action = (item.get("action") or "").strip()
     owner = f" [{state['owner']}]" if state and state.get("owner") else ""
-    tail = f": {detail}" if detail else ""
-    return f"- **{item['next_step']}**{owner} [{item['title']}]({item['url']}){tail}"
+    verb = f"**{item['next_step']}**{owner} " if item.get("actionable") else ""
+    touches = f" (touches {', '.join(h for h in item['stack_hits'])})" if item.get("stack_hits") else ""
+    return f"- {verb}[{item['title']}]({item['url']}){touches}" + (f": {action}" if action else "")
 
 
-def build_brief(digest: Dict[str, Any], triage: Dict[str, Dict[str, Any]], reads: int = 5) -> str:
-    """Plain Markdown a team can paste into chat: what needs doing, who has it, what to read."""
-    items = [i for i in digest.get("items", []) if i.get("category") != "Skip"]
+def build_brief(date: str, items: List[Dict[str, Any]], triage: Dict[str, Dict[str, Any]]) -> str:
+    """Plain Markdown a team can paste into chat. `items` come from radar.annotate().
+
+    Handled items are left out, so the brief shows only what is still open or under way.
+    """
     status = lambda i: (triage.get(i["url"]) or {}).get("status", "open")  # noqa: E731
+    live = [i for i in items if i["tier"] != "filtered" and status(i) not in ("done", "dismissed")]
 
-    todo = [i for i in items if i.get("next_step") in ACTION_STEPS and status(i) == "open"]
-    doing = [i for i in items if status(i) == "doing"]
-    read = [i for i in items if i.get("next_step") not in ACTION_STEPS and status(i) == "open"
-            and i.get("category") == "Must Read"][:reads]
+    doing = [i for i in live if status(i) == "doing"]
+    others = [i for i in live if status(i) != "doing"]
+    alerts = [i for i in others if i["tier"] == "alert"]
+    stack = [i for i in others if i["tier"] == "stack"]
+    picks = [i for i in others if i["tier"] == "pick"]
 
-    order = {step: n for n, step in enumerate(ACTION_STEPS)}
-    todo.sort(key=lambda i: order.get(i["next_step"], 9))
-
-    lines = [f"# TechPulse brief for {digest.get('date', '')}", ""]
-    if todo:
-        lines += [f"## Needs someone ({len(todo)})", *[_line(i, triage.get(i["url"])) for i in todo], ""]
-    if doing:
-        lines += [f"## In progress ({len(doing)})", *[_line(i, triage.get(i["url"])) for i in doing], ""]
-    if read:
-        lines += ["## Worth reading", *[f"- [{i['title']}]({i['url']})" for i in read], ""]
-    if not (todo or doing or read):
+    lines = [f"# TechPulse brief for {date}", ""]
+    for heading, group in (("Act on", alerts), ("In progress", doing), ("Touches our stack", stack), ("Worth your time", picks)):
+        if group:
+            lines += [f"## {heading} ({len(group)})", *[_line(i, triage.get(i["url"])) for i in group], ""]
+    if not (alerts or doing or stack or picks):
         lines += ["Nothing needs the team today.", ""]
     return "\n".join(lines).rstrip() + "\n"

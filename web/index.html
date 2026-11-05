@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechPulse, what your team should do today</title>
-  <meta name="description" content="A daily digest your team can act on: patches, things to try, who has each, and a searchable archive.">
+  <title>TechPulse, today's briefing for your stack</title>
+  <meta name="description" content="What changed today for the tools your team runs, the best few things to read, and who is handling what.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2' y='2' width='12' height='12' rx='3' fill='none' stroke='%23f5b942' stroke-width='2'/%3E%3C/svg%3E">
 </head>
@@ -15,30 +15,19 @@
 
   <header class="shell-bar">
     <div class="container">
-      <a href="/" class="brand-monolith" aria-label="TechPulse, live feed">
+      <a href="/" class="brand-monolith" aria-label="TechPulse, briefing">
         <span class="beacon-pulse" aria-hidden="true"></span>
         <span>TechPulse</span>
       </a>
 
       <nav class="nav-tabs" aria-label="Main">
-        <a href="/" class="nav-tab" aria-current="page">Feed</a>
+        <a href="/" class="nav-tab" aria-current="page">Briefing</a>
         <a href="/curated-digests" class="nav-tab">Archive</a>
       </nav>
 
       <div class="bar-actions">
-        <label class="visually-hidden" for="date-select">Digest date</label>
-        <select id="date-select" class="field" title="Browse earlier digests">
-          <option value="latest">Latest digest</option>
-        </select>
-
-        <button type="button" class="btn" id="btn-brief" title="Copy a standup brief: what needs someone, who has what, what to read">
-          <span>Copy brief</span>
-        </button>
-
-        <button type="button" class="btn" id="btn-name" title="Your name is shown on items you take">
-          <span id="name-label">Set your name</span>
-        </button>
-
+        <button type="button" class="btn" id="btn-brief" title="Copy a standup brief: what to act on, who has what, what to read">Copy brief</button>
+        <button type="button" class="btn" id="btn-name" title="Your name is shown on items you take"><span id="name-label">Set your name</span></button>
         <details class="admin-menu" id="admin-menu">
           <summary class="btn" title="Harvest controls">Admin</summary>
           <div class="admin-panel">
@@ -46,115 +35,49 @@
               <span class="quota-indicator-dot" id="quota-dot" aria-hidden="true"></span>
               <span class="quota-text" id="quota-text">Quota ready</span>
             </div>
-            <button type="button" class="btn btn-primary" id="btn-harvest" title="Collect and rank new items now">
-              <span>Run harvest</span>
-            </button>
-            <button type="button" class="btn" id="btn-export" title="Download the shown digest as Markdown">
-              <span>Export .md</span>
-            </button>
+            <button type="button" class="btn btn-primary" id="btn-harvest" title="Collect and rank new items now"><span>Run harvest</span></button>
+            <button type="button" class="btn" id="btn-export" title="Download the shown day as Markdown"><span>Export .md</span></button>
           </div>
         </details>
       </div>
     </div>
   </header>
 
-  <main class="app-wrapper container">
+  <main class="briefing" id="briefing" aria-busy="true">
 
-    <div class="page-head">
-      <div>
-        <h1 id="page-title">Today’s digest</h1>
-        <p id="page-sub">Loading the latest ranked items.</p>
-        <p id="feedback-note"></p>
-      </div>
-    </div>
+    <nav class="day-nav" aria-label="Day">
+      <button type="button" class="day-btn" id="day-prev" aria-label="Previous day">‹</button>
+      <span class="day-label" id="day-label">Loading</span>
+      <button type="button" class="day-btn" id="day-next" aria-label="Next day">›</button>
+    </nav>
 
-    <section class="readings" aria-label="Team work on this digest">
-      <button type="button" class="reading-cell" id="kpi-card-open" title="Show items that need someone">
-        <span class="reading-label">Needs someone</span>
-        <span class="reading-value" id="kpi-open">--</span>
-        <span class="reading-note">Patch, Try or Evaluate, nobody on it</span>
-      </button>
+    <header class="lede">
+      <h1 id="headline">Reading today.</h1>
+      <p class="lede-sub" id="lede-sub"></p>
+    </header>
 
-      <button type="button" class="reading-cell" id="kpi-card-doing" title="Show what the team is working on">
-        <span class="reading-label">In progress</span>
-        <span class="reading-value" id="kpi-doing">--</span>
-        <span class="reading-note" id="kpi-doing-note">nobody has taken anything yet</span>
-      </button>
+    <section class="stack-strip" id="stack-strip" aria-label="Your stack"></section>
 
-      <button type="button" class="reading-cell" id="kpi-card-done" title="Show handled items">
-        <span class="reading-label">Handled</span>
-        <span class="reading-value" id="kpi-done">--</span>
-        <span class="reading-note" id="kpi-done-note">done or dismissed</span>
-      </button>
-
-      <button type="button" class="reading-cell" id="kpi-card-must-read" title="Show must reads only">
-        <span class="reading-label">Must read</span>
-        <span class="reading-value" id="kpi-must-read">--</span>
-        <span class="reading-note" id="kpi-must-note">of the curated set</span>
-      </button>
-    </section>
-
-    <section class="control-bar" aria-label="Filters">
-      <div class="segmented-control" role="group" aria-label="View">
-        <button type="button" class="seg-btn is-active" data-category="todo" id="tab-todo">
-          To do <span class="tab-badge" id="count-todo">0</span>
-        </button>
-        <button type="button" class="seg-btn" data-category="doing" id="tab-doing">
-          In progress <span class="tab-badge" id="count-doing">0</span>
-        </button>
-        <button type="button" class="seg-btn" data-category="curated" id="tab-curated">
-          All signal <span class="tab-badge" id="count-curated">0</span>
-        </button>
-        <button type="button" class="seg-btn" data-category="Must Read" id="tab-must-read">
-          Must read <span class="tab-badge" id="count-must-read">0</span>
-        </button>
-        <button type="button" class="seg-btn" data-category="Inspiration" id="tab-inspiration">
-          Inspiration <span class="tab-badge" id="count-inspiration">0</span>
-        </button>
-        <button type="button" class="seg-btn" data-category="handled" id="tab-handled">
-          Handled <span class="tab-badge" id="count-handled">0</span>
-        </button>
-        <button type="button" class="seg-btn muted" data-category="Skip" id="tab-skip" title="Items you can skip, each with the reason">
-          Safe to ignore <span class="tab-badge" id="count-skip">0</span>
-        </button>
-      </div>
-
-      <div class="search-wrapper">
-        <label class="visually-hidden" for="search-input">Search the digest</label>
-        <input type="search" id="search-input" name="q" class="field search-input" placeholder="Search this digest" autocomplete="off" spellcheck="false">
-        <span class="kbd-shortcut"><kbd>Ctrl K</kbd></span>
-      </div>
-
-      <div class="view-toggle" role="group" aria-label="Layout">
-        <button type="button" class="view-btn is-active" id="view-cards-btn" title="Ranked list">List</button>
-        <button type="button" class="view-btn" id="view-cockpit-btn" title="List with a reading pane">Split</button>
-      </div>
-      <div class="keyboard-hint" id="keyboard-hint">
-        <kbd>↑</kbd><kbd>↓</kbd><span>move</span><kbd>↵</kbd><span>open</span>
-      </div>
-    </section>
-
-    <section class="spectrum-rail" id="spectrum-rail" aria-label="Filter by source"></section>
-    <section class="spectrum-rail" id="topic-rail" aria-label="Filter by topic"></section>
-
-    <div id="content-container" class="cards-grid-view" role="list" aria-live="polite" aria-busy="true">
-      <div class="skeleton-row"></div>
-      <div class="skeleton-row"></div>
-      <div class="skeleton-row"></div>
-      <div class="skeleton-row"></div>
+    <div id="content" aria-live="polite">
+      <div class="skeleton-row"></div><div class="skeleton-row"></div><div class="skeleton-row"></div>
     </div>
     <p class="wake-note" id="wake-note" hidden>The server is waking from idle. The first load can take about 30 seconds.</p>
     <p class="colophon" id="colophon"></p>
   </main>
 
+  <dialog id="story-dialog" aria-labelledby="story-title">
+    <form method="dialog">
+      <h2 id="story-title">The story so far</h2>
+      <ol class="story-list" id="story-list"></ol>
+      <div class="row"><button type="submit" class="btn">Close</button></div>
+    </form>
+  </dialog>
+
   <dialog id="name-dialog" aria-labelledby="name-title">
     <form method="dialog">
       <h2 id="name-title">Your name</h2>
       <p class="muted">Shown to your team on items you take or finish. It is stored in this browser only.</p>
-      <label>
-        Name
-        <input type="text" name="name" class="field" autocomplete="nickname" maxlength="40" required>
-      </label>
+      <label>Name <input type="text" name="name" class="field" autocomplete="nickname" maxlength="40" required></label>
       <div class="row">
         <button type="submit" class="btn" value="cancel" formnovalidate>Cancel</button>
         <button type="submit" class="btn btn-primary" value="ok">Save</button>
@@ -165,11 +88,8 @@
   <dialog id="key-dialog" aria-labelledby="key-title">
     <form method="dialog">
       <h2 id="key-title">Access key</h2>
-      <p class="muted">This server only lets key holders rate items and run a harvest.</p>
-      <label>
-        API key
-        <input type="password" name="key" class="field" autocomplete="off" required>
-      </label>
+      <p class="muted">This server only lets key holders rate items, take items and run a harvest.</p>
+      <label>API key <input type="password" name="key" class="field" autocomplete="off" required></label>
       <div class="row">
         <button type="submit" class="btn" value="cancel" formnovalidate>Cancel</button>
         <button type="submit" class="btn btn-primary" value="ok">Continue</button>
