@@ -206,3 +206,13 @@ dialog .row { display: flex; gap: var(--space-xs); justify-content: flex-end; }
 .find-heading { max-width: none; font-size: var(--text-xl); font-weight: 600; margin-bottom: var(--space-xs); }
 .examples { display: flex; flex-wrap: wrap; gap: var(--space-xs); align-items: center; }
 [hidden] { display: none !important; }
+
+.ask-panel { display: grid; gap: var(--space-sm); padding: var(--space-lg); border: var(--rule-hair) solid var(--color-rule-2); border-left: 3px solid var(--color-accent); border-radius: var(--radius-card); background: var(--color-paper-2); }
+.ask-answer { font-size: var(--text-md); line-height: 1.6; color: var(--color-ink); max-width: 68ch; }
+.ask-warn { padding: var(--space-xs) var(--space-sm); border-radius: 4px; background: var(--color-bad-soft); color: var(--color-ink); font-size: var(--text-sm); }
+.ask-picks { display: grid; gap: var(--space-sm); margin: 0; padding-left: var(--space-lg); }
+.ask-picks li { display: grid; gap: 2px; }
+.ask-picks p { color: var(--color-ink-2); font-size: var(--text-sm); max-width: 66ch; }
+.ask-sources li { display: flex; gap: var(--space-xs); align-items: baseline; }
+.ask-note { font-size: var(--text-xs); }
+.cite { display: inline-block; min-width: 1.2em; padding: 0 3px; margin: 0 1px; border-radius: 4px; background: var(--color-cool-soft); color: var(--color-ink); font-family: var(--font-outlier); font-size: 0.75em; text-align: center; text-decoration: none; vertical-align: super; }

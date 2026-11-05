@@ -46,7 +46,7 @@
 
     <div class="page-head">
       <h1>Find</h1>
-      <p>Describe what a project needs. Searches every digest your team has kept, then GitHub.</p>
+      <p>Describe what a project needs. Search shows what exists; Ask turns it into a recommendation with citations.</p>
     </div>
 
     <form class="search-bar" id="search-form" role="search" aria-label="Find a solution">
@@ -64,6 +64,7 @@
       </select>
       <label class="visually-hidden" for="area">Area</label>
       <select id="area" class="field"><option value="">Any area</option></select>
+      <button type="button" class="btn btn-primary" id="btn-ask" title="Answer this from the digests and GitHub, with citations">Ask</button>
     </form>
     <p class="examples" id="examples" aria-label="Examples">
       <span class="rail-label">Try</span>
@@ -72,6 +73,8 @@
       <button type="button" class="area-chip" data-example="kubernetes cost visibility">kubernetes cost visibility</button>
       <button type="button" class="area-chip" data-example="LLM evaluation framework">LLM evaluation framework</button>
     </p>
+
+    <section id="ask-panel" class="ask-panel" aria-live="polite" aria-label="Answer" hidden></section>
 
     <section aria-labelledby="h-digests">
       <h2 class="find-heading" id="h-digests">From your team's digests</h2>

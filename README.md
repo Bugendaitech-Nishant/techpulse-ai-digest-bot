@@ -17,6 +17,7 @@ Two jobs for an engineering team across backend, frontend, cloud, GenAI/AI/ML an
 
 1. **Keep the team current.** The **Briefing** page opens with the day's few **major updates** (capped at 5), then everything else the curator kept **by area** (GenAI & ML, Backend & data, Frontend & mobile, Cloud & DevOps, Security, Emerging). Pick an area and the whole page, and the link, narrows to it. Filtered-out items stay collapsed with the reason. A quiet day says so.
 2. **Find a solution for a use case.** **Find** takes a description ("vector database for multi-tenant RAG") and searches every digest the team has kept (ranked, stemmed, title-weighted; it will say "nothing" rather than show a one-word match), then asks GitHub live for maintained repositories (pushed in the last year, 20+ stars, with licence). Filter by tool, paper, article or advisory, and by area.
+   **Ask** turns the same retrieval into a short recommendation. The model reads only the numbered sources it is given, every pick must cite a real source and is built from that source's own title and link, a made-up citation is dropped, and it may say the sources are not enough. With no sources it is not called at all. It needs `GROQ_API_KEY`, counts against 10 questions an hour per visitor, answers repeated within an hour are free, and requires the access key when `HARVEST_API_KEY` is set.
 
 Optional **watchlist**: list tools in `config/profile.toml` (`tools`, `[aliases]`, `broad`) and items about them are pulled up as **Act on** (a patch or advisory) or **On your watchlist**. Leave `tools` empty for no alerts. The shipped list is a placeholder. The same list drives the security-advisory collector.
 
@@ -24,9 +25,13 @@ Team features: take an alert or patch ("I'll patch it"), finish it or mark it "n
 
 What to follow is set in `config/profile.toml` (`summary`, `interests`, `avoid` steer the curator) and `DEVTO_TAGS` / `GITHUB_SEARCH_TOPICS` in `config/settings.py` (what gets harvested). Coverage is only as wide as those lists.
 
+**Official feeds.** `FEEDS` in `config/settings.py` lists release-note and engineering-blog RSS/Atom feeds (AWS, Google Cloud, Azure, Cloudflare, Docker, Kubernetes, GitHub, Vercel, web.dev, Chrome, React, Node.js, Rust, Hugging Face, OpenAI, Google AI, Lobsters). They need no login. A dead feed is skipped and logged; the source fails only if all do. Run `python scripts/check_feeds.py` where the harvest runs to see which answer, and edit the list freely.
+
+**Agent Reach** (github.com/Panniantong/Agent-Reach) is deliberately not part of the server. It is a local CLI that drives a browser with logins copied from your own Chrome, which cannot and should not run on a shared host. It is useful on a teammate's own machine, with their coding agent, for sources that need a login or a transcript (Reddit, YouTube subtitles). Use a secondary account.
+
 Names are self-declared and kept in the browser; there is no login. Set `HARVEST_API_KEY` if strangers can reach the server. Status survives restarts like ratings do: set `FEEDBACK_GITHUB_TOKEN` and `GITHUB_REPO` and it is appended to `data/triage.jsonl` on the `feedback` branch. Live GitHub search uses the shared unauthenticated limit unless `GITHUB_TOKEN` is set.
 
-Endpoints: `GET /api/briefing?date=`, `GET /api/brief?date=`, `GET /api/search?q=&kind=&area=`, `GET /api/discover?q=`, `GET/POST /api/triage`.
+Endpoints: `GET /api/briefing?date=`, `GET /api/brief?date=`, `GET /api/search?q=&kind=&area=`, `GET /api/discover?q=`, `POST /api/ask`, `GET/POST /api/triage`.
 
 ---
 

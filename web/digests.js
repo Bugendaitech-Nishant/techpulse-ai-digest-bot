@@ -23,6 +23,95 @@ document.addEventListener('DOMContentLoaded', () => {
   load();
 });
 
+// ─── Ask: a recommendation, built only from what search found ──────────────
+
+const askState = { available: false, requiresKey: false, busy: false };
+
+async function setupAsk() {
+  const btn = document.getElementById('btn-ask');
+  try {
+    const status = await getJson('/api/ask/status', 15000);
+    askState.available = !!status.available;
+    askState.requiresKey = !!status.requires_key;
+  } catch (err) {
+    askState.available = false;
+  }
+  if (!askState.available) {
+    btn.disabled = true;
+    btn.title = 'Ask needs a model key (GROQ_API_KEY) on the server. Search still works.';
+  }
+}
+
+async function askQuestion() {
+  const q = document.getElementById('q').value.trim();
+  const panel = document.getElementById('ask-panel');
+  if (!askState.available) return;
+  if (q.length < 8) { showToast('Describe the need in a few words, at least 8 characters.'); return; }
+  if (askState.busy) return;
+
+  let key = storedHarvestKey();
+  if (askState.requiresKey && !key) {
+    key = await askHarvestKey();
+    if (!key) return;
+    storeHarvestKey(key);
+  }
+
+  askState.busy = true;
+  const btn = document.getElementById('btn-ask');
+  btn.disabled = true;
+  btn.textContent = 'Asking';
+  panel.hidden = false;
+  panel.innerHTML = '<div class="skeleton-row"></div>';
+  runSearch();
+  try {
+    const res = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(key ? { 'X-API-Key': key } : {}) },
+      body: JSON.stringify({ question: q }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) storeHarvestKey('');
+    if (!res.ok) throw new Error(res.status === 429 ? 'Ask is limited to 10 questions an hour. Search still works.' : (data.detail || data.error || `Ask failed (${res.status})`));
+    renderAnswer(data, q);
+  } catch (err) {
+    panel.innerHTML = `<div class="state-panel is-error"><h3>No answer</h3><p>${escapeHtml(err.message)}</p></div>`;
+  } finally {
+    askState.busy = false;
+    btn.disabled = false;
+    btn.textContent = 'Ask';
+  }
+}
+
+/** Model text is shown as text, never as markup. Citation markers become links to the numbered source. */
+function withCitations(text, sources) {
+  return escapeHtml(text).replace(/\[(\d+)\]/g, (m, n) => {
+    const s = sources.find((x) => x.n === Number(n));
+    return s ? `<a class="cite" href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(s.title)}">${n}</a>` : '';
+  });
+}
+
+function renderAnswer(data, question) {
+  const panel = document.getElementById('ask-panel');
+  const sources = data.sources || [];
+  const warn = !data.enough
+    ? '<p class="ask-warn">The sources do not answer this well. Treat anything below as a lead, not a recommendation.</p>' : '';
+  const picks = (data.picks || []).map((p) => `
+    <li>
+      <a href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer"><strong>${escapeHtml(p.title)}</strong></a>
+      <span class="muted">${p.origin === 'github' ? `GitHub${p.stars ? `, ${p.stars.toLocaleString()} stars` : ''}` : 'From your digests'}</span>
+      <p>${withCitations(p.why, sources)}</p>
+    </li>`).join('');
+  panel.innerHTML = `
+    <h2 class="find-heading">Answer</h2>
+    ${warn}
+    <p class="ask-answer">${withCitations(data.answer, sources)}</p>
+    ${picks ? `<ol class="ask-picks">${picks}</ol>` : ''}
+    ${data.caveats ? `<p class="muted">${withCitations(data.caveats, sources)}</p>` : ''}
+    ${sources.length ? `<details class="rest"><summary>Based on ${sources.length} ${sources.length === 1 ? 'source' : 'sources'}</summary>
+      <ol class="rest-list ask-sources">${sources.map((s) => `<li><span class="measured">${s.n}</span> <a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.title)}</a> <span class="muted">${s.origin === 'github' ? 'GitHub' : 'digest'}</span></li>`).join('')}</ol></details>` : ''}
+    <p class="muted ask-note">Written by an AI model from the sources above, which are third-party pages. Check the code and licence before relying on a pick.</p>`;
+}
+
 // ─── Find: the team's digests first, then GitHub ───────────────────────────
 
 let searchTimer = null;
@@ -34,7 +123,9 @@ function setupSearch() {
   const params = new URLSearchParams(window.location.search);
   document.getElementById('q').value = params.get('q') || '';
   document.getElementById('kind').value = params.get('kind') || '';
-  document.getElementById('search-form').addEventListener('submit', (e) => { e.preventDefault(); runSearch(); });
+  document.getElementById('search-form').addEventListener('submit', (e) => { e.preventDefault(); runSearch(); }); // Enter searches
+  document.getElementById('btn-ask').addEventListener('click', askQuestion); // asking spends model tokens, so it is a deliberate click
+  setupAsk();
   document.getElementById('q').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(runSearch, 300); });
   ['kind', 'area'].forEach((id) => document.getElementById(id).addEventListener('change', runSearch));
   document.getElementById('examples').addEventListener('click', (e) => {

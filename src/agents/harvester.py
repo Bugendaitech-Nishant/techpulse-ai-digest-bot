@@ -19,6 +19,7 @@ from src.collectors import (
     DevToCollector,
     ArXivCollector,
     SecurityAdvisoryCollector,
+    OfficialFeedsCollector,
 )
 from src.storage.database import DigestDatabase
 from config.settings import settings
@@ -56,6 +57,7 @@ class HarvesterAgent:
             DevToCollector(),
             ArXivCollector(),
             SecurityAdvisoryCollector(),
+            OfficialFeedsCollector(),
         ]
 
     def harvest(self) -> Tuple[List[RawItem], Dict[str, Any]]:

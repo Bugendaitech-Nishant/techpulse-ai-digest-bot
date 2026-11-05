@@ -108,6 +108,30 @@ class Settings:
     # Topics the team follows. Each gets its own quota so a big topic cannot crowd out a small one.
     DEVTO_TAGS: List[str] = ["ai", "machinelearning", "python", "webdev", "javascript", "devops", "cloud", "backend"]
     GITHUB_SEARCH_TOPICS: List[str] = ["ai-agents", "llm", "developer-tools", "react", "kubernetes", "rust", "rag"]
+    # Official release notes and engineering blogs. Addresses are the feeds' published ones; run
+    # `python scripts/check_feeds.py` to see which answer from your network, and edit freely.
+    FEEDS: List[tuple] = [
+        ("AWS What's New", "https://aws.amazon.com/about-aws/whats-new/recent/feed/"),
+        ("Google Cloud", "https://cloudblog.withgoogle.com/rss/"),
+        ("Azure", "https://azure.microsoft.com/en-us/blog/feed/"),
+        ("Cloudflare", "https://blog.cloudflare.com/rss/"),
+        ("Docker", "https://www.docker.com/blog/feed/"),
+        ("Kubernetes", "https://kubernetes.io/feed.xml"),
+        ("GitHub Changelog", "https://github.blog/changelog/feed/"),
+        ("Vercel", "https://vercel.com/atom"),
+        ("web.dev", "https://web.dev/feed.xml"),
+        ("Chrome for Developers", "https://developer.chrome.com/static/blog/feed.xml"),
+        ("React", "https://react.dev/rss.xml"),
+        ("Node.js", "https://nodejs.org/en/feed/blog.xml"),
+        ("Rust", "https://blog.rust-lang.org/feed.xml"),
+        ("Hugging Face", "https://huggingface.co/blog/feed.xml"),
+        ("OpenAI", "https://openai.com/news/rss.xml"),
+        ("Google AI", "https://blog.google/technology/ai/rss/"),
+        ("Lobsters", "https://lobste.rs/rss"),
+    ]
+    FEED_MAX_AGE_DAYS: int = 3
+    FEED_PER_FEED: int = 3
+    LIMIT_FEEDS: int = 40
     LIMIT_SECURITY: int = int(os.getenv("LIMIT_SECURITY", "5"))  # advisories per run
     SECURITY_LOOKBACK_DAYS: int = int(os.getenv("SECURITY_LOOKBACK_DAYS", "14"))
     GITHUB_API_TOKEN: str = os.getenv("GITHUB_TOKEN", "")  # optional, only raises the advisory API rate limit

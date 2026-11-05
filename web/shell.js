@@ -11,6 +11,7 @@ const SOURCE_NAMES = {
   devto_articles: 'Dev.to',
   arxiv_ai: 'ArXiv AI',
   security_advisories: 'Security advisories',
+  official_blogs: 'Official blogs',
 };
 
 const HARVEST_KEY_STORAGE = 'techpulse.harvestKey';

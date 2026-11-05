@@ -44,6 +44,7 @@ from src.storage.database import DigestDatabase
 from src.security.quota_manager import quota_manager
 from src.security.cache_manager import cache_manager
 from src import feedback as feedback_store
+from src import ask as ask_module
 from src import discover, radar
 from src import triage as triage_store
 from src import runlog
@@ -548,6 +549,51 @@ def search_archive(request: Request, q: str = "", topic: str = "", step: str = "
         item["areas"], item["kind"] = radar.areas_of(item), radar.kind_of(item)
         item["stack_hits"] = [h for h in stack.hits(item) if h.lower() not in stack.broad]
     return {"query": q, "count": len(items), "mode": mode, "items": items, "areas": list(radar.AREAS), "topics": list(TOPICS)}
+
+
+class AskIn(BaseModel):
+    question: str = Field(..., min_length=8, max_length=300)
+
+
+def _ask_json():
+    """The model call used by Ask, or None when no model key is configured. Separate so tests can replace it."""
+    if not settings.GROQ_API_KEY:
+        return None
+    from src.agents.processor import ProcessorAgent
+    return ProcessorAgent().ask_json
+
+
+@app.get("/api/ask/status")
+@limiter.limit(settings.RATE_LIMIT_READ)
+def ask_status(request: Request):
+    """Whether Ask can answer here, and whether it needs the access key (it spends model tokens)."""
+    return {"available": bool(settings.GROQ_API_KEY), "requires_key": bool(quota_manager.api_key)}
+
+
+@app.post("/api/ask")
+@limiter.limit("10/hour")
+def ask(request: Request, payload: AskIn, x_api_key: Optional[str] = Header(None, alias="X-API-Key")):
+    """Answer a use-case question from the team's digests and live GitHub results, with citations."""
+    if not quota_manager.check_auth(x_api_key):
+        return JSONResponse(status_code=401, content={"ok": False, "error": "Unauthorized: invalid or missing X-API-Key."})
+    model = _ask_json()
+    if model is None:
+        raise HTTPException(status_code=503, detail="Ask needs a model key (GROQ_API_KEY) on the server.")
+    question = " ".join(payload.question.split())
+    key = "ask:" + question.lower()
+    cached = cache_manager.get(key)
+    if cached is not None:
+        return cached
+    try:
+        result = ask_module.answer(question, db, model)
+    except ValueError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error
+    except Exception as error:  # a rate-limited or unreachable model must not look like a server fault
+        logger.error("Ask failed: %s", error)
+        raise HTTPException(status_code=502, detail="The model could not answer right now. Try again in a minute.") from error
+    if result["sources"]:  # a 'nothing found' caused by a passing GitHub error must not stick for an hour
+        cache_manager.set(key, result, ttl=3600)  # the same question within the hour costs nothing
+    return result
 
 
 @app.get("/api/discover")

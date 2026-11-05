@@ -126,6 +126,26 @@ def test_find_answers_from_the_digests_and_offers_github(browser):
     pg.close()
 
 
+def test_ask_is_a_deliberate_click_and_is_disabled_without_a_model(browser):
+    import json
+    import urllib.request
+
+    status = json.load(urllib.request.urlopen(f"{BASE}/api/ask/status"))
+    pg = browser.new_context(viewport={"width": 1280, "height": 900}).new_page()
+    pg.goto(f"{BASE}/find", timeout=15000)
+    pg.wait_for_selector(".result-row")
+    pg.fill("#q", "vector database for RAG")
+    pg.keyboard.press("Enter")  # Enter searches; it must never spend a model question
+    pg.wait_for_timeout(800)
+    expect(pg.locator("#ask-panel")).to_be_hidden()
+    if status["available"]:
+        expect(pg.locator("#btn-ask")).to_be_enabled()
+    else:
+        expect(pg.locator("#btn-ask")).to_be_disabled()
+        assert "GROQ_API_KEY" in pg.locator("#btn-ask").get_attribute("title")
+    pg.close()
+
+
 def test_old_archive_address_still_works(browser):
     pg = browser.new_context().new_page()
     assert pg.goto(f"{BASE}/curated-digests").status == 200

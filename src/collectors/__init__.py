@@ -11,6 +11,7 @@ from src.collectors.huggingface import HuggingFacePapersCollector
 from src.collectors.devto import DevToCollector
 from src.collectors.arxiv_ai import ArXivCollector
 from src.collectors.security_advisories import SecurityAdvisoryCollector
+from src.collectors.feeds import OfficialFeedsCollector
 
 __all__ = [
     "BaseCollector",
@@ -21,4 +22,5 @@ __all__ = [
     "DevToCollector",
     "ArXivCollector",
     "SecurityAdvisoryCollector",
+    "OfficialFeedsCollector",
 ]
