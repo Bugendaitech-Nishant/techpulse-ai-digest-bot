@@ -153,6 +153,7 @@ class DigestDatabase:
                 if "duplicate column name" not in str(error).lower():
                     raise
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_digest_items_date ON digest_items(digest_date);")
+            self._init_search(cursor)
 
             # Auto-hydrate database if newly created / empty (critical for ephemeral servers like Render)
             if self.auto_hydrate:
@@ -161,6 +162,28 @@ class DigestDatabase:
                     self._auto_hydrate_from_markdown(cursor)
 
             conn.commit()
+
+    FTS_COLUMNS = "title, summary, why_it_matters, next_step_detail, tags, topics"
+
+    def _init_search(self, cursor: sqlite3.Cursor) -> None:
+        """Full-text index over the kept items, kept in step with the table by triggers."""
+        exists = cursor.execute("SELECT 1 FROM sqlite_master WHERE name = 'items_fts';").fetchone()
+        cols = self.FTS_COLUMNS
+        cursor.execute(
+            f"CREATE VIRTUAL TABLE IF NOT EXISTS items_fts USING fts5({cols}, content='digest_items', "
+            "content_rowid='id', tokenize='porter unicode61');"
+        )
+        new = ", ".join(f"new.{c.strip()}" for c in cols.split(","))
+        old = ", ".join(f"old.{c.strip()}" for c in cols.split(","))
+        cursor.execute(f"CREATE TRIGGER IF NOT EXISTS items_ai AFTER INSERT ON digest_items BEGIN "
+                       f"INSERT INTO items_fts(rowid, {cols}) VALUES (new.id, {new}); END;")
+        cursor.execute(f"CREATE TRIGGER IF NOT EXISTS items_ad AFTER DELETE ON digest_items BEGIN "
+                       f"INSERT INTO items_fts(items_fts, rowid, {cols}) VALUES ('delete', old.id, {old}); END;")
+        cursor.execute(f"CREATE TRIGGER IF NOT EXISTS items_au AFTER UPDATE OF {cols} ON digest_items BEGIN "
+                       f"INSERT INTO items_fts(items_fts, rowid, {cols}) VALUES ('delete', old.id, {old}); "
+                       f"INSERT INTO items_fts(rowid, {cols}) VALUES (new.id, {new}); END;")
+        if not exists:
+            cursor.execute("INSERT INTO items_fts(items_fts) VALUES ('rebuild');")  # index rows that predate it
 
     def _auto_hydrate_from_markdown(self, cursor: sqlite3.Cursor) -> None:
         """
@@ -447,30 +470,82 @@ class DigestDatabase:
             ).fetchone()
         return dict(row) if row else None
 
-    def search_items(self, query: str = "", topic: str = "", step: str = "", limit: int = 60) -> List[Dict[str, Any]]:
-        """Kept items from every day, newest first. All words of `query` must appear somewhere in the item."""
-        where, args = ["category != 'Skip'"], []
-        for word in query.lower().split()[:8]:
-            like = "%" + word.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
-            where.append(
-                "(LOWER(title || ' ' || summary || ' ' || why_it_matters || ' ' || next_step_detail || ' ' || tags || ' ' || topics)"
-                " LIKE ? ESCAPE '\\')"
-            )
-            args.append(like)
+    STOPWORDS = frozenset(
+        "a an and are as at be by can for from how i in into is it its of on or our that the their this to use using "
+        "we what which with without you your need needs want looking find best good tool tools library libraries "
+        "framework frameworks solution solutions way ways".split()
+    )
+
+    @classmethod
+    def _terms(cls, query: str) -> List[str]:
+        words = (w.strip(".-") for w in re.findall(r"[a-z0-9][a-z0-9+#.\-]*", query.lower()))
+        return list(dict.fromkeys(w for w in words if len(w) > 1 and w not in cls.STOPWORDS))[:8]
+
+    @staticmethod
+    def _coverage(terms: List[str], row: sqlite3.Row) -> int:
+        text = " ".join(str(row[c]).lower() for c in ("title", "summary", "why_it_matters", "next_step_detail", "tags", "topics"))
+        return sum(1 for t in terms if re.search(r"\b" + re.escape(t[:5]), text))
+
+    def search_with_mode(
+        self, query: str = "", topic: str = "", step: str = "", kind: str = "", area: str = "", limit: int = 60
+    ) -> Tuple[List[Dict[str, Any]], str]:
+        """Kept items from every day, best match first. Returns (items, mode).
+
+        mode is 'all' when every word matched, 'any' when too few items matched all of them and the
+        search widened to any word (use-case phrasing rarely repeats an item's exact words), or
+        'recent' when there was no query. Words match as prefixes and are stemmed ("serving" finds "serve").
+        """
+        from src import radar  # local import: radar reads settings, the database must not depend on it at import
+
+        where, args = ["i.category != 'Skip'"], []
         if topic:
-            where.append("topics LIKE ?")
+            where.append("i.topics LIKE ?")
             args.append(f'%"{topic}"%')
         if step:
-            where.append("next_step = ?")
+            where.append("i.next_step = ?")
             args.append(step)
-        sql = (
-            "SELECT title, url, source, category, summary, why_it_matters, tags, topics, next_step, next_step_detail, "
-            "published_at, verification, priority_score, story_id, digest_date AS date FROM digest_items WHERE "
-            + " AND ".join(where) + " ORDER BY digest_date DESC, rank ASC LIMIT ?;"
-        )
+        if kind:
+            sources = [s for s, k in radar.KINDS.items() if k == kind]
+            where.append(f"i.source IN ({','.join('?' * len(sources))})" if sources else "0")
+            args += sources
+        if area in radar.AREAS:
+            members = sorted(radar.AREAS[area])
+            where.append("(" + " OR ".join("i.topics LIKE ?" for _ in members) + ")")
+            args += [f'%"{m}"%' for m in members]
+        limit = max(1, min(limit, 200))
+        cols = ("i.title, i.url, i.source, i.category, i.summary, i.why_it_matters, i.tags, i.topics, i.next_step, "
+                "i.next_step_detail, i.published_at, i.verification, i.priority_score, i.story_id, i.digest_date AS date")
+
+        terms = self._terms(query)
         with self._connection() as conn:
-            rows = conn.execute(sql, (*args, max(1, min(limit, 200)))).fetchall()
-        return [{**dict(r), "tags": json.loads(r["tags"] or "[]"), "topics": json.loads(r["topics"] or "[]")} for r in rows]
+            if not terms:
+                rows = conn.execute(
+                    f"SELECT {cols} FROM digest_items i WHERE {' AND '.join(where)} ORDER BY i.digest_date DESC, i.rank ASC LIMIT ?;",
+                    (*args, limit),
+                ).fetchall()
+                mode = "recent"
+            else:
+                sql = (f"SELECT {cols}, bm25(items_fts, 10.0, 4.0, 2.0, 3.0, 3.0, 3.0) AS match_score FROM items_fts "
+                       f"JOIN digest_items i ON i.id = items_fts.rowid WHERE items_fts MATCH ? AND {' AND '.join(where)} "
+                       "ORDER BY match_score ASC, i.digest_date DESC LIMIT ?;")
+                quoted = [f'"{t}"*' for t in terms]
+                rows = conn.execute(sql, (" ".join(quoted), *args, limit)).fetchall()
+                mode = "all"
+                if len(rows) < 5 and len(terms) > 3:
+                    # Widen, but only to items covering most of the words: one shared word ("state", "cost")
+                    # is how unrelated items look relevant, and nothing is better than a wrong answer.
+                    need = len(terms) - len(terms) // 4  # 4 words: 3 must match; 8 words: 6
+                    wide = conn.execute(sql, (" OR ".join(quoted), *args, limit * 3)).fetchall()
+                    covered = [r for r in wide if self._coverage(terms, r) >= need]
+                    if len(covered) > len(rows):
+                        rows, mode = covered[:limit], "any"
+        items = [{**dict(r), "tags": json.loads(r["tags"] or "[]"), "topics": json.loads(r["topics"] or "[]")} for r in rows]
+        for item in items:
+            item.pop("match_score", None)
+        return items, mode
+
+    def search_items(self, query: str = "", topic: str = "", step: str = "", limit: int = 60, **filters: str) -> List[Dict[str, Any]]:
+        return self.search_with_mode(query, topic, step, limit=limit, **filters)[0]
 
     def find_item_by_hash(self, url_hash: str) -> Optional[Dict[str, Any]]:
         """Look a digest item up by the hash of its URL (email links carry the hash, not the URL)."""

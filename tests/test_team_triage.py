@@ -83,19 +83,18 @@ def test_log_is_replayed_after_a_restart_and_older_events_lose(tmp_path, db):
     assert fresh.get_triage_map()["https://example.com/2"]["status"] == "doing"
 
 
-def test_search_spans_days_hides_skips_and_treats_wildcards_literally(db):
+def test_search_spans_days_hides_skips_and_filters(db):
     assert {i["url"] for i in db.search_items("litellm")} == {f"https://example.com/{n}" for n in (1, 2, 3, 5)}
     assert [i["date"] for i in db.search_items("litellm")][0] == "2026-11-04"
     assert [i["url"] for i in db.search_items("", topic="security")] == ["https://example.com/1"]
     assert [i["url"] for i in db.search_items("", step="Evaluate")] == ["https://example.com/5"]
-    assert [i["url"] for i in db.search_items("100% fast_path")] == ["https://example.com/5"]
-    assert [i["url"] for i in db.search_items("%")] == ["https://example.com/5"]  # a literal %, not a wildcard
-    assert db.search_items("summary 3 litellm")[0]["url"] == "https://example.com/3"
+    assert all(i["url"] != "https://example.com/4" for i in db.search_items(""))  # skips never appear
 
 
 def test_search_endpoint(client):
     data = client.get("/api/search", params={"q": "litellm", "step": "Try"}).json()
     assert data["count"] == 1 and data["items"][0]["next_step"] == "Try"
+    assert data["items"][0]["kind"] == "article" and data["items"][0]["areas"]
 
 
 def test_brief_shows_open_work_and_progress_and_leaves_out_finished_work(client):

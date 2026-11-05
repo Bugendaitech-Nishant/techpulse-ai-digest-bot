@@ -11,29 +11,28 @@
 
 ---
 
-## The briefing: what changed for the tools you run
+## What it is for
 
-Most of what public sources publish changes nothing for a given team (in our own archive only 4% of kept items mentioned anything the stack runs). So the page is a short briefing, not a feed:
+Two jobs for an engineering team across backend, frontend, cloud, GenAI/AI/ML and emerging tech:
 
-- **Act on**: touches your stack and asks for something (a patch, an evaluation, a security advisory). These can be taken by a teammate.
-- **Touches your stack**: worth knowing, nothing to do yet.
-- **Worth your time**: the best few reads of the day, capped so the briefing fits in a coffee. Total featured is about 7; alerts are never cut.
-- **Also kept** and **Filtered out, with the reason** stay collapsed underneath.
-- A quiet day says so. "Nothing touches your stack" is a result, not an empty page.
+1. **Keep the team current.** The **Briefing** page opens with the day's few **major updates** (capped at 5), then everything else the curator kept **by area** (GenAI & ML, Backend & data, Frontend & mobile, Cloud & DevOps, Security, Emerging). Pick an area and the whole page, and the link, narrows to it. Filtered-out items stay collapsed with the reason. A quiet day says so.
+2. **Find a solution for a use case.** **Find** takes a description ("vector database for multi-tenant RAG") and searches every digest the team has kept (ranked, stemmed, title-weighted; it will say "nothing" rather than show a one-word match), then asks GitHub live for maintained repositories (pushed in the last year, 20+ stars, with licence). Filter by tool, paper, article or advisory, and by area.
 
-**Set your stack** in `config/profile.toml` (`tools`, optional `[aliases]`, and `broad` for terms like `python` that are too common to promote anything alone). The shipped list is a placeholder. The same list drives the security-advisory collector.
+Optional **watchlist**: list tools in `config/profile.toml` (`tools`, `[aliases]`, `broad`) and items about them are pulled up as **Act on** (a patch or advisory) or **On your watchlist**. Leave `tools` empty for no alerts. The shipped list is a placeholder. The same list drives the security-advisory collector.
 
-Team features: take an item ("I'll patch it"), finish it or mark it "not for us", with an owner and a note, shared through the server. "Copy brief" produces a Markdown standup brief. The archive searches every kept item across all days. A boilerplate action such as "clone the repo and run the example" is shown as a suggestion, never as a task.
+Team features: take an alert or patch ("I'll patch it"), finish it or mark it "not for us", with an owner and a note, shared through the server. **Copy brief** produces a Markdown standup brief. A boilerplate action such as "clone the repo and run the example" is shown as a suggestion, never as a task.
 
-Names are self-declared and kept in the browser; there is no login. Set `HARVEST_API_KEY` if strangers can reach the server. Status survives restarts like ratings do: set `FEEDBACK_GITHUB_TOKEN` and `GITHUB_REPO` and it is appended to `data/triage.jsonl` on the `feedback` branch.
+What to follow is set in `config/profile.toml` (`summary`, `interests`, `avoid` steer the curator) and `DEVTO_TAGS` / `GITHUB_SEARCH_TOPICS` in `config/settings.py` (what gets harvested). Coverage is only as wide as those lists.
 
-Endpoints: `GET /api/briefing?date=`, `GET /api/brief?date=`, `GET /api/search?q=&topic=&step=`, `GET/POST /api/triage`.
+Names are self-declared and kept in the browser; there is no login. Set `HARVEST_API_KEY` if strangers can reach the server. Status survives restarts like ratings do: set `FEEDBACK_GITHUB_TOKEN` and `GITHUB_REPO` and it is appended to `data/triage.jsonl` on the `feedback` branch. Live GitHub search uses the shared unauthenticated limit unless `GITHUB_TOKEN` is set.
+
+Endpoints: `GET /api/briefing?date=`, `GET /api/brief?date=`, `GET /api/search?q=&kind=&area=`, `GET /api/discover?q=`, `GET/POST /api/triage`.
 
 ---
 
 ## Running the web app
 
-Pages: **Briefing** (`/`) and **Archive** (`/curated-digests`, search plus pipeline health). Harvest, quota and Markdown export are under **Admin**.
+Pages: **Briefing** (`/`) and **Find** (`/find`, with pipeline health at the bottom). Harvest, quota and Markdown export are under **Admin**.
 
 Start it:
 ```bash

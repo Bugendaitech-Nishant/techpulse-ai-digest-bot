@@ -99,12 +99,12 @@ def build_brief(date: str, items: List[Dict[str, Any]], triage: Dict[str, Dict[s
     others = [i for i in live if status(i) != "doing"]
     alerts = [i for i in others if i["tier"] == "alert"]
     stack = [i for i in others if i["tier"] == "stack"]
-    picks = [i for i in others if i["tier"] == "pick"]
+    majors = [i for i in others if i["tier"] == "major"]
 
     lines = [f"# TechPulse brief for {date}", ""]
-    for heading, group in (("Act on", alerts), ("In progress", doing), ("Touches our stack", stack), ("Worth your time", picks)):
+    for heading, group in (("Act on", alerts), ("In progress", doing), ("On our watchlist", stack), ("Major updates", majors)):
         if group:
             lines += [f"## {heading} ({len(group)})", *[_line(i, triage.get(i["url"])) for i in group], ""]
-    if not (alerts or doing or stack or picks):
+    if not (alerts or doing or stack or majors):
         lines += ["Nothing needs the team today.", ""]
     return "\n".join(lines).rstrip() + "\n"

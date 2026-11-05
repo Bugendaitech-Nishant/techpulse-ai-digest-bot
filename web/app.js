@@ -11,18 +11,22 @@ const state = {
   ratings: {}, // url -> 1 useful, -1 not useful
   feedback: { persistent: false, write_requires_key: false },
   stats: null,
+  area: 'all', // which area the reader follows; kept in the URL so a link opens the same view
 };
 
 const SECTIONS = [
-  { tier: 'alert', title: 'Act on', note: 'Touches what you run and asks for something.' },
-  { tier: 'stack', title: 'Touches your stack', note: 'Good to know. Nothing to do yet.' },
-  { tier: 'pick', title: 'Worth your time', note: 'Not about your stack, but the best of the day.' },
+  { tier: 'alert', title: 'Act on', note: 'On your watchlist and asking for something.' },
+  { tier: 'major', title: 'Major updates', note: 'The biggest changes of the day, across every area.' },
+  { tier: 'stack', title: 'On your watchlist', note: 'Good to know. Nothing to do yet.' },
 ];
+const AREA_ROWS_SHOWN = 4;
 
 // ─── Start ─────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-  state.date = new URLSearchParams(window.location.search).get('date') || 'latest';
+  const params = new URLSearchParams(window.location.search);
+  state.date = params.get('date') || 'latest';
+  state.area = params.get('area') || 'all';
   renderNameButton();
   setupHandlers();
   initHarvest(loadAll);
@@ -93,19 +97,28 @@ async function loadDay() {
   render();
 }
 
+function writeUrl() {
+  const p = new URLSearchParams();
+  if (state.date !== 'latest') p.set('date', state.date);
+  if (state.area !== 'all') p.set('area', state.area);
+  history.replaceState(null, '', p.toString() ? `?${p}` : window.location.pathname);
+}
+
 function stepDay(direction) {
   if (!state.briefing) return;
   const next = state.days[state.days.indexOf(state.briefing.date) + direction];
   if (!next) return;
   state.date = next === state.days[0] ? 'latest' : next;
-  history.replaceState(null, '', state.date === 'latest' ? window.location.pathname : `?date=${next}`);
+  writeUrl();
   loadDay();
 }
 
 // ─── Render ────────────────────────────────────────────────────────────────
 
+/** Items of one tier, narrowed to the followed area. */
 function itemsOf(tier) {
-  return ((state.briefing && state.briefing.items) || []).filter((i) => i.tier === tier);
+  return ((state.briefing && state.briefing.items) || [])
+    .filter((i) => i.tier === tier && (state.area === 'all' || (i.areas || []).includes(state.area)));
 }
 
 function render() {
@@ -113,17 +126,17 @@ function render() {
   if (!b) return;
   renderDayNav();
   renderLede();
+  renderAreas();
   renderStack();
 
   const focus = document.activeElement && document.activeElement.closest && document.activeElement.closest('.note-form');
   if (focus) return; // do not rebuild the page under someone who is typing a note
 
-  const content = document.getElementById('content');
   const parts = SECTIONS.map((s) => renderSection(s, itemsOf(s.tier))).join('');
-  const quiet = !itemsOf('alert').length && !itemsOf('stack').length
-    ? '<p class="quiet">Nothing here touches the tools you run. That is a result, not a gap: you can stop at the reading list.</p>'
-    : '';
-  content.innerHTML = quiet + parts + renderRest('more', 'Also kept', itemsOf('more')) + renderRest('filtered', 'Filtered out, with the reason', itemsOf('filtered'));
+  const nothing = !parts && !itemsOf('more').length;
+  document.getElementById('content').innerHTML =
+    (nothing ? `<p class="quiet">Nothing in ${escapeHtml(state.area)} today.</p>` : '') +
+    parts + renderAreaGroups(itemsOf('more')) + renderFiltered(itemsOf('filtered'));
   renderColophon();
 }
 
@@ -142,28 +155,36 @@ function plural(n, one, many) {
 }
 
 function renderLede() {
-  const b = state.briefing;
-  const c = b.counts;
+  const c = state.briefing.counts;
+  const areas = (state.briefing.areas || []).filter((a) => a.name !== 'General').length;
   let headline;
-  if (c.alerts) headline = `${plural(c.alerts, 'thing needs', 'things need')} your attention.`;
-  else if (c.stack) headline = `Nothing to patch. ${plural(c.stack, 'item touches', 'items touch')} your stack.`;
-  else headline = 'Quiet day for your stack.';
+  if (c.alerts) headline = `${plural(c.alerts, 'thing needs', 'things need')} action, plus ${plural(c.major, 'major update', 'major updates')}.`;
+  else if (c.major) headline = `${plural(c.major, 'major update', 'major updates')} today${areas > 1 ? `, across ${areas} areas` : ''}.`;
+  else headline = 'A quiet day.';
   document.getElementById('headline').textContent = headline;
 
-  const when = b.created_at ? ` Built ${relativeTime(b.created_at)}.` : '';
-  const from = b.total_harvested ? ` of ${b.total_harvested} harvested` : '';
-  document.getElementById('lede-sub').textContent =
-    `${c.picks} worth your time, ${c.more} more kept, ${c.filtered} filtered out${from}.${when}`;
+  const when = state.briefing.created_at ? ` Built ${relativeTime(state.briefing.created_at)}.` : '';
+  const from = state.briefing.total_harvested ? ` of ${state.briefing.total_harvested} harvested` : '';
+  document.getElementById('lede-sub').textContent = `${plural(c.more + c.major + c.alerts + c.stack, 'item', 'items')} kept${from}, ${c.filtered} filtered out.${when}`;
+}
+
+/** One chip per area with its item count: pick yours and the whole page narrows to it. */
+function renderAreas() {
+  const strip = document.getElementById('area-strip');
+  const areas = state.briefing.areas || [];
+  const c = state.briefing.counts;
+  const total = c.alerts + c.stack + c.major + c.more; // an item in two areas is still one item
+  const chip = (key, label, count) =>
+    `<button type="button" class="area-chip ${state.area === key ? 'is-active' : ''}" data-area="${escapeHtml(key)}" aria-pressed="${state.area === key}">${escapeHtml(label)}<b>${count}</b></button>`;
+  strip.innerHTML = '<span class="rail-label">Area</span>' + chip('all', 'All areas', total) + areas.map((a) => chip(a.name, a.name, a.count)).join('');
 }
 
 function renderStack() {
   const strip = document.getElementById('stack-strip');
   const stack = state.briefing.stack || [];
-  if (!stack.length) {
-    strip.innerHTML = '<p class="muted">No stack defined, so nothing can be matched. Set <code>tools</code> in config/profile.toml.</p>';
-    return;
-  }
-  strip.innerHTML = '<span class="rail-label">Your stack</span>' + stack.map((s) => {
+  strip.hidden = !stack.length; // the watchlist is optional: no list, no strip, no alerts
+  if (!stack.length) return;
+  strip.innerHTML = '<span class="rail-label">Watchlist</span>' + stack.map((s) => {
     const cls = s.hits && !s.broad ? 'is-hit' : '';
     const title = s.broad ? 'Too common to count on its own' : s.hits ? `${plural(s.hits, 'item mentions', 'items mention')} ${s.name} today` : `Nothing about ${s.name} today`;
     return `<span class="stack-chip ${cls}" title="${escapeHtml(title)}">${escapeHtml(s.name)}${s.hits ? `<b>${s.hits}</b>` : ''}</span>`;
@@ -182,18 +203,47 @@ function renderSection(section, items) {
     </section>`;
 }
 
-function renderRest(id, title, items) {
-  if (!items.length) return '';
-  const rows = items.map((i) => `
+function row(i, withSummary = true) {
+  const meta = [sourceName(i.source), KIND_LABELS[i.kind], ageLabel(i)].filter(Boolean).map(escapeHtml).join(' · ');
+  return `
     <li>
       <a href="${escapeHtml(i.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(i.title)}</a>
-      <span class="muted">${escapeHtml(sourceName(i.source))}</span>
-      <p>${escapeHtml(plainText(i.category === 'Skip' ? i.why_it_matters : i.summary))}</p>
-    </li>`).join('');
+      <span class="muted">${meta}</span>
+      ${withSummary ? `<p>${escapeHtml(plainText(i.category === 'Skip' ? i.why_it_matters : i.summary))}</p>` : ''}
+    </li>`;
+}
+
+const KIND_LABELS = { tool: 'Tool', paper: 'Paper', article: 'Article', advisory: 'Advisory' };
+
+/** Everything the curator kept that is not a major update, grouped by area so each person scans their own. */
+function renderAreaGroups(items) {
+  if (!items.length) return '';
+  const groups = {};
+  items.forEach((i) => {
+    const area = state.area !== 'all' ? state.area : (i.areas || ['General'])[0];
+    (groups[area] = groups[area] || []).push(i);
+  });
+  const order = ((state.briefing.areas || []).map((a) => a.name));
+  const html = order.filter((name) => groups[name]).map((name) => {
+    const list = groups[name];
+    const shown = state.area === 'all' ? AREA_ROWS_SHOWN : list.length;
+    const more = list.slice(shown);
+    return `
+      <section class="area-group" aria-label="${escapeHtml(name)}">
+        <h2>${escapeHtml(name)} <span class="tier-count">${list.length}</span></h2>
+        <ul class="rest-list">${list.slice(0, shown).map((i) => row(i)).join('')}</ul>
+        ${more.length ? `<details class="rest"><summary>${more.length} more in ${escapeHtml(name)}</summary><ul class="rest-list">${more.map((i) => row(i, false)).join('')}</ul></details>` : ''}
+      </section>`;
+  }).join('');
+  return `<div class="areas-heading"><h2 class="areas-title">By area</h2></div>${html}`;
+}
+
+function renderFiltered(items) {
+  if (!items.length) return '';
   return `
-    <details class="rest" id="rest-${id}">
-      <summary>${title} <span class="tier-count">${items.length}</span></summary>
-      <ul class="rest-list">${rows}</ul>
+    <details class="rest" id="rest-filtered">
+      <summary>Filtered out, with the reason <span class="tier-count">${items.length}</span></summary>
+      <ul class="rest-list">${items.map((i) => row(i)).join('')}</ul>
     </details>`;
 }
 
@@ -284,6 +334,13 @@ async function onClick(e) {
       </form>`);
     edit.hidden = true;
     slot.parentElement.querySelector('.note-form input').focus();
+    return;
+  }
+  const chip = e.target.closest('[data-area]');
+  if (chip) {
+    state.area = chip.dataset.area;
+    writeUrl();
+    render();
     return;
   }
   const rate = e.target.closest('.rate-btn');

@@ -99,12 +99,15 @@ class Settings:
 
     # Source Limits
     LIMIT_GITHUB_TRENDING: int = 25
-    LIMIT_GITHUB_SEARCH: int = 15
+    LIMIT_GITHUB_SEARCH: int = 21
     LIMIT_HACKER_NEWS: int = 25
     LIMIT_HUGGINGFACE_PAPERS: int = 15
-    LIMIT_DEVTO: int = 15
+    LIMIT_DEVTO: int = 40
     LIMIT_ARXIV: int = 15
     MAX_ITEM_AGE_DAYS: int = int(os.getenv("MAX_ITEM_AGE_DAYS", "7"))  # older items are dropped, except security advisories
+    # Topics the team follows. Each gets its own quota so a big topic cannot crowd out a small one.
+    DEVTO_TAGS: List[str] = ["ai", "machinelearning", "python", "webdev", "javascript", "devops", "cloud", "backend"]
+    GITHUB_SEARCH_TOPICS: List[str] = ["ai-agents", "llm", "developer-tools", "react", "kubernetes", "rust", "rag"]
     LIMIT_SECURITY: int = int(os.getenv("LIMIT_SECURITY", "5"))  # advisories per run
     SECURITY_LOOKBACK_DAYS: int = int(os.getenv("SECURITY_LOOKBACK_DAYS", "14"))
     GITHUB_API_TOKEN: str = os.getenv("GITHUB_TOKEN", "")  # optional, only raises the advisory API rate limit

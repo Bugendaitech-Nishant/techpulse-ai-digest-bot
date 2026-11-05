@@ -44,7 +44,7 @@ from src.storage.database import DigestDatabase
 from src.security.quota_manager import quota_manager
 from src.security.cache_manager import cache_manager
 from src import feedback as feedback_store
-from src import radar
+from src import discover, radar
 from src import triage as triage_store
 from src import runlog
 from config.settings import settings
@@ -118,7 +118,8 @@ def get_dashboard(request: Request):
     return FileResponse(index_file)
 
 
-@app.get("/curated-digests")
+@app.get("/find")
+@app.get("/curated-digests")  # the old address keeps working
 def get_curated_digests(request: Request):
     """Serve the Curated Digests Archive web UI."""
     archive_file = WEB_DIR / "curated_digests.html"
@@ -538,11 +539,22 @@ def post_triage(
 
 @app.get("/api/search")
 @limiter.limit(settings.RATE_LIMIT_READ)
-def search_archive(request: Request, q: str = "", topic: str = "", step: str = "", limit: int = 60):
-    """Search every kept item from every day. Words in `q` must all match; topic and step narrow further."""
+def search_archive(request: Request, q: str = "", topic: str = "", step: str = "", kind: str = "", area: str = "", limit: int = 60):
+    """Search every kept item from every day, best match first. `kind` is tool, paper, article or advisory."""
     q = q.strip()[:200]
-    results = db.search_items(q, topic.strip()[:40], step.strip()[:20], limit)
-    return {"query": q, "count": len(results), "items": results, "topics": list(TOPICS)}
+    items, mode = db.search_with_mode(q, topic.strip()[:40], step.strip()[:20], kind.strip()[:20], area.strip()[:40], limit)
+    stack = radar.load_stack()
+    for item in items:
+        item["areas"], item["kind"] = radar.areas_of(item), radar.kind_of(item)
+        item["stack_hits"] = [h for h in stack.hits(item) if h.lower() not in stack.broad]
+    return {"query": q, "count": len(items), "mode": mode, "items": items, "areas": list(radar.AREAS), "topics": list(TOPICS)}
+
+
+@app.get("/api/discover")
+@limiter.limit("20/minute")
+def discover_repos(request: Request, q: str = ""):
+    """Live GitHub search for a use case: maintained repositories the digests may never have covered."""
+    return discover.github_repos(q.strip()[:120])
 
 
 def _briefing_for(date: str) -> Dict[str, Any]:
@@ -557,6 +569,7 @@ def _briefing_for(date: str) -> Dict[str, Any]:
         "total_harvested": digest.get("total_harvested", 0),
         "items": items,
         "stack": radar.stack_strip(items, stack),
+        "areas": radar.area_strip(items),
         "counts": radar.headline(items),
     }
 

@@ -113,3 +113,15 @@ def test_a_digest_of_only_advisories_needs_no_model():
     digest = ProcessorAgent(api_key=None).process([advisory], "2026-10-23")
     assert digest.items[0].category == "Inspiration"
     assert "No fixed version" in digest.items[0].why_it_matters
+
+
+def test_keyword_fallback_treats_singular_and_plural_as_one_interest(monkeypatch):
+    from config.settings import settings
+    from src.agents.processor import ProcessorAgent
+    from src.models import RawItem
+
+    monkeypatch.setattr(settings, "USER_INTERESTS", ["GenAI: LLMs, agents, RAG, inference"])
+    agent = ProcessorAgent.__new__(ProcessorAgent)
+    item = RawItem(title="AgentZero", url="https://x.test/a", description="An autonomous agent framework", source="github_trending")
+    assert agent._heuristic_item(item).category == "Inspiration"
+    assert agent._heuristic_item(item.model_copy(update={"description": "A gardening journal"})).category == "Skip"

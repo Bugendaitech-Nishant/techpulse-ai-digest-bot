@@ -378,13 +378,18 @@ class ProcessorAgent:
         "source", "model", "cloud", "developer", "python", "backend",
     })
 
+    @staticmethod
+    def _singular(word: str) -> str:
+        """'agents' and 'agent' are one interest. Crude on purpose: this fallback only runs without the LLM."""
+        return word[:-1] if len(word) > 3 and word.endswith("s") and not word.endswith("ss") else word
+
     def _heuristic_item(self, raw: RawItem) -> DigestItem:
         """Keyword-only categorisation. Without the LLM it never claims 'Must Read'."""
-        text_tokens = set(re.findall(r"[a-z0-9]+", f"{raw.title} {raw.description} {raw.language}".lower()))
+        text_tokens = {self._singular(w) for w in re.findall(r"[a-z0-9]+", f"{raw.title} {raw.description} {raw.language}".lower())}
         matches = []
         for interest in settings.USER_INTERESTS:
             distinctive = {
-                w for w in re.findall(r"[a-z0-9]+", interest.lower())
+                self._singular(w) for w in re.findall(r"[a-z0-9]+", interest.lower())
                 if len(w) >= 3 and w not in self._GENERIC_WORDS
             }
             if distinctive & text_tokens:

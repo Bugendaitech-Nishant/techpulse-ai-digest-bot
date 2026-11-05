@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechPulse archive, search every digest</title>
-  <meta name="description" content="Search every item TechPulse has kept, by word, topic or next step, and see what your team did about it.">
+  <title>TechPulse Find, a solution for your use case</title>
+  <meta name="description" content="Describe a use case and find frameworks, tools, papers and articles your team has seen, plus live GitHub results.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -21,8 +21,8 @@
       </a>
 
       <nav class="nav-tabs" aria-label="Main">
-        <a href="/" class="nav-tab">Feed</a>
-        <a href="/curated-digests" class="nav-tab" aria-current="page">Archive</a>
+        <a href="/" class="nav-tab">Briefing</a>
+        <a href="/find" class="nav-tab" aria-current="page">Find</a>
       </nav>
 
       <div class="bar-actions">
@@ -45,32 +45,45 @@
   <main class="app-wrapper container" id="archive" aria-busy="true">
 
     <div class="page-head">
-      <div>
-        <h1>Archive</h1>
-        <p id="page-sub">Every item the digest has kept, searchable across days.</p>
-      </div>
+      <h1>Find</h1>
+      <p>Describe what a project needs. Searches every digest your team has kept, then GitHub.</p>
     </div>
 
-    <form class="search-bar" id="search-form" role="search" aria-label="Search the archive">
+    <form class="search-bar" id="search-form" role="search" aria-label="Find a solution">
       <div class="search-wrapper">
-        <label class="visually-hidden" for="q">Search every digest</label>
-        <input type="search" id="q" name="q" class="field search-input" placeholder="Search every digest: litellm, rust, postgres" autocomplete="off" spellcheck="false">
+        <label class="visually-hidden" for="q">What does the project need?</label>
+        <input type="search" id="q" name="q" class="field search-input" placeholder="e.g. vector database for multi-tenant RAG" autocomplete="off" spellcheck="false">
       </div>
-      <label class="visually-hidden" for="topic">Topic</label>
-      <select id="topic" class="field"><option value="">Any topic</option></select>
-      <label class="visually-hidden" for="step">What to do</label>
-      <select id="step" class="field">
-        <option value="">Any next step</option>
-        <option value="Patch">Patch</option>
-        <option value="Try">Try</option>
-        <option value="Evaluate">Evaluate</option>
-        <option value="Read">Read</option>
-        <option value="Watch">Watch</option>
+      <label class="visually-hidden" for="kind">Kind</label>
+      <select id="kind" class="field">
+        <option value="">Anything</option>
+        <option value="tool">Tools and repos</option>
+        <option value="paper">Papers</option>
+        <option value="article">Articles</option>
+        <option value="advisory">Advisories</option>
       </select>
+      <label class="visually-hidden" for="area">Area</label>
+      <select id="area" class="field"><option value="">Any area</option></select>
     </form>
+    <p class="examples" id="examples" aria-label="Examples">
+      <span class="rail-label">Try</span>
+      <button type="button" class="area-chip" data-example="vector database for RAG">vector database for RAG</button>
+      <button type="button" class="area-chip" data-example="react state management">react state management</button>
+      <button type="button" class="area-chip" data-example="kubernetes cost visibility">kubernetes cost visibility</button>
+      <button type="button" class="area-chip" data-example="LLM evaluation framework">LLM evaluation framework</button>
+    </p>
 
-    <p class="result-meta" id="result-meta" role="status"></p>
-    <div id="results" class="cards-grid-view" aria-live="polite"></div>
+    <section aria-labelledby="h-digests">
+      <h2 class="find-heading" id="h-digests">From your team's digests</h2>
+      <p class="result-meta" id="result-meta" role="status"></p>
+      <div id="results" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="h-github" id="github-section" hidden>
+      <h2 class="find-heading" id="h-github">On GitHub right now</h2>
+      <p class="result-meta">Maintained repositories (pushed in the last year, 20+ stars), best match first. Check the licence and the code before you rely on one.</p>
+      <div id="github-results" aria-live="polite"></div>
+    </section>
 
     <details class="health" id="health">
       <summary>Pipeline health</summary>

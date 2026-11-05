@@ -3,32 +3,33 @@
 # Changes take effect at the next harvest. Keep each line short and concrete.
 
 summary = """
-Staff Software Engineer and AI architect who builds autonomous agent workflows in Python,
-runs open-source AI models, and ships production cloud infrastructure.
+An engineering team covering backend, frontend, cloud and DevOps, and GenAI, AI and ML, that also
+tracks emerging technology. They want to stay current on trends and major releases, and to find
+frameworks, libraries, techniques and skills to reuse when a project needs them.
 """
 
 # What is worth surfacing. The first lines weigh most.
 interests = [
-  "Security incidents and advisories in tools an engineer runs (LLM libraries, Python packages, runtimes)",
-  "AI agents and multi-agent systems that can be built on today",
-  "Open-source AI infrastructure: inference serving, RAG, routing, evaluation",
-  "Local LLMs and model optimization",
-  "Python developer tooling and frameworks",
-  "Cloud automation and serverless architectures",
-  "High-performance backend systems",
+  "Major releases and changes in frameworks, runtimes and platforms (backend, frontend, cloud)",
+  "GenAI: LLMs, agents, RAG, inference, evaluation and the tooling around them",
+  "AI and ML research that can be applied, with code or clear results",
+  "Reusable frameworks, libraries and developer tools that solve a concrete problem",
+  "Cloud, DevOps, platform and observability practices and new managed services",
+  "Security incidents and advisories in widely used tools and packages",
+  "Emerging technology worth knowing about: hardware, new platforms, regulation",
 ]
 
 # What to push down even when it is popular.
 avoid = [
   "Entertainment, gaming and consumer-product business news",
   "Cryptocurrency and trading hype",
-  "Pure benchmark or robotics and 3D-vision research with no path to agent or tooling work",
   "Marketing posts, launch announcements without technical detail, tutorials for beginners",
+  "Personal-project showcases with no reusable idea or code",
 ]
 
 # The stack your team runs. This drives the briefing: anything that mentions one of these is
 # pulled to the top as "touches your stack", and security advisories are matched against it.
-# Use package names. PLACEHOLDER: replace with what you actually deploy.
+# Optional: leave empty if you do not want alerts. PLACEHOLDER: replace with what you actually deploy.
 tools = ["python", "litellm", "langchain", "fastapi", "pydantic", "postgresql", "docker"]
 
 # Other spellings that mean the same tool.

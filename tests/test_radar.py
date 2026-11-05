@@ -39,25 +39,25 @@ def test_security_advisories_are_alerts_even_when_the_text_names_no_tool():
 
 def test_a_broad_tool_alone_never_promotes_an_item_but_still_shows_in_the_strip():
     item = radar.annotate([_item("A Python trick", summary="python python")], STACK)
-    assert item[0]["tier"] == "pick" and item[0]["stack_hits"] == [] and item[0]["broad_hits"] == ["python"]
+    assert item[0]["tier"] == "major" and item[0]["stack_hits"] == [] and item[0]["broad_hits"] == ["python"]
     assert {s["name"]: s["hits"] for s in radar.stack_strip(item, STACK)}["python"] == 1
 
 
-def test_the_briefing_is_capped_and_keeps_the_best_picks():
-    picks = [_item(f"Read {n}", score=n) for n in range(20)]
-    out = radar.annotate(picks, STACK)
-    featured = [i for i in out if i["tier"] == "pick"]
-    assert len(featured) == radar.BRIEF_SIZE
+def test_the_briefing_is_capped_and_keeps_the_best_majors():
+    majors = [_item(f"Read {n}", score=n) for n in range(20)]
+    out = radar.annotate(majors, STACK)
+    featured = [i for i in out if i["tier"] == "major"]
+    assert len(featured) == radar.MAJOR_SIZE
     assert [i["priority_score"] for i in featured] == sorted((i["priority_score"] for i in featured), reverse=True)
     assert max(i["priority_score"] for i in featured) == 19
-    assert sum(i["tier"] == "more" for i in out) == 13
+    assert sum(i["tier"] == "more" for i in out) == 20 - radar.MAJOR_SIZE
 
 
 def test_alerts_are_never_cut_to_make_room():
     alerts = [_item(f"FastAPI bug {n}", step="Patch") for n in range(12)]
     out = radar.annotate(alerts + [_item("A good read")], STACK)
     assert sum(i["tier"] == "alert" for i in out) == 12
-    assert sum(i["tier"] == "pick" for i in out) == 1  # at most what exists, never fewer than MIN_PICKS allows
+    assert sum(i["tier"] == "major" for i in out) == 1  # at most what exists, never fewer than MIN_PICKS allows
 
 
 def test_boilerplate_actions_are_not_work():
@@ -69,8 +69,33 @@ def test_boilerplate_actions_are_not_work():
     assert out["actionable"] is True and out["action"].startswith("Upgrade")
 
 
-def test_skips_are_filtered_and_order_is_alert_stack_pick_more_filtered():
+def test_skips_are_filtered_and_order_is_alert_stack_major_more_filtered():
     items = [_item("skip", category="Skip", step="Ignore"), _item("Plain read", category="Inspiration"),
              _item("A good read"), _item("Postgres news"), _item("FastAPI bug", step="Patch")]
-    assert [i["tier"] for i in radar.annotate(items, STACK)] == ["alert", "stack", "pick", "more", "filtered"]
-    assert radar.headline(radar.annotate(items, STACK)) == {"alerts": 1, "stack": 1, "picks": 1, "more": 1, "filtered": 1}
+    assert [i["tier"] for i in radar.annotate(items, STACK)] == ["alert", "stack", "major", "more", "filtered"]
+    assert radar.headline(radar.annotate(items, STACK)) == {"alerts": 1, "stack": 1, "major": 1, "more": 1, "filtered": 1}
+
+
+@pytest.mark.parametrize("topics,source,expected", [
+    (["agents", "inference"], "hacker_news", ["GenAI & ML"]),
+    (["kubernetes", "security"], "devto_articles", ["Cloud & DevOps", "Security"]),
+    (["developer-tools"], "github_trending", ["General"]),
+    ([], "hacker_news", ["General"]),
+    (["web"], "devto_articles", ["Frontend & mobile"]),
+    ([], "security_advisories", ["Security"]),
+])
+def test_items_land_in_the_areas_their_topics_name(topics, source, expected):
+    assert radar.areas_of({"topics": topics, "source": source}) == expected
+
+
+def test_kind_comes_from_the_source():
+    assert [radar.kind_of({"source": s}) for s in ("github_trending", "arxiv_ai", "hacker_news", "security_advisories", "unknown")] == \
+        ["tool", "paper", "article", "advisory", "article"]
+
+
+def test_a_team_with_no_watchlist_still_gets_majors_and_areas():
+    none = radar.Stack([])
+    items = [_item(f"Update {n}", score=n, topics=["cloud"]) for n in range(8)]
+    out = radar.annotate(items, none)
+    assert radar.headline(out) == {"alerts": 0, "stack": 0, "major": radar.MAJOR_SIZE, "more": 3, "filtered": 0}
+    assert radar.area_strip(out) == [{"name": "Cloud & DevOps", "count": 8}]

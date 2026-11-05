@@ -1,5 +1,5 @@
 """
-Browser tests for the briefing and archive. They read a running server (default http://127.0.0.1:8000)
+Browser tests for the briefing and Find. They read a running server (default http://127.0.0.1:8000)
 and never change team state, so they are safe to run against a shared instance.
 
     python -m uvicorn api:app --port 8000 &
@@ -34,45 +34,60 @@ def page(browser):
     pg.close()
 
 
-def test_headline_answers_what_needs_attention(page):
+def test_headline_states_what_the_day_holds(page):
     headline = page.locator("#headline").inner_text()
     assert headline and "Reading" not in headline  # replaced by a real sentence
-    assert "harvested" in page.locator("#lede-sub").inner_text()
+    assert "kept" in page.locator("#lede-sub").inner_text()
     page.screenshot(path=str(SCREENSHOTS / "1_briefing.png"))
 
 
-def test_stack_strip_lists_the_stack_and_lights_only_real_hits(page):
-    chips = page.locator(".stack-chip")
-    assert chips.count() >= 1
-    for chip in chips.all():
-        if "is-hit" in (chip.get_attribute("class") or ""):
-            assert chip.locator("b").count() == 1  # a lit chip carries its count
+def test_major_updates_are_few_and_the_rest_is_grouped_by_area(page):
+    assert 1 <= page.locator(".tier-major .brief-card").count() <= 5
+    assert page.locator(".area-group").count() >= 1
+    for group in page.locator(".area-group").all():
+        assert group.locator("ul.rest-list").first.locator("li").count() <= 4  # the rest sits behind "more in ..."
 
 
-def test_briefing_is_short_and_the_rest_is_collapsed(page):
-    featured = page.locator(".tier .brief-card").count()
-    assert 1 <= featured <= 12
-    assert page.locator("#rest-more").count() in (0, 1)
-    assert page.locator("#rest-filtered").count() in (0, 1)
+def test_picking_an_area_narrows_the_whole_page_and_the_link_keeps_it(page):
+    chips = page.locator(".area-chip[data-area]:not([data-area='all'])")
+    assert chips.count() >= 2
+    name = chips.first.get_attribute("data-area")
+    chips.first.click()
+    assert "area=" in page.url
+    for group in page.locator(".area-group").all():
+        assert group.get_attribute("aria-label") == name  # only the chosen area's group remains
+    page.reload()
+    page.wait_for_selector(".area-chip.is-active")
+    assert page.locator(".area-chip.is-active").get_attribute("data-area") == name
+    page.locator(".area-chip[data-area='all']").click()
+    assert "area=" not in page.url
+
+
+def test_the_watchlist_is_optional_and_lit_only_for_real_hits(page):
+    strip = page.locator("#stack-strip")
+    if strip.is_hidden():
+        return  # no watchlist configured: no strip, no alerts
+    for chip in page.locator(".stack-chip.is-hit").all():
+        assert chip.locator("b").count() == 1
+
+
+def test_only_actionable_items_offer_to_be_taken(page):
+    for card in page.locator(".brief-card").all():
+        if card.locator("[data-triage='doing']").count():
+            in_alerts = card.evaluate("el => !!el.closest('.tier-alert')")
+            assert in_alerts or card.locator(".action").count() == 1  # outside alerts a patch carries its concrete action
+
+
+def test_every_featured_card_can_be_rated(page):
+    expect(page.locator(".brief-card").first.locator(".rate-btn").first).to_be_visible()
+
+
+def test_filtered_items_are_collapsed_with_their_reason(page):
     rest = page.locator("#rest-filtered")
     if rest.count():
         assert not rest.evaluate("el => el.open")
         rest.locator("summary").click()
-        expect(rest.locator(".rest-list li").first).to_be_visible()
-
-
-def test_only_actionable_items_offer_to_be_taken(page):
-    for section in ("stack", "pick"):
-        for card in page.locator(f".tier-{section} .brief-card").all():
-            if card.locator("[data-triage='doing']").count():
-                assert card.locator(".action").count() == 1  # a take button needs a real action beside it
-    for card in page.locator(".tier-alert .brief-card").all():
-        assert card.locator("[data-triage]").count() >= 1
-
-
-def test_every_card_can_be_rated(page):
-    first = page.locator(".brief-card").first
-    expect(first.locator(".rate-btn").first).to_be_visible()
+        expect(rest.locator(".rest-list li p").first).to_be_visible()
 
 
 def test_day_navigation_walks_back_and_forth(page):
@@ -94,25 +109,33 @@ def test_harvest_controls_live_under_admin(page):
     expect(page.locator("#btn-harvest")).to_be_visible()
 
 
-def test_archive_search_finds_items_across_days(browser):
+def test_find_answers_from_the_digests_and_offers_github(browser):
     pg = browser.new_context(viewport={"width": 1280, "height": 900}).new_page()
-    pg.goto(f"{BASE}/curated-digests", timeout=15000)
-    pg.wait_for_selector(".result-row", timeout=10000)
-    total = pg.locator(".result-row").count()
+    pg.goto(f"{BASE}/find", timeout=15000)
+    pg.wait_for_selector(".result-row", timeout=10000)  # empty query lists recent items
     pg.fill("#q", "zzzzzz-no-such-thing")
-    expect(pg.locator(".state-panel h3")).to_have_text("Nothing matches that")
+    expect(pg.locator("#results .state-panel h3")).to_have_text("Nothing in your digests matches that")
     pg.fill("#q", "")
-    pg.wait_for_selector(".result-row")
-    assert pg.locator(".result-row").count() == total
-    pg.locator("#health > summary").click()
-    expect(pg.locator("#readings")).to_be_visible()
-    pg.screenshot(path=str(SCREENSHOTS / "2_archive.png"))
+    pg.wait_for_selector("#results .result-row")
+    expect(pg.locator("#github-section")).to_be_hidden()  # nothing to ask GitHub without a query
+    pg.fill("#q", "postgres")
+    pg.wait_for_selector("#github-section:not([hidden])")
+    pg.select_option("#kind", "paper")
+    expect(pg.locator("#github-section")).to_be_hidden()  # papers are not repositories
+    pg.screenshot(path=str(SCREENSHOTS / "2_find.png"))
+    pg.close()
+
+
+def test_old_archive_address_still_works(browser):
+    pg = browser.new_context().new_page()
+    assert pg.goto(f"{BASE}/curated-digests").status == 200
     pg.close()
 
 
 def test_phone_width_has_no_sideways_scroll(browser):
     pg = browser.new_context(viewport={"width": 390, "height": 844}).new_page()
-    pg.goto(BASE, timeout=15000)
-    pg.wait_for_selector(".brief-card")
-    assert pg.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1")
+    for path in ("/", "/find"):
+        pg.goto(BASE + path, timeout=15000)
+        pg.wait_for_selector(".brief-card, .result-row")
+        assert pg.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"), path
     pg.close()

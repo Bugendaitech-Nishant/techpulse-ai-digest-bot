@@ -23,14 +23,16 @@ class GitHubSearchCollector(BaseCollector):
 
         # GitHub's search treats "(topic:a OR topic:b)" as matching nothing, so ask once per topic.
         repos: dict = {}
-        for topic in ("ai-agents", "llm", "developer-tools"):
+        topics = settings.GITHUB_SEARCH_TOPICS
+        per_topic = max(3, settings.LIMIT_GITHUB_SEARCH // len(topics))
+        for topic in topics:
             resp = requests.get(
                 "https://api.github.com/search/repositories",
                 params={
                     "q": f"topic:{topic} pushed:>{week_ago} stars:>50",
                     "sort": "stars",
                     "order": "desc",
-                    "per_page": settings.LIMIT_GITHUB_SEARCH,
+                    "per_page": per_topic,
                 },
                 headers=headers,
                 timeout=self.timeout,

@@ -23,50 +23,56 @@ document.addEventListener('DOMContentLoaded', () => {
   load();
 });
 
-// ─── Search across every day ───────────────────────────────────────────────
+// ─── Find: the team's digests first, then GitHub ───────────────────────────
 
 let searchTimer = null;
 let searchSeq = 0;
 
+const KIND_LABELS = { tool: 'Tool', paper: 'Paper', article: 'Article', advisory: 'Advisory' };
+
 function setupSearch() {
   const params = new URLSearchParams(window.location.search);
   document.getElementById('q').value = params.get('q') || '';
-  document.getElementById('step').value = params.get('step') || '';
+  document.getElementById('kind').value = params.get('kind') || '';
   document.getElementById('search-form').addEventListener('submit', (e) => { e.preventDefault(); runSearch(); });
-  document.getElementById('q').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(runSearch, 250); });
-  ['topic', 'step'].forEach((id) => document.getElementById(id).addEventListener('change', runSearch));
-  runSearch(params.get('topic') || '');
+  document.getElementById('q').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(runSearch, 300); });
+  ['kind', 'area'].forEach((id) => document.getElementById(id).addEventListener('change', runSearch));
+  document.getElementById('examples').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-example]');
+    if (b) { document.getElementById('q').value = b.dataset.example; runSearch(); }
+  });
+  runSearch(params.get('area') || '');
 }
 
-async function runSearch(initialTopic) {
+async function runSearch(initialArea) {
   const q = document.getElementById('q').value.trim();
-  const topicSelect = document.getElementById('topic');
-  const topic = typeof initialTopic === 'string' ? initialTopic : topicSelect.value;
-  const step = document.getElementById('step').value;
-  const results = document.getElementById('results');
-  const meta = document.getElementById('result-meta');
+  const areaSelect = document.getElementById('area');
+  const area = typeof initialArea === 'string' ? initialArea : areaSelect.value;
+  const kind = document.getElementById('kind').value;
   const seq = ++searchSeq;
 
   const p = new URLSearchParams();
   if (q) p.set('q', q);
-  if (topic) p.set('topic', topic);
-  if (step) p.set('step', step);
+  if (kind) p.set('kind', kind);
+  if (area) p.set('area', area);
   history.replaceState(null, '', p.toString() ? `?${p}` : window.location.pathname);
 
+  searchGithub(q, kind, seq); // in parallel: the archive answer must not wait for GitHub
+
+  const results = document.getElementById('results');
   try {
     const [data] = await Promise.all([getJson(`/api/search?${p}`), loadTriage()]);
     if (seq !== searchSeq) return; // a newer search is already on its way
-    if (!topicSelect.dataset.ready) {
-      (data.topics || []).forEach((t) => topicSelect.appendChild(new Option(t.replace(/-/g, ' '), t)));
-      topicSelect.dataset.ready = '1';
-      topicSelect.value = topic;
+    if (!areaSelect.dataset.ready) {
+      (data.areas || []).forEach((a) => areaSelect.appendChild(new Option(a, a)));
+      areaSelect.dataset.ready = '1';
+      areaSelect.value = area;
     }
-    renderResults(data, q || topic || step);
+    renderResults(data, !!(q || kind || area));
   } catch (err) {
     if (seq !== searchSeq) return;
     console.error('Search failed:', err);
-    meta.textContent = '';
-    results.className = 'cards-grid-view';
+    document.getElementById('result-meta').textContent = '';
     results.innerHTML = `
       <div class="state-panel is-error">
         <h3>Search did not load</h3>
@@ -80,33 +86,66 @@ async function runSearch(initialTopic) {
 function renderResults(data, filtered) {
   const results = document.getElementById('results');
   const meta = document.getElementById('result-meta');
-  results.className = 'cards-grid-view';
   if (!data.items.length) {
     meta.textContent = '';
     results.innerHTML = `
       <div class="state-panel">
-        <h3>${filtered ? 'Nothing matches that' : 'The archive is empty'}</h3>
-        <p>${filtered ? 'Try fewer words, another topic, or any next step.' : 'It fills as harvests run.'}</p>
+        <h3>${filtered ? 'Nothing in your digests matches that' : 'The archive is empty'}</h3>
+        <p>${filtered ? 'Try fewer or broader words, or another kind. The GitHub results below do not depend on the digests.' : 'It fills as harvests run.'}</p>
       </div>`;
     return;
   }
   const days = new Set(data.items.map((i) => i.date)).size;
-  meta.textContent = `${data.count}${data.count >= 60 ? '+' : ''} ${data.count === 1 ? 'item' : 'items'} across ${days} ${days === 1 ? 'day' : 'days'}${filtered ? '' : ', newest first'}.`;
+  const widened = data.mode === 'any' ? ' Few items matched every word, so these match some of them, best first.' : '';
+  meta.textContent = `${data.count}${data.count >= 60 ? '+' : ''} ${data.count === 1 ? 'item' : 'items'} across ${days} ${days === 1 ? 'day' : 'days'}${data.mode === 'recent' ? ', newest first' : ''}.${widened}`;
 
   let day = '';
   results.innerHTML = data.items.map((item) => {
-    const header = item.date !== day ? `<h2 class="result-day">${escapeHtml(item.date)} <a href="/?date=${encodeURIComponent(item.date)}" class="action-link">open this day</a></h2>` : '';
+    const header = data.mode === 'recent' && item.date !== day
+      ? `<h3 class="result-day">${escapeHtml(item.date)} <a href="/?date=${encodeURIComponent(item.date)}" class="action-link">open this day</a></h3>` : '';
     day = item.date;
-    const topics = (item.topics || []).map((t) => `#${escapeHtml(t)}`).join(' ');
-    const detail = item.next_step_detail ? `<p class="card-next"><strong>${escapeHtml(item.next_step)}:</strong> ${escapeHtml(item.next_step_detail)}</p>` : '';
-    const note = triageOf(item).note ? `<span class="triage-note">${escapeHtml(triageOf(item).note)}</span>` : '';
+    const meta = [KIND_LABELS[item.kind], sourceName(item.source), (item.areas || []).join(', '), item.date]
+      .filter(Boolean).map(escapeHtml).join(' · ');
+    const detail = item.next_step_detail && item.next_step === 'Patch'
+      ? `<p class="card-next"><strong>${escapeHtml(item.next_step)}:</strong> ${escapeHtml(item.next_step_detail)}</p>` : '';
     return `${header}
       <article class="result-row">
         <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="card-title">${escapeHtml(item.title)}</a>
-        <p class="card-meta">${escapeHtml(sourceName(item.source))}${topics ? ` · ${topics}` : ''}</p>
+        <p class="card-meta">${meta}</p>
         <p class="card-desc">${escapeHtml(plainText(item.summary))}</p>
         ${detail}
-        <div class="card-triage">${triageChip(item)}${note}</div>
+        ${triageChip(item) ? `<div class="card-triage">${triageChip(item)}</div>` : ''}
+      </article>`;
+  }).join('');
+}
+
+async function searchGithub(q, kind, seq) {
+  const section = document.getElementById('github-section');
+  const box = document.getElementById('github-results');
+  if (!q || (kind && kind !== 'tool')) { section.hidden = true; return; }
+  section.hidden = false;
+  box.innerHTML = '<div class="skeleton-row"></div>';
+  let data;
+  try {
+    data = await getJson(`/api/discover?q=${encodeURIComponent(q)}`, 20000);
+  } catch (err) {
+    data = { items: [], error: 'GitHub results could not be loaded.' };
+  }
+  if (seq !== searchSeq) return;
+  if (!data.items.length) {
+    box.innerHTML = `<div class="state-panel"><h3>${data.error ? 'GitHub did not answer' : 'No maintained repositories matched'}</h3><p>${escapeHtml(data.error || 'Try other words for the same need.')}</p></div>`;
+    return;
+  }
+  box.innerHTML = data.items.map((r) => {
+    const facts = [r.stars ? `${r.stars.toLocaleString()} stars` : '', r.language, r.license && r.license !== 'NOASSERTION' ? r.license : 'licence not stated',
+      r.pushed_at ? `pushed ${relativeTime(r.pushed_at)}` : ''].filter(Boolean).map(escapeHtml).join(' · ');
+    const topics = (r.topics || []).map((t) => `#${escapeHtml(t)}`).join(' ');
+    return `
+      <article class="result-row">
+        <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer" class="card-title">${escapeHtml(r.title)}</a>
+        <p class="card-meta">${facts}</p>
+        <p class="card-desc">${escapeHtml(r.description)}</p>
+        ${topics ? `<p class="card-meta">${topics}</p>` : ''}
       </article>`;
   }).join('');
 }
@@ -149,12 +188,8 @@ function render(insights, latest) {
         <h3>No digests yet</h3>
         <p>The archive fills as harvests run. Run the first one from the button above.</p>
       </div>`;
-    document.getElementById('page-sub').textContent = 'Nothing has been harvested yet.';
     return;
   }
-
-  document.getElementById('page-sub').textContent =
-    `${insights.digests_total} ${insights.digests_total === 1 ? 'digest' : 'digests'} kept, last harvest ${relativeTime(insights.last_harvest_at) || 'time unknown'}.`;
 
   const backend = insights.latest ? `${insights.latest.ranking_backend} ${insights.latest.ranking_version}` : '--';
   const categories = insights.by_category || {};
@@ -316,5 +351,4 @@ function renderError() {
       <button type="button" class="btn btn-primary" id="btn-retry">Try again</button>
     </div>`;
   document.getElementById('btn-retry').addEventListener('click', load);
-  document.getElementById('page-sub').textContent = 'The archive could not be reached.';
 }

@@ -78,7 +78,8 @@ def test_github_search_asks_once_per_topic_and_uses_push_date():
                 "pushed_at": "2026-10-29T10:00:00Z", "created_at": "2019-01-01T00:00:00Z"}
 
     replies = [response([repo("a/one", 90)]), response([repo("a/one", 90), repo("b/two", 400)]), response([])]
-    with patch("src.collectors.github_search.requests.get", side_effect=replies) as get:
+    with patch("src.collectors.github_search.requests.get", side_effect=replies) as get, \
+            patch("src.collectors.github_search.settings.GITHUB_SEARCH_TOPICS", ["ai-agents", "llm", "react"]):
         items = GitHubSearchCollector()._fetch_items()
 
     assert get.call_count == 3

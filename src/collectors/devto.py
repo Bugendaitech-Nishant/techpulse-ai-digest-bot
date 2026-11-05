@@ -17,14 +17,14 @@ class DevToCollector(BaseCollector):
 
     def _fetch_items(self) -> List[RawItem]:
         items: List[RawItem] = []
-        tags = ["ai", "python", "opensource"]
+        tags = settings.DEVTO_TAGS
 
         for tag in tags:
             api_url = "https://dev.to/api/articles"
             params = {
                 "tag": tag,
                 "top": 1,  # Top articles from the past day
-                "per_page": settings.LIMIT_DEVTO // len(tags),
+                "per_page": max(3, settings.LIMIT_DEVTO // len(tags)),
             }
 
             resp = requests.get(
