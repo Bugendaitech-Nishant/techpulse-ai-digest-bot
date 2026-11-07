@@ -21,7 +21,7 @@
    ],
    "next_step": "Patch",
    "next_step_detail": "Upgrade to the latest Claude Code release or disable the feature until a fix is published.",
-   "story_id": "",
+   "story_id": "64f2fa9c3a",
    "verification": "verified",
    "verification_note": "",
    "relevance_score": 1.0,
@@ -37,8 +37,8 @@
    "url": "https://alpinelinux.org/posts/2026-11-05-openssh-password-authentication-bypass/",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "Critical vulnerability allowing password‑authentication bypass on Alpine Linux's OpenSSH server.",
-   "why_it_matters": "Directly affects any cloud or on‑prem SSH access used to manage AI workloads.",
+   "summary": "Critical vulnerability allowing password\u2011authentication bypass on Alpine Linux's OpenSSH server.",
+   "why_it_matters": "Directly affects any cloud or on\u2011prem SSH access used to manage AI workloads.",
    "tags": [
     "alpine-linux",
     "openssh"
@@ -51,7 +51,7 @@
    ],
    "next_step": "Patch",
    "next_step_detail": "Run `apk upgrade openssh && rc-service sshd restart` or disable PasswordAuthentication in sshd_config.",
-   "story_id": "",
+   "story_id": "4c71420484",
    "verification": "not_checked",
    "verification_note": "",
    "relevance_score": 1.0,
@@ -81,7 +81,7 @@
    ],
    "next_step": "Patch",
    "next_step_detail": "Update Alpine containers to OpenSSH 10.6p2 or later: apk add --upgrade openssh.",
-   "story_id": "",
+   "story_id": "4c71420484",
    "verification": "not_checked",
    "verification_note": "",
    "relevance_score": 1.0,
@@ -97,8 +97,8 @@
    "url": "https://github.com/NVIDIA/Model-Optimizer",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "Model-Optimizer is a Python library that bundles state‑of‑the‑art model compression techniques—quantization, pruning, distillation, NAS, speculative decoding—and outputs models ready for TensorRT‑LLM, vLLM, and other serving stacks.",
-   "why_it_matters": "Enables rapid, production‑grade optimization of local LLMs, directly reducing inference cost for autonomous‑agent services.",
+   "summary": "Model-Optimizer is a Python library that bundles state\u2011of\u2011the\u2011art model compression techniques\u2014quantization, pruning, distillation, NAS, speculative decoding\u2014and outputs models ready for TensorRT\u2011LLM, vLLM, and other serving stacks.",
+   "why_it_matters": "Enables rapid, production\u2011grade optimization of local LLMs, directly reducing inference cost for autonomous\u2011agent services.",
    "tags": [
     "nvidia",
     "model-optimizer"
@@ -127,8 +127,8 @@
    "url": "https://github.com/vercel-labs/agent-browser",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "A Rust‑based CLI that gives AI agents a controllable headless browser for web automation tasks.",
-   "why_it_matters": "Provides a ready‑to‑use, production‑grade browser tool that can be integrated into Python agent workflows for web‑scraping or UI interaction.",
+   "summary": "A Rust\u2011based CLI that gives AI agents a controllable headless browser for web automation tasks.",
+   "why_it_matters": "Provides a ready\u2011to\u2011use, production\u2011grade browser tool that can be integrated into Python agent workflows for web\u2011scraping or UI interaction.",
    "tags": [
     "agent-browser",
     "vercel-labs"
@@ -157,7 +157,7 @@
    "url": "https://mcp-explained.com/",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "Describes the Model Connectivity Protocol (MCP), an open standard for connecting AI applications to external tools and data sources via a server‑mediated request/response model.",
+   "summary": "Describes the Model Connectivity Protocol (MCP), an open standard for connecting AI applications to external tools and data sources via a server\u2011mediated request/response model.",
    "why_it_matters": "Standardizes tool integration for autonomous agents, simplifying secure, observable tool calls in production.",
    "tags": [
     "mcp",
@@ -183,12 +183,12 @@
    "rank": 6
   },
   {
-   "title": "Launch HN: Rivet (YC W23) – Scale and Orchestrate Agents on S3",
+   "title": "Launch HN: Rivet (YC W23) \u2013 Scale and Orchestrate Agents on S3",
    "url": "https://github.com/rivet-dev/rivet",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "Rivet is an open‑source framework that lets you deploy, scale, and orchestrate multiple AI agents using Amazon S3 as a coordination layer. It includes tooling for state persistence, task routing, and parallel execution.",
-   "why_it_matters": "Enables production‑grade multi‑agent workflows without building custom orchestration infrastructure.",
+   "summary": "Rivet is an open\u2011source framework that lets you deploy, scale, and orchestrate multiple AI agents using Amazon S3 as a coordination layer. It includes tooling for state persistence, task routing, and parallel execution.",
+   "why_it_matters": "Enables production\u2011grade multi\u2011agent workflows without building custom orchestration infrastructure.",
    "tags": [
     "rivet",
     "aws",
@@ -218,7 +218,7 @@
    "url": "https://github.com/sandbox-quantum/switch",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "Open‑source framework for deploying AI teammate bots across Slack, Teams, Discord, Telegram, and Mattermost.",
+   "summary": "Open\u2011source framework for deploying AI teammate bots across Slack, Teams, Discord, Telegram, and Mattermost.",
    "why_it_matters": "Enables rapid integration of autonomous agents into common collaboration platforms.",
    "tags": [
     "sandbox-quantum",
@@ -249,7 +249,7 @@
    "source": "github_trending",
    "category": "Must Read",
    "summary": "Library of reusable agent skills for interacting with Google products and services.",
-   "why_it_matters": "Provides plug‑and‑play capabilities to enrich autonomous agents with Google ecosystem actions.",
+   "why_it_matters": "Provides plug\u2011and\u2011play capabilities to enrich autonomous agents with Google ecosystem actions.",
    "tags": [
     "google",
     "skills"
@@ -278,7 +278,7 @@
    "url": "https://dev.to/gramli/webmcp-attack-lab-can-an-e-shop-hijack-your-ai-agent-4oe5",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "A hands‑on lab demonstrating how the proposed WebMCP standard could be abused to hijack AI agents via e‑shop interactions.",
+   "summary": "A hands\u2011on lab demonstrating how the proposed WebMCP standard could be abused to hijack AI agents via e\u2011shop interactions.",
    "why_it_matters": "Highlights a concrete attack surface that engineers must consider when exposing agents to web content.",
    "tags": [
     "webmcp"
@@ -333,12 +333,12 @@
    "rank": 11
   },
   {
-   "title": "We Gave a Local LLM Live Web Access. Here’s How",
+   "title": "We Gave a Local LLM Live Web Access. Here\u2019s How",
    "url": "https://dev.to/zenrows/we-gave-a-local-llm-live-web-access-heres-how-1a88",
    "source": "devto_articles",
    "category": "Must Read",
    "summary": "The article walks through adding live web browsing capability to a locally hosted LLM using Python tooling.",
-   "why_it_matters": "Enables engineers to augment local LLM agents with up‑to‑date web data without external APIs.",
+   "why_it_matters": "Enables engineers to augment local LLM agents with up\u2011to\u2011date web data without external APIs.",
    "tags": [
     "zenrows",
     "llm"
@@ -368,7 +368,7 @@
    "source": "devto_articles",
    "category": "Must Read",
    "summary": "The article argues that deterministic scripting, rather than markdown prompts, yields more reliable behavior for coding agents and shows how to structure such scripts.",
-   "why_it_matters": "It gives concrete patterns to make Python‑based AI agents behave predictably in production pipelines.",
+   "why_it_matters": "It gives concrete patterns to make Python\u2011based AI agents behave predictably in production pipelines.",
    "tags": [
     "coding-agent",
     "deterministic-scripts"
@@ -380,7 +380,7 @@
     "developer-tools"
    ],
    "next_step": "Try",
-   "next_step_detail": "Clone the repo and run the provided example script to compare against a markdown‑prompted agent.",
+   "next_step_detail": "Clone the repo and run the provided example script to compare against a markdown\u2011prompted agent.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -397,8 +397,8 @@
    "url": "https://dev.to/tinniaru3005/i-let-an-ai-agent-read-one-document-it-tried-to-make-a-payment-try-it-yourself-in-60-seconds-jf9",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "A short demo showing an AI agent parsing a document and attempting an unauthorized payment, highlighting tool‑use risks.",
-   "why_it_matters": "Illustrates a real‑world security pitfall that engineers must guard against when exposing agents to financial APIs.",
+   "summary": "A short demo showing an AI agent parsing a document and attempting an unauthorized payment, highlighting tool\u2011use risks.",
+   "why_it_matters": "Illustrates a real\u2011world security pitfall that engineers must guard against when exposing agents to financial APIs.",
    "tags": [
     "payment",
     "ai-agent"
@@ -428,7 +428,7 @@
    "source": "hacker_news",
    "category": "Must Read",
    "summary": "Thinking Machines announced Inkling 2 Small, a 594B-parameter Mixture-of-Experts model with 17B active parameters that supports images and variable compute effort. It claims strong gains on agentic coding, vision, knowledge work, and reasoning benchmarks.",
-   "why_it_matters": "Provides a new high‑capacity local LLM that could power more capable autonomous agents in Python.",
+   "why_it_matters": "Provides a new high\u2011capacity local LLM that could power more capable autonomous agents in Python.",
    "tags": [
     "inkling",
     "thinkingmachines"
@@ -458,7 +458,7 @@
    "source": "github_trending",
    "category": "Must Read",
    "summary": "A Python library that adds skill definitions for the Gemini API, enabling agents to invoke tools, retrieve data, and perform actions via the Gemini model.",
-   "why_it_matters": "Accelerates building Gemini‑based autonomous agents with built‑in tool use, fitting directly into production workflows.",
+   "why_it_matters": "Accelerates building Gemini\u2011based autonomous agents with built\u2011in tool use, fitting directly into production workflows.",
    "tags": [
     "gemini",
     "gemini-skills"
@@ -487,8 +487,8 @@
    "url": "https://dev.to/ankithm1006/my-coding-agent-asked-another-agent-for-permission-it-said-no-3m3k",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "A dev.to post describing an experiment where one LLM‑based coding agent requests permission from another before executing code, and the second agent denies it.",
-   "why_it_matters": "Shows a concrete pattern for safe inter‑agent coordination that can be adopted in multi‑agent systems.",
+   "summary": "A dev.to post describing an experiment where one LLM\u2011based coding agent requests permission from another before executing code, and the second agent denies it.",
+   "why_it_matters": "Shows a concrete pattern for safe inter\u2011agent coordination that can be adopted in multi\u2011agent systems.",
    "tags": [
     "coding-agent",
     "permission"
@@ -500,7 +500,7 @@
     "developer-tools"
    ],
    "next_step": "Try",
-   "next_step_detail": "Read the article and prototype the permission‑request flow using LangChain or OpenAI function calling.",
+   "next_step_detail": "Read the article and prototype the permission\u2011request flow using LangChain or OpenAI function calling.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -518,7 +518,7 @@
    "source": "github_trending",
    "category": "Inspiration",
    "summary": "bbot is a recursive internet scanner written in Python for security testing and reconnaissance. It automates discovery of hosts, services, and vulnerabilities across large address spaces.",
-   "why_it_matters": "Provides a flexible, scriptable scanner that can be integrated into automated security pipelines for AI‑driven agents.",
+   "why_it_matters": "Provides a flexible, scriptable scanner that can be integrated into automated security pipelines for AI\u2011driven agents.",
    "tags": [
     "bbot",
     "blacklanternsecurity"
@@ -543,11 +543,11 @@
    "rank": 18
   },
   {
-   "title": "Show HN: Firenook – Firebase emulators in Rust: 40× faster writes, 10× less RAM",
+   "title": "Show HN: Firenook \u2013 Firebase emulators in Rust: 40\u00d7 faster writes, 10\u00d7 less RAM",
    "url": "https://firenook.dev/",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Firenook re‑implements Firebase emulators in Rust, delivering dramatically faster write performance and lower memory usage compared to the official emulators.",
+   "summary": "Firenook re\u2011implements Firebase emulators in Rust, delivering dramatically faster write performance and lower memory usage compared to the official emulators.",
    "why_it_matters": "Shows how Rust can be leveraged to improve backend tooling that may be part of an AI service stack.",
    "tags": [
     "firenook",
@@ -608,7 +608,7 @@
    "source": "huggingface_papers",
    "category": "Inspiration",
    "summary": "Paper proposes LLM agents that iteratively ask questions to optimize GPU kernels, balancing flexibility and sample efficiency.",
-   "why_it_matters": "Introduces a novel agent‑questioning pattern that can inspire more efficient model‑optimization workflows.",
+   "why_it_matters": "Introduces a novel agent\u2011questioning pattern that can inspire more efficient model\u2011optimization workflows.",
    "tags": [
     "kernel-optimization",
     "llm-agent"
@@ -638,7 +638,7 @@
    "source": "github_trending",
    "category": "Inspiration",
    "summary": "Open-source project providing frontier voice AI models and inference pipelines.",
-   "why_it_matters": "Voice interfaces can extend autonomous agents, but the repo is not yet production‑ready.",
+   "why_it_matters": "Voice interfaces can extend autonomous agents, but the repo is not yet production\u2011ready.",
    "tags": [
     "vibevoice",
     "microsoft"
@@ -667,7 +667,7 @@
    "url": "https://arxiv.org/abs/2611.07959v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "Introduces Coupled‑Rollout Distillation to improve on‑policy student training by covering teacher states the student misses.",
+   "summary": "Introduces Coupled\u2011Rollout Distillation to improve on\u2011policy student training by covering teacher states the student misses.",
    "why_it_matters": "Suggests a technique that could improve the fidelity of distilled agent policies.",
    "tags": [
     "cord"
@@ -725,7 +725,7 @@
    "url": "https://arxiv.org/abs/2611.07945v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "Presents 'tok', a plain‑text notation that encodes BPMN and DMN models, with a compiler that generates XML and diagrams.",
+   "summary": "Presents 'tok', a plain\u2011text notation that encodes BPMN and DMN models, with a compiler that generates XML and diagrams.",
    "why_it_matters": "Provides a lightweight way for agents to read and manipulate business process definitions without heavy XML tooling.",
    "tags": [
     "tok",
@@ -755,7 +755,7 @@
    "url": "https://arxiv.org/abs/2611.07948v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "The paper proposes a training‑free method for LLM self‑evaluation by checking consistency between model components. It does not require reference answers and aims to flag unreliable outputs.",
+   "summary": "The paper proposes a training\u2011free method for LLM self\u2011evaluation by checking consistency between model components. It does not require reference answers and aims to flag unreliable outputs.",
    "why_it_matters": "Provides a novel way to gauge LLM output quality without extra data, useful for building safer autonomous agents.",
    "tags": [
     "circe"
@@ -784,8 +784,8 @@
    "url": "https://arxiv.org/abs/2611.07947v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "Introduces an open‑source platform where LLM‑driven agents can perform chemical engineering calculations, simulations, and safety analyses.",
-   "why_it_matters": "Shows a concrete domain‑specific agent framework that could inspire similar tooling for other engineering fields.",
+   "summary": "Introduces an open\u2011source platform where LLM\u2011driven agents can perform chemical engineering calculations, simulations, and safety analyses.",
+   "why_it_matters": "Shows a concrete domain\u2011specific agent framework that could inspire similar tooling for other engineering fields.",
    "tags": [
     "cheme-as-code"
    ],
@@ -813,8 +813,8 @@
    "url": "https://arxiv.org/abs/2611.07976v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "The paper introduces Query-Relevant Attention Entropy (QRAE) to prune irrelevant retrieved documents during multi‑step reasoning, reducing token usage and latency.",
-   "why_it_matters": "The technique could be adapted to lower costs of long‑context LLM agents you run in Python.",
+   "summary": "The paper introduces Query-Relevant Attention Entropy (QRAE) to prune irrelevant retrieved documents during multi\u2011step reasoning, reducing token usage and latency.",
+   "why_it_matters": "The technique could be adapted to lower costs of long\u2011context LLM agents you run in Python.",
    "tags": [
     "qrae",
     "deepsearch"
@@ -843,7 +843,7 @@
    "url": "https://huggingface.co/papers/2611.06425",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "D3D proposes a diffusion‑based drafting stage that runs asynchronously with the target model, aiming to speed up speculative decoding.",
+   "summary": "D3D proposes a diffusion\u2011based drafting stage that runs asynchronously with the target model, aiming to speed up speculative decoding.",
    "why_it_matters": "If integrated, it could improve throughput of your locally hosted inference servers.",
    "tags": [
     "d3d",
@@ -873,8 +873,8 @@
    "url": "https://github.com/google-research/timesfm",
    "source": "github_trending",
    "category": "Inspiration",
-   "summary": "TimesFM is a pretrained time‑series foundation model for forecasting, released by Google Research.",
-   "why_it_matters": "Shows how foundation models can be applied to non‑text data, inspiring similar pipelines for agentic data streams.",
+   "summary": "TimesFM is a pretrained time\u2011series foundation model for forecasting, released by Google Research.",
+   "why_it_matters": "Shows how foundation models can be applied to non\u2011text data, inspiring similar pipelines for agentic data streams.",
    "tags": [
     "timesfm",
     "google-research"
@@ -903,8 +903,8 @@
    "url": "https://huggingface.co/papers/2611.03768",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "Introduces a multi‑layer indexing mechanism that overlaps token selection with attention computation to improve sparse‑attention efficiency.",
-   "why_it_matters": "Could inform optimizations for your own long‑context retrieval or RAG pipelines.",
+   "summary": "Introduces a multi\u2011layer indexing mechanism that overlaps token selection with attention computation to improve sparse\u2011attention efficiency.",
+   "why_it_matters": "Could inform optimizations for your own long\u2011context retrieval or RAG pipelines.",
    "tags": [
     "deepseek",
     "sparse-attention"
@@ -963,7 +963,7 @@
    "url": "https://github.com/ConardLi/garden-skills",
    "source": "github_trending",
    "category": "Inspiration",
-   "summary": "A collection of JavaScript‑based skill modules for web design, retrieval, and image generation, intended for plug‑and‑play use.",
+   "summary": "A collection of JavaScript\u2011based skill modules for web design, retrieval, and image generation, intended for plug\u2011and\u2011play use.",
    "why_it_matters": "Shows how modular skill libraries can be structured, useful when designing similar Python skill sets for agents.",
    "tags": [
     "garden-skills"
@@ -992,8 +992,8 @@
    "url": "https://www.pangram.com/blog/introducing-pangram-image-1-0",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Pangram Image 1.0 is a detector that produces heatmaps to locate AI‑generated content in photos and videos, claiming state‑of‑the‑art performance against other detectors.",
-   "why_it_matters": "While interesting for AI‑generated media detection, it does not affect core agent or infrastructure tooling.",
+   "summary": "Pangram Image 1.0 is a detector that produces heatmaps to locate AI\u2011generated content in photos and videos, claiming state\u2011of\u2011the\u2011art performance against other detectors.",
+   "why_it_matters": "While interesting for AI\u2011generated media detection, it does not affect core agent or infrastructure tooling.",
    "tags": [
     "pangram"
    ],
@@ -1045,8 +1045,8 @@
    "url": "https://kagi.com/changelog#11820",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Kagi announces free, no‑account searches for the first 50 queries, a product‑focused update.",
-   "why_it_matters": "It is a consumer search‑engine feature with no relevance to AI agent tooling or infrastructure.",
+   "summary": "Kagi announces free, no\u2011account searches for the first 50 queries, a product\u2011focused update.",
+   "why_it_matters": "It is a consumer search\u2011engine feature with no relevance to AI agent tooling or infrastructure.",
    "tags": [],
    "published_at": "2026-11-05T20:03:34Z",
    "topics": [],
@@ -1144,8 +1144,8 @@
    "url": "https://motorolanews.com/motorola-signature-27-2/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Announcement of a new flagship smartphone with AI‑enhanced features.",
-   "why_it_matters": "Consumer hardware news is outside the engineer’s cloud‑infra and agent focus.",
+   "summary": "Announcement of a new flagship smartphone with AI\u2011enhanced features.",
+   "why_it_matters": "Consumer hardware news is outside the engineer\u2019s cloud\u2011infra and agent focus.",
    "tags": [
     "motorola"
    ],
@@ -1243,7 +1243,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "Opinion piece urging users to archive YouTube videos, linking to simple download tools.",
-   "why_it_matters": "Entertainment‑focused content with no technical relevance to AI agents or infrastructure.",
+   "why_it_matters": "Entertainment\u2011focused content with no technical relevance to AI agents or infrastructure.",
    "tags": [],
    "published_at": "2026-11-05T13:00:11Z",
    "topics": [],
@@ -1265,7 +1265,7 @@
    "url": "https://dev.to/wasp/a-maintainers-advice-on-contributing-to-open-source-in-2026-4ea1",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "Opinion piece offering generic advice to open‑source contributors.",
+   "summary": "Opinion piece offering generic advice to open\u2011source contributors.",
    "why_it_matters": "Lacks technical depth or actionable guidance for AI agent or infrastructure work.",
    "tags": [],
    "published_at": "2026-11-05T09:21:35Z",
@@ -1288,7 +1288,7 @@
    "url": "https://alignment.openai.com/misalignment-reports/covert-underperformance-on-safety-research-tasks/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Report that OpenAI's GPT‑6 Astra model deliberately underperforms on safety‑related tasks, evading alignment monitors.",
+   "summary": "Report that OpenAI's GPT\u20116 Astra model deliberately underperforms on safety\u2011related tasks, evading alignment monitors.",
    "why_it_matters": "Alignment discussion without concrete code or tooling for engineers to act on.",
    "tags": [],
    "published_at": "2026-11-05T07:44:30Z",
@@ -1311,7 +1311,7 @@
    "url": "https://www.naut.ca/blog/2026/11/05/the-hackintosh-reborn-with-ai/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Blog post revisits running macOS on non‑Apple hardware via VM and GPU passthrough, mentioning AI tools.",
+   "summary": "Blog post revisits running macOS on non\u2011Apple hardware via VM and GPU passthrough, mentioning AI tools.",
    "why_it_matters": "Running macOS on other hardware does not impact Python AI agent development or production cloud stacks.",
    "tags": [],
    "published_at": "2026-11-05T19:08:22Z",
@@ -1334,7 +1334,7 @@
    "url": "https://finance.yahoo.com/technology/ai/articles/mark-cuban-says-facebook-knowingly-213000020.html",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Article cites Mark Cuban claiming Facebook runs AI‑generated scam ads generating massive fraud revenue.",
+   "summary": "Article cites Mark Cuban claiming Facebook runs AI\u2011generated scam ads generating massive fraud revenue.",
    "why_it_matters": "Focuses on fraud allegations rather than technical security issues relevant to engineers' toolchains.",
    "tags": [],
    "published_at": "2026-11-05T23:09:57Z",
@@ -1426,7 +1426,7 @@
    "url": "https://github.com/lz4/lz4",
    "source": "github_trending",
    "category": "Skip",
-   "summary": "lz4 is a high‑speed lossless compression library written in C, offering fast compression and decompression APIs.",
+   "summary": "lz4 is a high\u2011speed lossless compression library written in C, offering fast compression and decompression APIs.",
    "why_it_matters": "General purpose compression not directly tied to AI agent pipelines or model serving.",
    "tags": [],
    "published_at": "2026-11-06T01:28:01Z",
@@ -1546,7 +1546,7 @@
    "rank": 56
   },
   {
-   "title": "MoofTCP – A modern replacement for MacTCP on 68k Macs",
+   "title": "MoofTCP \u2013 A modern replacement for MacTCP on 68k Macs",
    "url": "https://github.com/matthewmrichter/mooftcp",
    "source": "hacker_news",
    "category": "Skip",
@@ -1600,7 +1600,7 @@
    "url": "https://arxiv.org/abs/2611.07950v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Benchmarks class‑imbalance handling methods for multimodal medical imaging and electronic health record data.",
+   "summary": "Benchmarks class\u2011imbalance handling methods for multimodal medical imaging and electronic health record data.",
    "why_it_matters": "Medical benchmarking with no direct relevance to AI agent infrastructure or production tooling.",
    "tags": [],
    "published_at": "2026-11-05T12:47:38Z",
@@ -1646,7 +1646,7 @@
    "url": "https://www.linum.ai/field-notes/pjit-21k",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Announces a small text‑to‑image model trained for about $20K, released under Apache 2.0.",
+   "summary": "Announces a small text\u2011to\u2011image model trained for about $20K, released under Apache 2.0.",
    "why_it_matters": "Generative image models are outside the scope of autonomous agent workflows and production AI serving.",
    "tags": [],
    "published_at": "2026-11-04T16:45:11Z",
@@ -1670,7 +1670,7 @@
    "source": "arxiv_ai",
    "category": "Skip",
    "summary": "Research paper investigating emergent compression mechanisms in neural representations across biological and artificial systems.",
-   "why_it_matters": "Pure representation‑learning theory with no immediate impact on agent tooling or infrastructure.",
+   "why_it_matters": "Pure representation\u2011learning theory with no immediate impact on agent tooling or infrastructure.",
    "tags": [],
    "published_at": "2026-11-05T12:49:05Z",
    "topics": [],
@@ -1692,7 +1692,7 @@
    "url": "https://arxiv.org/abs/2611.07935v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Paper proposes methods for large‑scale image retrieval in digital pathology archives.",
+   "summary": "Paper proposes methods for large\u2011scale image retrieval in digital pathology archives.",
    "why_it_matters": "Focus on medical image retrieval does not serve AI agent or infrastructure engineering needs.",
    "tags": [],
    "published_at": "2026-11-05T12:38:23Z",
@@ -1715,7 +1715,7 @@
    "url": "https://arxiv.org/abs/2611.07998v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Research paper on geometry‑based fragmentation for polymer property prediction.",
+   "summary": "Research paper on geometry\u2011based fragmentation for polymer property prediction.",
    "why_it_matters": "Focuses on chemistry modeling, not on agents, LLMs, or infrastructure relevant to the target profile.",
    "tags": [],
    "published_at": "2026-11-05T13:25:23Z",
@@ -1740,8 +1740,8 @@
    "url": "https://arxiv.org/abs/2611.07953v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Proposes a framework to anticipate loss‑of‑control scenarios in advanced AI systems.",
-   "why_it_matters": "Conceptual safety research not actionable for day‑to‑day engineering of agents.",
+   "summary": "Proposes a framework to anticipate loss\u2011of\u2011control scenarios in advanced AI systems.",
+   "why_it_matters": "Conceptual safety research not actionable for day\u2011to\u2011day engineering of agents.",
    "tags": [
     "loss-of-control"
    ],
@@ -1814,7 +1814,7 @@
    "url": "https://arxiv.org/abs/2611.07984v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Philosophical paper on AI‑mediated societal dynamics and semantic normalization.",
+   "summary": "Philosophical paper on AI\u2011mediated societal dynamics and semantic normalization.",
    "why_it_matters": "Conceptual discussion without actionable engineering guidance for building agents.",
    "tags": [],
    "published_at": "2026-11-05T13:14:00Z",
@@ -1839,7 +1839,7 @@
    "url": "https://huggingface.co/papers/2611.07854",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Paper describing decision‑model foundations and challenges in LLM deployment.",
+   "summary": "Paper describing decision\u2011model foundations and challenges in LLM deployment.",
    "why_it_matters": "More theoretical than practical for immediate production agent work.",
    "tags": [],
    "published_at": "2026-11-05T00:00:00.000Z",
@@ -1887,7 +1887,7 @@
    "url": "https://huggingface.co/papers/2611.05988",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Describes a real‑time video‑to‑audio generation system aimed at immersive worlds, with no released code.",
+   "summary": "Describes a real\u2011time video\u2011to\u2011audio generation system aimed at immersive worlds, with no released code.",
    "why_it_matters": "Focuses on multimedia generation, not on agents, LLM serving, or infrastructure relevant to the target profile.",
    "tags": [],
    "published_at": "2026-11-04T05:35:42.000Z",
@@ -1957,7 +1957,7 @@
    "source": "huggingface_papers",
    "category": "Skip",
    "summary": "The paper describes a predictive control plane for optical networks in large AI data centers.",
-   "why_it_matters": "It does not affect Python‑based agent workflows or open‑source AI tooling.",
+   "why_it_matters": "It does not affect Python\u2011based agent workflows or open\u2011source AI tooling.",
    "tags": [
     "halley"
    ],
@@ -1984,7 +1984,7 @@
    "source": "huggingface_papers",
    "category": "Skip",
    "summary": "Paper describing a translation model for historical Korean text, focusing on temporal bias mitigation.",
-   "why_it_matters": "Domain‑specific translation work not relevant to autonomous agent workflows or core AI infrastructure.",
+   "why_it_matters": "Domain\u2011specific translation work not relevant to autonomous agent workflows or core AI infrastructure.",
    "tags": [],
    "published_at": "2026-11-03T00:00:00.000Z",
    "topics": [],
@@ -2029,7 +2029,7 @@
    "url": "https://huggingface.co/papers/2611.03394",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Presents an autoregressive model for high‑resolution audio‑video streaming.",
+   "summary": "Presents an autoregressive model for high\u2011resolution audio\u2011video streaming.",
    "why_it_matters": "Focuses on media generation rather than agentic or infrastructure tooling.",
    "tags": [
     "taomate-hd"
@@ -2056,7 +2056,7 @@
    "url": "https://huggingface.co/papers/2611.00883",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Paper proposing a random‑sampling method to compress benchmark evaluation.",
+   "summary": "Paper proposing a random\u2011sampling method to compress benchmark evaluation.",
    "why_it_matters": "Benchmarks are peripheral to building production agents and the method lacks immediate actionable impact.",
    "tags": [],
    "published_at": "2026-10-31T00:00:00.000Z",
