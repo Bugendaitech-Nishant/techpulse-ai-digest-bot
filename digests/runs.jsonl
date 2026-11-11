@@ -19,3 +19,4 @@
 {"date": "2026-11-08", "at": "2026-11-08T03:46:34.698626+00:00", "duration_seconds": 335.7, "harvested": 97, "novel": 45, "kept": 11, "unreviewed": 0, "security": 0, "failed_sources": ["arxiv_ai"]}
 {"date": "2026-11-09", "at": "2026-11-09T03:47:17.551984+00:00", "duration_seconds": 409.2, "harvested": 87, "novel": 48, "kept": 17, "unreviewed": 0, "security": 0, "failed_sources": ["arxiv_ai"]}
 {"date": "2026-11-10", "at": "2026-11-10T04:11:16.614605+00:00", "duration_seconds": 283.8, "harvested": 114, "novel": 73, "kept": 30, "unreviewed": 0, "security": 0, "failed_sources": []}
+{"date": "2026-11-11", "at": "2026-11-11T03:49:29.596282+00:00", "duration_seconds": 532.3, "harvested": 106, "novel": 69, "kept": 22, "unreviewed": 0, "security": 0, "failed_sources": []}
