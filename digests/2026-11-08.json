@@ -8,7 +8,7 @@
    "source": "hacker_news",
    "category": "Must Read",
    "summary": "A discussion reveals that Claude Code's \"Don't Ask Again\" feature unintentionally leaked passwords in over a thousand public GitHub repositories. The issue stems from the model caching secret strings and reusing them across prompts.",
-   "why_it_matters": "It shows a concrete supply‑chain secret‑leak risk in a popular coding agent that many engineers run locally or via API.",
+   "why_it_matters": "It shows a concrete supply\u2011chain secret\u2011leak risk in a popular coding agent that many engineers run locally or via API.",
    "tags": [
     "claude",
     "apiiro",
@@ -21,8 +21,8 @@
     "python"
    ],
    "next_step": "Patch",
-   "next_step_detail": "Upgrade to the latest Claude SDK version that disables the cache or add a post‑processing filter to scrub secrets from model outputs.",
-   "story_id": "",
+   "next_step_detail": "Upgrade to the latest Claude SDK version that disables the cache or add a post\u2011processing filter to scrub secrets from model outputs.",
+   "story_id": "5186d80b7e",
    "verification": "not_checked",
    "verification_note": "",
    "relevance_score": 1.0,
@@ -38,8 +38,8 @@
    "url": "https://dev.to/gde/building-railpulse-ai-deploying-an-open-source-railway-dispatch-agent-with-gemma-and-google-cloud-2b9g",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "A step‑by‑step guide that builds a railway dispatch autonomous agent using the Gemma model and serves it on Google Cloud Run.",
-   "why_it_matters": "Shows a production‑ready pattern for deploying custom LLM agents on serverless cloud infrastructure.",
+   "summary": "A step\u2011by\u2011step guide that builds a railway dispatch autonomous agent using the Gemma model and serves it on Google Cloud Run.",
+   "why_it_matters": "Shows a production\u2011ready pattern for deploying custom LLM agents on serverless cloud infrastructure.",
    "tags": [
     "gemma",
     "google-cloud-run"
@@ -68,8 +68,8 @@
    "url": "https://github.com/ranxianglei/billion-context",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "A TypeScript plugin that compresses LLM context windows, enabling billion‑token sessions with token savings of up to 5×.",
-   "why_it_matters": "Reduces inference cost for long‑running autonomous agents that need extensive memory.",
+   "summary": "A TypeScript plugin that compresses LLM context windows, enabling billion\u2011token sessions with token savings of up to 5\u00d7.",
+   "why_it_matters": "Reduces inference cost for long\u2011running autonomous agents that need extensive memory.",
    "tags": [
     "billion-context",
     "ranxianglei"
@@ -94,7 +94,7 @@
    "rank": 3
   },
   {
-   "title": "You tried git-lrc. Meet LiveReview 👀",
+   "title": "You tried git-lrc. Meet LiveReview \ud83d\udc40",
    "url": "https://dev.to/lovestaco/you-tried-git-lrc-meet-livereview-7od",
    "source": "devto_articles",
    "category": "Must Read",
@@ -111,7 +111,7 @@
     "ai-safety"
    ],
    "next_step": "Try",
-   "next_step_detail": "Run `pip install livereview` and enable it in your repo’s CI config.",
+   "next_step_detail": "Run `pip install livereview` and enable it in your repo\u2019s CI config.",
    "story_id": "",
    "verification": "corrected",
    "verification_note": "",
@@ -157,8 +157,8 @@
    "url": "https://github.com/dsx-ai-factory/nvke",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "NVKE provides a management plane for GPU‑accelerated Kubernetes clusters on bare metal.",
-   "why_it_matters": "Enables scalable, low‑latency inference serving for local LLMs in production.",
+   "summary": "NVKE provides a management plane for GPU\u2011accelerated Kubernetes clusters on bare metal.",
+   "why_it_matters": "Enables scalable, low\u2011latency inference serving for local LLMs in production.",
    "tags": [
     "nvke",
     "nvidia",
@@ -171,10 +171,10 @@
     "inference"
    ],
    "next_step": "Try",
-   "next_step_detail": "Clone the repo and run `make install` to evaluate its GPU‑K8s workflow.",
+   "next_step_detail": "Clone the repo and run `make install` to evaluate its GPU\u2011K8s workflow.",
    "story_id": "",
    "verification": "unverified",
-   "verification_note": "NVKE enables scalable, low‑latency inference serving for local LLMs in production.",
+   "verification_note": "NVKE enables scalable, low\u2011latency inference serving for local LLMs in production.",
    "relevance_score": 0.75,
    "impact_score": 0.5,
    "freshness_score": 0.7013,
@@ -188,8 +188,8 @@
    "url": "https://blog.bosscher.ch/posts/openstick/",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "The author describes self‑hosting services on a $10 OpenStick single‑board computer running Debian.",
-   "why_it_matters": "Demonstrates ultra‑low‑cost hardware for edge deployments of lightweight AI services.",
+   "summary": "The author describes self\u2011hosting services on a $10 OpenStick single\u2011board computer running Debian.",
+   "why_it_matters": "Demonstrates ultra\u2011low\u2011cost hardware for edge deployments of lightweight AI services.",
    "tags": [
     "openstick",
     "bosscher"
@@ -201,7 +201,7 @@
     "hardware"
    ],
    "next_step": "Read",
-   "next_step_detail": "Review the hardware setup to see if a similar device fits your edge‑compute needs.",
+   "next_step_detail": "Review the hardware setup to see if a similar device fits your edge\u2011compute needs.",
    "story_id": "",
    "verification": "verified",
    "verification_note": "",
@@ -219,7 +219,7 @@
    "source": "devto_articles",
    "category": "Inspiration",
    "summary": "A developer recounts a bug where an autonomous agent ignored a correct timestamp in its prompt, leading to stale context.",
-   "why_it_matters": "Highlights a subtle failure mode that can affect reliability of long‑running agents.",
+   "why_it_matters": "Highlights a subtle failure mode that can affect reliability of long\u2011running agents.",
    "tags": [
     "self-audit",
     "timestamp"
@@ -234,7 +234,7 @@
    "next_step_detail": "Read the post to learn the debugging steps and apply similar checks in your agents.",
    "story_id": "",
    "verification": "unverified",
-   "verification_note": "The bug highlighted a subtle failure mode that can affect reliability of long‑running agents.",
+   "verification_note": "The bug highlighted a subtle failure mode that can affect reliability of long\u2011running agents.",
    "relevance_score": 0.5,
    "impact_score": 0.5,
    "freshness_score": 0.8508,
@@ -363,7 +363,7 @@
    "url": "https://nfsu2.xyz/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A fan‑ported version of the 2004 racing game runs in Chrome/Firefox with online multiplayer.",
+   "summary": "A fan\u2011ported version of the 2004 racing game runs in Chrome/Firefox with online multiplayer.",
    "why_it_matters": "It is entertainment unrelated to AI agents or infrastructure.",
    "tags": [],
    "published_at": "2026-11-07T09:36:36Z",
@@ -384,7 +384,7 @@
    "rank": 13
   },
   {
-   "title": "Apple’s grey list: Words and phrases your iPhone won’t help you spell",
+   "title": "Apple\u2019s grey list: Words and phrases your iPhone won\u2019t help you spell",
    "url": "https://www.theguardian.com/technology/2026/nov/06/struggling-to-spell-male-chauvinist-pig-apple-grey-list-means-your-iphone-wont-help-you",
    "source": "hacker_news",
    "category": "Skip",
@@ -511,7 +511,7 @@
    "rank": 18
   },
   {
-   "title": "MaxxBench – \"Nice DeepSWE score. But is it true?\"",
+   "title": "MaxxBench \u2013 \"Nice DeepSWE score. But is it true?\"",
    "url": "https://maxxbench.unlap.ai/research/why-maxxbench/",
    "source": "hacker_news",
    "category": "Skip",
@@ -539,7 +539,7 @@
    "source": "github_trending",
    "category": "Skip",
    "summary": "A Python integration that lets Home Assistant control Samsung appliances locally without cloud accounts.",
-   "why_it_matters": "IoT home‑automation focus does not intersect with AI agent workflows or cloud infrastructure.",
+   "why_it_matters": "IoT home\u2011automation focus does not intersect with AI agent workflows or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-07T06:48:26Z",
    "topics": [
@@ -563,7 +563,7 @@
    "url": "http://thelittleengineerthatcould.blogspot.com/2022/12/the-8-linux-computer.html",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A blog post and HN discussion about building a low‑cost Linux computer.",
+   "summary": "A blog post and HN discussion about building a low\u2011cost Linux computer.",
    "why_it_matters": "Hardware hobbyist content with no direct link to AI agents or cloud tooling.",
    "tags": [],
    "published_at": "2026-11-07T14:00:20Z",
@@ -751,7 +751,7 @@
    "url": "https://sheets.works/data-viz/cpu-dies",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A data‑visualization of photographed CPU dies from 1972 to 2024.",
+   "summary": "A data\u2011visualization of photographed CPU dies from 1972 to 2024.",
    "why_it_matters": "Interesting hardware trivia but unrelated to AI agent development or cloud ops.",
    "tags": [],
    "published_at": "2026-11-07T16:21:36Z",
@@ -797,7 +797,7 @@
    "url": "https://dev.to/aws-builders/how-to-master-aws-for-ai-3la4",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "A high‑level, non‑technical guide on using AWS for AI projects.",
+   "summary": "A high\u2011level, non\u2011technical guide on using AWS for AI projects.",
    "why_it_matters": "Lacks concrete engineering details; not actionable for a staff engineer.",
    "tags": [
     "aws"
@@ -962,7 +962,7 @@
    "url": "https://github.com/tailwindlabs/tailwindcss",
    "source": "github_trending",
    "category": "Skip",
-   "summary": "Tailwind CSS is a utility‑first CSS framework for building UI.",
+   "summary": "Tailwind CSS is a utility\u2011first CSS framework for building UI.",
    "why_it_matters": "Frontend styling library not pertinent to backend AI agent or infrastructure work.",
    "tags": [],
    "published_at": "2026-11-06T14:50:08Z",
@@ -1010,8 +1010,8 @@
    "url": "https://github.com/donnemartin/system-design-primer",
    "source": "github_trending",
    "category": "Skip",
-   "summary": "A repository of resources and flashcards to prepare for large‑scale system design interviews.",
-   "why_it_matters": "Focuses on interview prep rather than production‑ready tooling for AI agents.",
+   "summary": "A repository of resources and flashcards to prepare for large\u2011scale system design interviews.",
+   "why_it_matters": "Focuses on interview prep rather than production\u2011ready tooling for AI agents.",
    "tags": [],
    "published_at": "2026-09-15T01:10:09Z",
    "topics": [
@@ -1035,7 +1035,7 @@
    "url": "https://textjs.org/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Text.js lets developers create full‑stack React applications that render inside the browser console using a hidden textarea for input.",
+   "summary": "Text.js lets developers create full\u2011stack React applications that render inside the browser console using a hidden textarea for input.",
    "why_it_matters": "It is a novelty UI hack with no relevance to AI agents, LLMs, or production infrastructure.",
    "tags": [],
    "published_at": "2026-11-04T04:59:36Z",
@@ -1082,7 +1082,7 @@
    "source": "github_trending",
    "category": "Skip",
    "summary": "A repository listing open source games.",
-   "why_it_matters": "Games are outside the engineer’s focus on AI agents and infrastructure.",
+   "why_it_matters": "Games are outside the engineer\u2019s focus on AI agents and infrastructure.",
    "tags": [],
    "published_at": "2026-02-25T20:22:58Z",
    "topics": [
@@ -1107,7 +1107,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "Article describing a technique to repurpose radios for radar-like sensing.",
-   "why_it_matters": "Radio‑to‑radar concept is unrelated to software engineering for AI agents or cloud services.",
+   "why_it_matters": "Radio\u2011to\u2011radar concept is unrelated to software engineering for AI agents or cloud services.",
    "tags": [],
    "published_at": "2026-11-03T21:18:48Z",
    "topics": [],
