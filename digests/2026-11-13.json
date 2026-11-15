@@ -8,7 +8,7 @@
    "source": "github_trending",
    "category": "Must Read",
    "summary": "C/C++ library for running LLM inference locally, supporting quantized models and GPU acceleration.",
-   "why_it_matters": "Core open‑source inference engine for deploying local LLMs in production agents.",
+   "why_it_matters": "Core open\u2011source inference engine for deploying local LLMs in production agents.",
    "tags": [
     "llama.cpp",
     "ggml-org"
@@ -80,7 +80,7 @@
     "llm-models"
    ],
    "next_step": "Read",
-   "next_step_detail": "Read the full forensic report and audit any Blackwell‑trained models in your stack.",
+   "next_step_detail": "Read the full forensic report and audit any Blackwell\u2011trained models in your stack.",
    "story_id": "",
    "verification": "corrected",
    "verification_note": "",
@@ -110,7 +110,7 @@
     "databases"
    ],
    "next_step": "Patch",
-   "next_step_detail": "Upgrade PostgreSQL to the version that includes the CVE‑2026‑6460 fix or apply the provided patch from the advisory.",
+   "next_step_detail": "Upgrade PostgreSQL to the version that includes the CVE\u20112026\u20116460 fix or apply the provided patch from the advisory.",
    "story_id": "",
    "verification": "corrected",
    "verification_note": "",
@@ -127,8 +127,8 @@
    "url": "https://github.com/QwenLM/qwen-code",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "Open‑source AI coding agent that runs in the terminal, enabling code generation and execution via LLM prompts.",
-   "why_it_matters": "Directly usable as a developer‑centric autonomous agent for building and debugging code pipelines.",
+   "summary": "Open\u2011source AI coding agent that runs in the terminal, enabling code generation and execution via LLM prompts.",
+   "why_it_matters": "Directly usable as a developer\u2011centric autonomous agent for building and debugging code pipelines.",
    "tags": [
     "qwen-code",
     "qwenlm"
@@ -157,8 +157,8 @@
    "url": "https://edge0.ai/blog/introducing-edge0-145b-frontier-ai-capabilities-on-your-own-computer",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "Edge0 open‑sources 145B and 120B parameter models together with a unified inference framework and deployment tools for on‑device execution. The models claim frontier‑level reasoning and agent abilities without cloud fees.",
-   "why_it_matters": "Provides a high‑performance local LLM that can power autonomous agents without external API costs.",
+   "summary": "Edge0 open\u2011sources 145B and 120B parameter models together with a unified inference framework and deployment tools for on\u2011device execution. The models claim frontier\u2011level reasoning and agent abilities without cloud fees.",
+   "why_it_matters": "Provides a high\u2011performance local LLM that can power autonomous agents without external API costs.",
    "tags": [
     "edge0-145b",
     "edge0",
@@ -201,7 +201,7 @@
     "cloud"
    ],
    "next_step": "Read",
-   "next_step_detail": "Study the micro‑tool pattern and refactor one of your existing agents accordingly.",
+   "next_step_detail": "Study the micro\u2011tool pattern and refactor one of your existing agents accordingly.",
    "story_id": "",
    "verification": "corrected",
    "verification_note": "",
@@ -218,8 +218,8 @@
    "url": "https://github.com/NVIDIA/SkillEvaluator",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "A multi‑tier framework that evaluates AI agent capabilities with quality gates, semantic overlap detection, and live behavior testing.",
-   "why_it_matters": "Provides a ready‑made benchmark suite to validate the reliability of the reader's autonomous agents before production.",
+   "summary": "A multi\u2011tier framework that evaluates AI agent capabilities with quality gates, semantic overlap detection, and live behavior testing.",
+   "why_it_matters": "Provides a ready\u2011made benchmark suite to validate the reliability of the reader's autonomous agents before production.",
    "tags": [
     "nvidia",
     "skillevaluator"
@@ -279,8 +279,8 @@
    "url": "https://dev.to/alexr/cortexdb-agent-memory-and-a-knowledge-graph-in-one-sqlite-file-1p5n",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "CortexDB bundles an agent’s vector memory and a knowledge‑graph store into a single SQLite file, removing the need for external vector services.",
-   "why_it_matters": "Provides a lightweight, self‑contained memory layer for autonomous agents in production.",
+   "summary": "CortexDB bundles an agent\u2019s vector memory and a knowledge\u2011graph store into a single SQLite file, removing the need for external vector services.",
+   "why_it_matters": "Provides a lightweight, self\u2011contained memory layer for autonomous agents in production.",
    "tags": [
     "cortexdb"
    ],
@@ -291,7 +291,7 @@
     "developer-tools"
    ],
    "next_step": "Try",
-   "next_step_detail": "Clone the repo and run the quick‑start example against a local SQLite DB.",
+   "next_step_detail": "Clone the repo and run the quick\u2011start example against a local SQLite DB.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -304,12 +304,12 @@
    "rank": 10
   },
   {
-   "title": "Show HN: AgentRun – open-source, Self-improving Managed Agents",
+   "title": "Show HN: AgentRun \u2013 open-source, Self-improving Managed Agents",
    "url": "https://github.com/Parcha-ai/agentrun/blob/main/README.md",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "AgentRun is an open‑source platform for self‑improving managed agents that can persist state, schedule tasks, and invoke tools autonomously. It includes a runtime for orchestrating multiple agents and a simple API for extensions.",
-   "why_it_matters": "Directly matches the engineer’s need for a production‑ready multi‑agent framework in Python.",
+   "summary": "AgentRun is an open\u2011source platform for self\u2011improving managed agents that can persist state, schedule tasks, and invoke tools autonomously. It includes a runtime for orchestrating multiple agents and a simple API for extensions.",
+   "why_it_matters": "Directly matches the engineer\u2019s need for a production\u2011ready multi\u2011agent framework in Python.",
    "tags": [
     "agentrun",
     "parcha-ai"
@@ -321,7 +321,7 @@
     "developer-tools"
    ],
    "next_step": "Try",
-   "next_step_detail": "git clone https://github.com/Parcha-ai/agentrun && follow the quick‑start guide to launch a sample agent.",
+   "next_step_detail": "git clone https://github.com/Parcha-ai/agentrun && follow the quick\u2011start guide to launch a sample agent.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -338,8 +338,8 @@
    "url": "https://dev.to/gecojs/how-i-built-an-agentic-memory-service-with-x402-payments-and-sentence-transformers-1i0b",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "The author describes Memory01, a lightweight HTTP‑based persistent memory service for AI agents that uses the x402 payment protocol and sentence‑transformer embeddings for vector search. It avoids API keys and external vector DB services.",
-   "why_it_matters": "Provides a ready‑to‑deploy, low‑overhead memory backend that can be plugged into autonomous agents.",
+   "summary": "The author describes Memory01, a lightweight HTTP\u2011based persistent memory service for AI agents that uses the x402 payment protocol and sentence\u2011transformer embeddings for vector search. It avoids API keys and external vector DB services.",
+   "why_it_matters": "Provides a ready\u2011to\u2011deploy, low\u2011overhead memory backend that can be plugged into autonomous agents.",
    "tags": [
     "x402",
     "sentence-transformers",
@@ -369,8 +369,8 @@
    "url": "https://huggingface.co/papers/2611.12304",
    "source": "huggingface_papers",
    "category": "Must Read",
-   "summary": "Presents a serving architecture that dynamically reallocates compute and KV‑cache resources for agentic LLM workloads, improving latency and cost.",
-   "why_it_matters": "Directly impacts how the reader should design scalable inference pipelines for multi‑agent systems.",
+   "summary": "Presents a serving architecture that dynamically reallocates compute and KV\u2011cache resources for agentic LLM workloads, improving latency and cost.",
+   "why_it_matters": "Directly impacts how the reader should design scalable inference pipelines for multi\u2011agent systems.",
    "tags": [
     "huggingface",
     "agent-serving"
@@ -429,8 +429,8 @@
    "url": "https://github.com/ashhart/TensorFold",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "TensorFold is an LLM inference engine written in Zig that targets Metal, CUDA, and Vulkan backends. It aims to provide high‑performance serving across GPU platforms.",
-   "why_it_matters": "It offers a fast, cross‑GPU inference layer that can replace existing Python‑based servers for lower latency.",
+   "summary": "TensorFold is an LLM inference engine written in Zig that targets Metal, CUDA, and Vulkan backends. It aims to provide high\u2011performance serving across GPU platforms.",
+   "why_it_matters": "It offers a fast, cross\u2011GPU inference layer that can replace existing Python\u2011based servers for lower latency.",
    "tags": [
     "tensorfold",
     "zig",
@@ -444,7 +444,7 @@
     "open-source"
    ],
    "next_step": "Try",
-   "next_step_detail": "Clone the repo and run the provided benchmark script on a CUDA‑enabled machine.",
+   "next_step_detail": "Clone the repo and run the provided benchmark script on a CUDA\u2011enabled machine.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -462,7 +462,7 @@
    "source": "github_trending",
    "category": "Must Read",
    "summary": "A curated collection of Claude AI skills (prompt templates and tool wrappers) for building conversational agents. The repo includes examples for web search, data extraction, and more.",
-   "why_it_matters": "Provides ready‑made building blocks to accelerate development of Claude‑based autonomous agents.",
+   "why_it_matters": "Provides ready\u2011made building blocks to accelerate development of Claude\u2011based autonomous agents.",
    "tags": [
     "claude",
     "skills"
@@ -506,7 +506,7 @@
    ],
    "next_step": "Read",
    "next_step_detail": "Read the full article to learn the failure modes and mitigation strategies.",
-   "story_id": "",
+   "story_id": "70f7ff2d73",
    "verification": "not_checked",
    "verification_note": "",
    "relevance_score": 0.75,
@@ -522,7 +522,7 @@
    "url": "https://huggingface.co/papers/2611.13410",
    "source": "huggingface_papers",
    "category": "Must Read",
-   "summary": "SteerDistill proposes a closed‑loop quantization technique that preserves task success for LLM agents by steering a teacher model during low‑bit distillation. It analyzes failure modes of quantized agents.",
+   "summary": "SteerDistill proposes a closed\u2011loop quantization technique that preserves task success for LLM agents by steering a teacher model during low\u2011bit distillation. It analyzes failure modes of quantized agents.",
    "why_it_matters": "Provides a practical method to reduce inference cost of agent deployments without sacrificing performance.",
    "tags": [
     "steerdistill",
@@ -535,7 +535,7 @@
     "inference"
    ],
    "next_step": "Evaluate",
-   "next_step_detail": "Compare SteerDistill‑quantized models against your current 8‑bit quantization pipeline on a benchmark task.",
+   "next_step_detail": "Compare SteerDistill\u2011quantized models against your current 8\u2011bit quantization pipeline on a benchmark task.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -552,8 +552,8 @@
    "url": "https://huggingface.co/papers/2611.14418",
    "source": "huggingface_papers",
    "category": "Must Read",
-   "summary": "Introduces a dynamic precision scheme that uses 8‑bit weights but upgrades to higher precision only when the model’s output distribution is uncertain.",
-   "why_it_matters": "Enables more efficient inference on edge devices, directly relevant to local‑LLM deployments.",
+   "summary": "Introduces a dynamic precision scheme that uses 8\u2011bit weights but upgrades to higher precision only when the model\u2019s output distribution is uncertain.",
+   "why_it_matters": "Enables more efficient inference on edge devices, directly relevant to local\u2011LLM deployments.",
    "tags": [
     "huggingface"
    ],
@@ -580,8 +580,8 @@
    "url": "https://arxiv.org/abs/2611.15538v1",
    "source": "arxiv_ai",
    "category": "Must Read",
-   "summary": "The paper proposes a query‑decomposition technique for Retrieval‑Augmented Generation that produces cited evidence for each answer step.",
-   "why_it_matters": "It offers a practical method to reduce hallucinations in agent‑driven RAG pipelines.",
+   "summary": "The paper proposes a query\u2011decomposition technique for Retrieval\u2011Augmented Generation that produces cited evidence for each answer step.",
+   "why_it_matters": "It offers a practical method to reduce hallucinations in agent\u2011driven RAG pipelines.",
    "tags": [
     "arxiv"
    ],
@@ -609,7 +609,7 @@
    "url": "https://huggingface.co/papers/2611.14413",
    "source": "huggingface_papers",
    "category": "Must Read",
-   "summary": "Investigates trade‑offs between reducing weight precision and averaging answer permutations to stay within a fixed inference budget for small local LLMs.",
+   "summary": "Investigates trade\u2011offs between reducing weight precision and averaging answer permutations to stay within a fixed inference budget for small local LLMs.",
    "why_it_matters": "Helps decide how to allocate limited compute when deploying LLMs on constrained hardware.",
    "tags": [
     "huggingface"
@@ -667,8 +667,8 @@
    "url": "https://dev.to/effessdev/a-vs-code-extension-to-turn-any-free-chatbot-website-into-an-ai-agent-kind-of-1jfb",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "Describes a VS Code extension that wraps a free web‑based chatbot, exposing it as a pseudo‑agent with limited tool access.",
-   "why_it_matters": "Provides a quick way to prototype agent‑like behavior without building a backend.",
+   "summary": "Describes a VS\u202fCode extension that wraps a free web\u2011based chatbot, exposing it as a pseudo\u2011agent with limited tool access.",
+   "why_it_matters": "Provides a quick way to prototype agent\u2011like behavior without building a backend.",
    "tags": [
     "vscode",
     "extension"
@@ -680,7 +680,7 @@
     "python"
    ],
    "next_step": "Try",
-   "next_step_detail": "Install the extension from the VS Code marketplace and point it at a chatbot URL to experiment.",
+   "next_step_detail": "Install the extension from the VS\u202fCode marketplace and point it at a chatbot URL to experiment.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -697,8 +697,8 @@
    "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Google announces Gemini 4 Hydrogen, a lightweight model aimed at fast execution for everyday coding and agentic workflows.",
-   "why_it_matters": "If the model becomes publicly accessible, it could serve as a low‑latency LLM option for agent pipelines.",
+   "summary": "Google announces Gemini\u202f4 Hydrogen, a lightweight model aimed at fast execution for everyday coding and agentic workflows.",
+   "why_it_matters": "If the model becomes publicly accessible, it could serve as a low\u2011latency LLM option for agent pipelines.",
    "tags": [
     "google",
     "gemini"
@@ -727,8 +727,8 @@
    "url": "https://arxiv.org/abs/2611.15515v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "The paper proposes a principal‑agent framework and runtime architecture for persistent personal AI agents that manage accounts, mailboxes, and long‑term memory. It emphasizes incentive alignment over pure capability scaling.",
-   "why_it_matters": "Provides a conceptual blueprint for building safe, long‑lived autonomous agents that engineers can adapt to production workflows.",
+   "summary": "The paper proposes a principal\u2011agent framework and runtime architecture for persistent personal AI agents that manage accounts, mailboxes, and long\u2011term memory. It emphasizes incentive alignment over pure capability scaling.",
+   "why_it_matters": "Provides a conceptual blueprint for building safe, long\u2011lived autonomous agents that engineers can adapt to production workflows.",
    "tags": [
     "principal-agent",
     "long-lived-agents"
@@ -758,7 +758,7 @@
    "source": "devto_articles",
    "category": "Inspiration",
    "summary": "The article explains how to persist refund state in SQLite and ensure a Python voice agent always confirms the transaction, even if the caller interrupts the call.",
-   "why_it_matters": "Shows a concrete pattern for handling idempotent operations and user feedback in voice‑based agents.",
+   "why_it_matters": "Shows a concrete pattern for handling idempotent operations and user feedback in voice\u2011based agents.",
    "tags": [
     "sqlite",
     "voice-agent"
@@ -787,8 +787,8 @@
    "url": "https://antigravity.google/blog/gemini-4-hydrogen-in-google-antigravity/",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Google announces Gemini 4 Hydrogen and an Orchestrator mode that pairs a lightweight model with stronger models for long‑horizon tasks.",
-   "why_it_matters": "Shows a commercial direction for multi‑model orchestration that could inspire open‑source agent frameworks.",
+   "summary": "Google announces Gemini 4 Hydrogen and an Orchestrator mode that pairs a lightweight model with stronger models for long\u2011horizon tasks.",
+   "why_it_matters": "Shows a commercial direction for multi\u2011model orchestration that could inspire open\u2011source agent frameworks.",
    "tags": [
     "google",
     "gemini"
@@ -800,7 +800,7 @@
     "multimodal"
    ],
    "next_step": "Watch",
-   "next_step_detail": "Monitor Google’s blog for any open‑source SDK releases.",
+   "next_step_detail": "Monitor Google\u2019s blog for any open\u2011source SDK releases.",
    "story_id": "5ab15edc03",
    "verification": "not_checked",
    "verification_note": "",
@@ -818,7 +818,7 @@
    "source": "huggingface_papers",
    "category": "Inspiration",
    "summary": "Introduces ScrapeBench, a benchmark for measuring legal compliance of AI agents that scrape websites.",
-   "why_it_matters": "Provides a concrete evaluation suite for safety and compliance of deployed web‑scraping agents.",
+   "why_it_matters": "Provides a concrete evaluation suite for safety and compliance of deployed web\u2011scraping agents.",
    "tags": [
     "scrapebench"
    ],
@@ -846,7 +846,7 @@
    "url": "https://arxiv.org/abs/2611.15543v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "Introduces a rule‑based oracle to detect when LLM API translation silently drops conversation context or tool interaction data.",
+   "summary": "Introduces a rule\u2011based oracle to detect when LLM API translation silently drops conversation context or tool interaction data.",
    "why_it_matters": "Highlights a reliability risk that engineers need to consider when routing agent calls through multiple LLM providers.",
    "tags": [
     "arxiv"
@@ -875,8 +875,8 @@
    "url": "https://dev.to/voxrtio/offline-voice-replies-on-a-35-raspberry-pi-linnettts-integration-in-python-4la6",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "The article walks through building a low‑cost voice assistant on a Raspberry Pi using LinnetTTS for offline speech synthesis, covering wake‑word detection, VAD, and audio playback.",
-   "why_it_matters": "Shows a lightweight pattern for running voice‑based agents on edge hardware, useful for prototyping.",
+   "summary": "The article walks through building a low\u2011cost voice assistant on a Raspberry\u202fPi using LinnetTTS for offline speech synthesis, covering wake\u2011word detection, VAD, and audio playback.",
+   "why_it_matters": "Shows a lightweight pattern for running voice\u2011based agents on edge hardware, useful for prototyping.",
    "tags": [
     "linnettts",
     "raspberrypi"
@@ -905,8 +905,8 @@
    "url": "https://github.com/openai/whisper",
    "source": "github_trending",
    "category": "Inspiration",
-   "summary": "OpenAI's Whisper provides robust speech‑to‑text transcription using large‑scale weak supervision.",
-   "why_it_matters": "Audio transcription can be a front‑end for autonomous agents that need voice input.",
+   "summary": "OpenAI's Whisper provides robust speech\u2011to\u2011text transcription using large\u2011scale weak supervision.",
+   "why_it_matters": "Audio transcription can be a front\u2011end for autonomous agents that need voice input.",
    "tags": [
     "whisper",
     "openai"
@@ -965,7 +965,7 @@
    "url": "https://huggingface.co/papers/2611.13843",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "PolyRoute introduces a benchmark covering 12 languages and code‑mixed inputs to evaluate typed‑decision routing models. Baselines and a leaderboard are provided.",
+   "summary": "PolyRoute introduces a benchmark covering 12 languages and code\u2011mixed inputs to evaluate typed\u2011decision routing models. Baselines and a leaderboard are provided.",
    "why_it_matters": "It highlights multilingual routing challenges that could affect future agent routing components.",
    "tags": [
     "polyroute",
@@ -995,7 +995,7 @@
    "url": "https://arxiv.org/abs/2611.15569v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "Paper proposes low‑rank compression of KV caches to reduce memory for vision‑language model reasoning.",
+   "summary": "Paper proposes low\u2011rank compression of KV caches to reduce memory for vision\u2011language model reasoning.",
    "why_it_matters": "Potentially useful for scaling multimodal agents, but still early research.",
    "tags": [],
    "published_at": "2026-11-11T14:54:19Z",
@@ -1074,7 +1074,7 @@
    "url": "https://arxiv.org/abs/2611.15521v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Presents DecArena, a benchmark for testing decentralized multi‑agent collaboration without a central orchestrator.",
+   "summary": "Presents DecArena, a benchmark for testing decentralized multi\u2011agent collaboration without a central orchestrator.",
    "why_it_matters": "Interesting research but lacks concrete tools or implementations for immediate engineering use.",
    "tags": [],
    "published_at": "2026-11-11T14:13:26Z",
@@ -1148,7 +1148,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "Announces the Rust 1.100 release with upgrade instructions via rustup.",
-   "why_it_matters": "While useful for systems programming, it does not affect the Python‑centric AI agent stack the reader works on.",
+   "why_it_matters": "While useful for systems programming, it does not affect the Python\u2011centric AI agent stack the reader works on.",
    "tags": [],
    "published_at": "2026-11-12T18:39:05Z",
    "topics": [
@@ -1272,7 +1272,7 @@
    "url": "https://www.smithsonianmag.com/smart-news/astronomers-found-a-mysterious-object-orbiting-far-beyond-pluto-it-could-be-a-new-dwarf-planet-hidden-in-our-solar-system-180989857/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Astronomers report a distant object with a 280‑year orbit that may be a new dwarf planet, discovered via data from the Vera C. Rubin Observatory.",
+   "summary": "Astronomers report a distant object with a 280\u2011year orbit that may be a new dwarf planet, discovered via data from the Vera C. Rubin Observatory.",
    "why_it_matters": "Astronomy news does not impact AI agent engineering or infrastructure.",
    "tags": [],
    "published_at": "2026-11-12T19:05:33Z",
@@ -1291,7 +1291,7 @@
    "rank": 45
   },
   {
-   "title": "Ultimate AI Roast! 😂🤹",
+   "title": "Ultimate AI Roast! \ud83d\ude02\ud83e\udd39",
    "url": "https://dev.to/annavi11arrea1/ultimate-ai-roast-168b",
    "source": "devto_articles",
    "category": "Skip",
@@ -1344,7 +1344,7 @@
    "source": "devto_articles",
    "category": "Skip",
    "summary": "A personal essay outlining a software engineer's strategy for keeping up with rapid AI advances.",
-   "why_it_matters": "It provides high‑level opinion without concrete tools or techniques for production agents.",
+   "why_it_matters": "It provides high\u2011level opinion without concrete tools or techniques for production agents.",
    "tags": [],
    "published_at": "2026-11-12T15:35:00Z",
    "topics": [
@@ -1368,7 +1368,7 @@
    "url": "https://www.moddb.com/mods/openq4/downloads/openq4-0141-windows-x64",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "OpenQ4 is an open‑source engine replacement that lets the original Quake 4 campaign run on modern hardware with Vulkan support and updated bots.",
+   "summary": "OpenQ4 is an open\u2011source engine replacement that lets the original Quake\u202f4 campaign run on modern hardware with Vulkan support and updated bots.",
    "why_it_matters": "It is a gaming/entertainment project with no relevance to AI agents or infrastructure.",
    "tags": [],
    "published_at": "2026-11-12T14:18:49Z",
@@ -1437,8 +1437,8 @@
    "url": "https://developer.apple.com/foundation-models-framework/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Apple’s Swift‑based Foundation Models framework lets developers integrate on‑device and cloud LLMs with tool‑calling and multimodal prompts.",
-   "why_it_matters": "Targeted at Swift/iOS developers; not relevant to Python‑centric AI agent workflows.",
+   "summary": "Apple\u2019s Swift\u2011based Foundation Models framework lets developers integrate on\u2011device and cloud LLMs with tool\u2011calling and multimodal prompts.",
+   "why_it_matters": "Targeted at Swift/iOS developers; not relevant to Python\u2011centric AI agent workflows.",
    "tags": [],
    "published_at": "2026-11-12T21:13:26Z",
    "topics": [],
@@ -1460,8 +1460,8 @@
    "url": "https://github.com/nodejs/node",
    "source": "github_trending",
    "category": "Skip",
-   "summary": "Node.js is a JavaScript runtime for building server‑side applications.",
-   "why_it_matters": "The engineer’s stack centers on Python and AI; Node.js adds little value here.",
+   "summary": "Node.js is a JavaScript runtime for building server\u2011side applications.",
+   "why_it_matters": "The engineer\u2019s stack centers on Python and AI; Node.js adds little value here.",
    "tags": [
     "node"
    ],
@@ -1488,7 +1488,7 @@
    "source": "github_trending",
    "category": "Skip",
    "summary": "Node Version Manager is a bash script for switching between Node.js versions.",
-   "why_it_matters": "Python‑centric AI engineers rarely need this for their primary stack.",
+   "why_it_matters": "Python\u2011centric AI engineers rarely need this for their primary stack.",
    "tags": [
     "nvm"
    ],
@@ -1514,7 +1514,7 @@
    "url": "https://synthanatomy.com/2026/11/ai-is-turning-apples-app-review-process-into-a-nightmare-for-developers.html",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Article describing how the surge of AI‑generated iOS apps is overwhelming Apple’s review pipeline.",
+   "summary": "Article describing how the surge of AI\u2011generated iOS apps is overwhelming Apple\u2019s review pipeline.",
    "why_it_matters": "Focuses on iOS app store policy, not on Python AI agents or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-12T21:09:49Z",
@@ -1560,7 +1560,7 @@
    "url": "https://github.com/Qiskit/qiskit",
    "source": "github_trending",
    "category": "Skip",
-   "summary": "Qiskit is an open‑source Python SDK for building and executing quantum circuits on quantum hardware and simulators.",
+   "summary": "Qiskit is an open\u2011source Python SDK for building and executing quantum circuits on quantum hardware and simulators.",
    "why_it_matters": "Quantum computing SDKs are outside the engineer's focus on LLM agents and cloud infra.",
    "tags": [],
    "published_at": "2026-11-13T00:40:40Z",
@@ -1625,7 +1625,7 @@
    "rank": 59
   },
   {
-   "title": "Show HN: Kapso – Iterative learning from enterprise data",
+   "title": "Show HN: Kapso \u2013 Iterative learning from enterprise data",
    "url": "https://news.ycombinator.com/item?id=50471281",
    "source": "hacker_news",
    "category": "Skip",
@@ -1653,7 +1653,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "Relax is a live compiler and JIT runtime for Rust that compiles functions on first call, eliminating the need for a separate rustc/LLVM step.",
-   "why_it_matters": "While interesting for Rust developers, it does not impact Python‑based AI agent stacks.",
+   "why_it_matters": "While interesting for Rust developers, it does not impact Python\u2011based AI agent stacks.",
    "tags": [],
    "published_at": "2026-11-11T21:20:01Z",
    "topics": [],
@@ -1746,8 +1746,8 @@
    "url": "https://arxiv.org/abs/2611.15502v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Research proposes a tensor factorization technique to impute missing traffic data by modeling long‑term temporal dependencies.",
-   "why_it_matters": "Domain‑specific traffic forecasting with no direct link to AI agents or infrastructure tooling.",
+   "summary": "Research proposes a tensor factorization technique to impute missing traffic data by modeling long\u2011term temporal dependencies.",
+   "why_it_matters": "Domain\u2011specific traffic forecasting with no direct link to AI agents or infrastructure tooling.",
    "tags": [],
    "published_at": "2026-11-11T14:00:53Z",
    "topics": [],
@@ -1769,7 +1769,7 @@
    "url": "https://arxiv.org/abs/2611.15555v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Explores conformal selection methods for safety‑critical CRISPR guide design, focusing on statistical guarantees.",
+   "summary": "Explores conformal selection methods for safety\u2011critical CRISPR guide design, focusing on statistical guarantees.",
    "why_it_matters": "The biomedical focus and statistical methods have no direct bearing on AI agent infrastructure or Python tooling.",
    "tags": [],
    "published_at": "2026-11-11T14:39:10Z",
@@ -1819,7 +1819,7 @@
    "url": "https://arxiv.org/abs/2611.15566v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Research proposes a self‑supervised pretraining method for electromagnetic I/Q signal data that aligns temporal drift while preserving structural patterns.",
+   "summary": "Research proposes a self\u2011supervised pretraining method for electromagnetic I/Q signal data that aligns temporal drift while preserving structural patterns.",
    "why_it_matters": "The work focuses on signal processing and offers no immediate path to agent workflows or Python tooling.",
    "tags": [],
    "published_at": "2026-11-11T14:51:23Z",
@@ -1867,7 +1867,7 @@
    "url": "https://arxiv.org/abs/2611.15507v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "The paper introduces ReShap, a method for making deep RL policies interpretable in high‑dimensional action spaces.",
+   "summary": "The paper introduces ReShap, a method for making deep RL policies interpretable in high\u2011dimensional action spaces.",
    "why_it_matters": "Focuses on RL interpretability, which is outside the engineer's immediate AI agent and infrastructure concerns.",
    "tags": [],
    "published_at": "2026-11-11T14:02:55Z",
@@ -1890,8 +1890,8 @@
    "url": "https://arxiv.org/abs/2611.15529v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "The paper presents a multi‑task learning framework for predicting the next shot in racket sports, leveraging hierarchical relationships between shots, rallies, and matches.",
-   "why_it_matters": "Sports‑specific research has no clear path to agent or infrastructure work for the target audience.",
+   "summary": "The paper presents a multi\u2011task learning framework for predicting the next shot in racket sports, leveraging hierarchical relationships between shots, rallies, and matches.",
+   "why_it_matters": "Sports\u2011specific research has no clear path to agent or infrastructure work for the target audience.",
    "tags": [],
    "published_at": "2026-11-11T14:15:43Z",
    "topics": [
@@ -1915,7 +1915,7 @@
    "url": "https://arxiv.org/abs/2611.15530v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "The paper proposes a method to detect hallucinations in medical multimodal models using a Gini‑based metric. It focuses on clinical decision support reliability.",
+   "summary": "The paper proposes a method to detect hallucinations in medical multimodal models using a Gini\u2011based metric. It focuses on clinical decision support reliability.",
    "why_it_matters": "The medical focus and lack of agent tooling make it irrelevant for production AI engineering.",
    "tags": [],
    "published_at": "2026-11-11T14:16:43Z",
@@ -1988,8 +1988,8 @@
    "url": "https://huggingface.co/papers/2611.13766",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Introduces FAME-QP, a CUDA‑graph‑based GPU solver for dense quadratic programs used in linear MPC.",
-   "why_it_matters": "MPC solvers are outside the core stack of LLM agents and Python‑centric cloud infra the reader maintains.",
+   "summary": "Introduces FAME-QP, a CUDA\u2011graph\u2011based GPU solver for dense quadratic programs used in linear MPC.",
+   "why_it_matters": "MPC solvers are outside the core stack of LLM agents and Python\u2011centric cloud infra the reader maintains.",
    "tags": [],
    "published_at": "2026-11-10T00:00:00.000Z",
    "topics": [
@@ -2013,7 +2013,7 @@
    "url": "https://huggingface.co/papers/2611.13758",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Introduces weight‑space programming that lets language models read and edit neural network weights, demonstrated on EEG/ECG models.",
+   "summary": "Introduces weight\u2011space programming that lets language models read and edit neural network weights, demonstrated on EEG/ECG models.",
    "why_it_matters": "Focused on biomedical signal models and a niche research direction, not actionable for production AI agents.",
    "tags": [],
    "published_at": "2026-11-10T00:00:00.000Z",
