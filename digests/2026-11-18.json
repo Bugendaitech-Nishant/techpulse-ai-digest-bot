@@ -7,7 +7,7 @@
    "url": "https://dev.to/aws-builders/ai-agents-open-17-million-pull-requests-a-month-i-built-a-gate-that-rejects-the-ones-that-lie-46n7",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "The author demonstrates a deterministic Python gate that validates AI‑generated pull requests before they are merged.",
+   "summary": "The author demonstrates a deterministic Python gate that validates AI\u2011generated pull requests before they are merged.",
    "why_it_matters": "Provides a concrete safety net for autonomous agents modifying codebases.",
    "tags": [
     "nova-pro",
@@ -66,7 +66,7 @@
    "url": "https://calif.io/java4shell/",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "Disclosure of CVE‑2026‑114938, a critical memory‑corruption RCE in OpenJDK’s Base64 decoder.",
+   "summary": "Disclosure of CVE\u20112026\u2011114938, a critical memory\u2011corruption RCE in OpenJDK\u2019s Base64 decoder.",
    "why_it_matters": "If your stack runs Java services (e.g., Spark, Flink) you must patch to avoid remote code execution.",
    "tags": [
     "openjdk",
@@ -78,8 +78,8 @@
     "vulnerabilities"
    ],
    "next_step": "Patch",
-   "next_step_detail": "Upgrade OpenJDK to version 21.0.3+ or later where the fix is back‑ported.",
-   "story_id": "",
+   "next_step_detail": "Upgrade OpenJDK to version 21.0.3+ or later where the fix is back\u2011ported.",
+   "story_id": "4d9c0f5d92",
    "verification": "unverified",
    "verification_note": "If your stack runs Java services (e.g., Spark, Flink) you must patch to avoid remote code execution.",
    "relevance_score": 0.75,
@@ -155,7 +155,7 @@
    "source": "hacker_news",
    "category": "Must Read",
    "summary": "A Hacker News thread notes that the official ONNX Runtime repository is no longer visible on GitHub.",
-   "why_it_matters": "ONNX Runtime is a core component for serving open‑source LLMs; its disappearance could break inference pipelines.",
+   "why_it_matters": "ONNX Runtime is a core component for serving open\u2011source LLMs; its disappearance could break inference pipelines.",
    "tags": [
     "onnx",
     "microsoft",
@@ -185,7 +185,7 @@
    "url": "https://claude.dev/blog/how-the-claude-code-team-thinks-about-verification/",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "Describes Claude’s verification loops—property, differential, and end‑to‑end tests—that let coding agents produce evidence of correctness at scale.",
+   "summary": "Describes Claude\u2019s verification loops\u2014property, differential, and end\u2011to\u2011end tests\u2014that let coding agents produce evidence of correctness at scale.",
    "why_it_matters": "Provides concrete verification strategies you can adopt for your own coding agents to reduce manual review.",
    "tags": [
     "claude"
@@ -214,8 +214,8 @@
    "url": "https://github.com/dograh-hq/dograh",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "Open‑source voice AI platform offering self‑hosted speech‑to‑speech, STT, TTS, and a visual workflow builder, with BYOK and telephony support.",
-   "why_it_matters": "Provides a turnkey, on‑prem solution for building voice‑enabled AI agents, fitting the target’s need for local, secure tooling.",
+   "summary": "Open\u2011source voice AI platform offering self\u2011hosted speech\u2011to\u2011speech, STT, TTS, and a visual workflow builder, with BYOK and telephony support.",
+   "why_it_matters": "Provides a turnkey, on\u2011prem solution for building voice\u2011enabled AI agents, fitting the target\u2019s need for local, secure tooling.",
    "tags": [
     "dograh",
     "voice-ai"
@@ -270,7 +270,7 @@
    "rank": 9
   },
   {
-   "title": "Launch HN: StarSling (YC P25) – Self-improving CI for agent-volume repos",
+   "title": "Launch HN: StarSling (YC P25) \u2013 Self-improving CI for agent-volume repos",
    "url": "https://starsling.dev",
    "source": "hacker_news",
    "category": "Must Read",
@@ -333,8 +333,8 @@
    "url": "https://complexdiscovery.com/harvard-researchers-find-ai-coding-agents-shifted-the-bottleneck-to-code-review/",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "A working paper reports that firms using AI coding assistants produce 30% more code but see a 49% increase in code‑review time, highlighting a new workflow bottleneck.",
-   "why_it_matters": "Understanding this shift helps engineers design better CI and review pipelines for AI‑augmented development.",
+   "summary": "A working paper reports that firms using AI coding assistants produce 30% more code but see a 49% increase in code\u2011review time, highlighting a new workflow bottleneck.",
+   "why_it_matters": "Understanding this shift helps engineers design better CI and review pipelines for AI\u2011augmented development.",
    "tags": [
     "ai-coding-agents",
     "harvard",
@@ -364,7 +364,7 @@
    "url": "https://huggingface.co/papers/2611.20595",
    "source": "huggingface_papers",
    "category": "Must Read",
-   "summary": "Presents a harness that enforces invariant checks on LLM‑agent API calls, detecting silent failures where APIs return plausible but incorrect results.",
+   "summary": "Presents a harness that enforces invariant checks on LLM\u2011agent API calls, detecting silent failures where APIs return plausible but incorrect results.",
    "why_it_matters": "Directly improves reliability of your production LLM agents that depend on external services.",
    "tags": [
     "huggingface"
@@ -436,7 +436,7 @@
     "python"
    ],
    "next_step": "Try",
-   "next_step_detail": "Follow the repo’s quick‑start guide and benchmark training time on your hardware.",
+   "next_step_detail": "Follow the repo\u2019s quick\u2011start guide and benchmark training time on your hardware.",
    "story_id": "",
    "verification": "corrected",
    "verification_note": "",
@@ -454,7 +454,7 @@
    "source": "devto_articles",
    "category": "Must Read",
    "summary": "Shows how to create a minimal Python harness for evaluating LLM outputs against custom metrics without pulling in heavy libraries.",
-   "why_it_matters": "Gives a quick, dependency‑light way to add quality checks to your production LLM services.",
+   "why_it_matters": "Gives a quick, dependency\u2011light way to add quality checks to your production LLM services.",
    "tags": [
     "devto"
    ],
@@ -483,7 +483,7 @@
    "source": "hacker_news",
    "category": "Inspiration",
    "summary": "Microsoft announces MAI Code 2 and a faster Code 2 Flash model for code generation tasks.",
-   "why_it_matters": "New open‑source‑style code models can be evaluated for integration into internal tooling pipelines.",
+   "why_it_matters": "New open\u2011source\u2011style code models can be evaluated for integration into internal tooling pipelines.",
    "tags": [
     "mai-code-2"
    ],
@@ -511,7 +511,7 @@
    "url": "https://newsletter.posthog.com/p/decision-models",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Article argues for using structured decision models instead of LLMs for simple, well‑defined tasks, showing typed outputs with calibrated probabilities.",
+   "summary": "Article argues for using structured decision models instead of LLMs for simple, well\u2011defined tasks, showing typed outputs with calibrated probabilities.",
    "why_it_matters": "Highlights alternative tooling that can complement or replace LLM agents in certain pipelines.",
    "tags": [
     "decision-models",
@@ -570,8 +570,8 @@
    "url": "https://dev.to/alexr/edgextract-a-knowledge-graph-extractor-that-checks-every-link-d78",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "The article presents edgextract, a Python tool that uses LLMs to generate and validate knowledge‑graph edges.",
-   "why_it_matters": "Shows a pattern for building LLM‑driven data validation pipelines useful in agent tooling.",
+   "summary": "The article presents edgextract, a Python tool that uses LLMs to generate and validate knowledge\u2011graph edges.",
+   "why_it_matters": "Shows a pattern for building LLM\u2011driven data validation pipelines useful in agent tooling.",
    "tags": [
     "edgextract"
    ],
@@ -598,8 +598,8 @@
    "url": "https://arxiv.org/abs/2611.22658v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "Introduces AlignedHPO, a surrogate‑guided method that leverages differentiable loss structures to speed up hyperparameter tuning for deep models.",
-   "why_it_matters": "Could reduce the compute cost of tuning custom loss weights in your fine‑tuned LLM pipelines.",
+   "summary": "Introduces AlignedHPO, a surrogate\u2011guided method that leverages differentiable loss structures to speed up hyperparameter tuning for deep models.",
+   "why_it_matters": "Could reduce the compute cost of tuning custom loss weights in your fine\u2011tuned LLM pipelines.",
    "tags": [
     "arxiv"
    ],
@@ -627,8 +627,8 @@
    "url": "https://hy.tencent.ai/research/hy4-flash",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Tencent’s Hy4 Flash research page introduces a new high‑performance language model aimed at fast inference.",
-   "why_it_matters": "If the model is open‑source, it could become a candidate for local‑LLM deployments in agent workflows.",
+   "summary": "Tencent\u2019s Hy4 Flash research page introduces a new high\u2011performance language model aimed at fast inference.",
+   "why_it_matters": "If the model is open\u2011source, it could become a candidate for local\u2011LLM deployments in agent workflows.",
    "tags": [
     "hy4-flash",
     "tencent"
@@ -657,7 +657,7 @@
    "url": "https://arxiv.org/abs/2611.22661v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "Proposes an LLM‑based controller that reviews the full experimental trajectory before deciding whether to refine a solution or start a new direction in autonomous research loops.",
+   "summary": "Proposes an LLM\u2011based controller that reviews the full experimental trajectory before deciding whether to refine a solution or start a new direction in autonomous research loops.",
    "why_it_matters": "Suggests a control pattern that could improve decision logic in your own autonomous agent pipelines.",
    "tags": [
     "arxiv"
@@ -686,7 +686,7 @@
    "url": "https://arxiv.org/abs/2611.22670v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "The paper proposes describing LLMs by their underlying worldviews—beliefs about reality—rather than just personas, arguing this deeper view aids alignment research.",
+   "summary": "The paper proposes describing LLMs by their underlying worldviews\u2014beliefs about reality\u2014rather than just personas, arguing this deeper view aids alignment research.",
    "why_it_matters": "Offers a new conceptual lens that could shape how you design agent prompts and safety checks.",
    "tags": [
     "arxiv"
@@ -715,8 +715,8 @@
    "url": "https://huggingface.co/papers/2611.19559",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "Introduces World‑Action Models that predict future observations by focusing on changes rather than static parts of the scene.",
-   "why_it_matters": "Suggests a new direction for building more efficient multi‑modal agents.",
+   "summary": "Introduces World\u2011Action Models that predict future observations by focusing on changes rather than static parts of the scene.",
+   "why_it_matters": "Suggests a new direction for building more efficient multi\u2011modal agents.",
    "tags": [
     "reswam"
    ],
@@ -727,7 +727,7 @@
     "research"
    ],
    "next_step": "Read",
-   "next_step_detail": "Read the paper to evaluate if its change‑focused prediction fits your agent pipeline.",
+   "next_step_detail": "Read the paper to evaluate if its change\u2011focused prediction fits your agent pipeline.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -744,8 +744,8 @@
    "url": "https://huggingface.co/papers/2611.17610",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "The study analyzes how multi‑agent LLM evaluations conflate coordination benefits with extra sampling and compute, providing a taxonomy of nine empirical setups.",
-   "why_it_matters": "Helps you interpret multi‑agent benchmark results and avoid misleading performance claims.",
+   "summary": "The study analyzes how multi\u2011agent LLM evaluations conflate coordination benefits with extra sampling and compute, providing a taxonomy of nine empirical setups.",
+   "why_it_matters": "Helps you interpret multi\u2011agent benchmark results and avoid misleading performance claims.",
    "tags": [
     "huggingface"
    ],
@@ -773,8 +773,8 @@
    "url": "https://huggingface.co/papers/2611.16694",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "The paper studies how LLMs revise answers after another agent disagrees, introducing a two‑pass audit to distinguish fixing mistakes from abandoning correct answers.",
-   "why_it_matters": "Shows pitfalls when chaining LLM agents, useful for designing robust multi‑agent workflows.",
+   "summary": "The paper studies how LLMs revise answers after another agent disagrees, introducing a two\u2011pass audit to distinguish fixing mistakes from abandoning correct answers.",
+   "why_it_matters": "Shows pitfalls when chaining LLM agents, useful for designing robust multi\u2011agent workflows.",
    "tags": [
     "huggingface",
     "llm",
@@ -805,7 +805,7 @@
    "source": "github_trending",
    "category": "Skip",
    "summary": "Repository defining a plugin specification and a set of official plugins for the Cursor IDE.",
-   "why_it_matters": "Primarily TypeScript‑centric UI extensions, not directly useful for Python‑based agent stacks.",
+   "why_it_matters": "Primarily TypeScript\u2011centric UI extensions, not directly useful for Python\u2011based agent stacks.",
    "tags": [
     "cursor"
    ],
@@ -881,7 +881,7 @@
    "url": "https://developer.apple.com/system-status/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A discussion thread about Apple’s system‑status page being down.",
+   "summary": "A discussion thread about Apple\u2019s system\u2011status page being down.",
    "why_it_matters": "No relevance to AI agent development or infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T17:47:14Z",
@@ -1008,8 +1008,8 @@
    "url": "https://consumerrights.wiki/w/ID.me_terms_required_for_IRS_sign-in",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Discussion of ID.me's terms of service and privacy policy for IRS sign‑in.",
-   "why_it_matters": "Legal terms for a consumer sign‑in service, not a security incident affecting AI tooling.",
+   "summary": "Discussion of ID.me's terms of service and privacy policy for IRS sign\u2011in.",
+   "why_it_matters": "Legal terms for a consumer sign\u2011in service, not a security incident affecting AI tooling.",
    "tags": [],
    "published_at": "2026-11-18T00:51:45Z",
    "topics": [],
@@ -1032,7 +1032,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "Release announcement for jQuery version 4.1.0 with typical bug fixes and feature updates.",
-   "why_it_matters": "jQuery is unrelated to Python‑based AI agent development or cloud infrastructure.",
+   "why_it_matters": "jQuery is unrelated to Python\u2011based AI agent development or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T19:50:40Z",
    "topics": [],
@@ -1050,11 +1050,11 @@
    "rank": 37
   },
   {
-   "title": "350 years ago, Ole Rømer discovered that light has a finite speed",
+   "title": "350 years ago, Ole R\u00f8mer discovered that light has a finite speed",
    "url": "https://www.sciencenorway.no/culture-history-history-of-science/350-years-ago-this-man-discovered-that-light-has-a-finite-speed/2737969",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Historical article about Ole Rømer's 1676 observation proving light travels at a finite speed.",
+   "summary": "Historical article about Ole R\u00f8mer's 1676 observation proving light travels at a finite speed.",
    "why_it_matters": "No relevance to AI agents, tooling, or infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T19:25:27Z",
@@ -1077,7 +1077,7 @@
    "url": "https://github.com/3441293738/creatorhub",
    "source": "github_trending",
    "category": "Skip",
-   "summary": "A Chinese‑language web dashboard for monitoring and aggregating content across platforms like TikTok.",
+   "summary": "A Chinese\u2011language web dashboard for monitoring and aggregating content across platforms like TikTok.",
    "why_it_matters": "Focuses on content aggregation, not on AI agents, LLM serving, or infrastructure.",
    "tags": [],
    "published_at": "2026-11-18T03:16:02Z",
@@ -1098,7 +1098,7 @@
    "rank": 39
   },
   {
-   "title": "Five Palaces, One Model: Testing Google’s Gemini 4 Hydrogen in AI Studio",
+   "title": "Five Palaces, One Model: Testing Google\u2019s Gemini 4 Hydrogen in AI Studio",
    "url": "https://dev.to/amananandrai/i-built-5-interactive-3d-palaces-with-googles-new-gemini-4-hydrogen-in-ai-studio-5g8h",
    "source": "devto_articles",
    "category": "Skip",
@@ -1152,8 +1152,8 @@
    "url": "https://www.solidjs.com/blog/solid-2-0-the-long-hold/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Blog post announcing Solid 2.0, a JavaScript UI library built on fine‑grained reactivity.",
-   "why_it_matters": "Frontend UI library unrelated to Python‑based AI agent or backend infrastructure work.",
+   "summary": "Blog post announcing Solid 2.0, a JavaScript UI library built on fine\u2011grained reactivity.",
+   "why_it_matters": "Frontend UI library unrelated to Python\u2011based AI agent or backend infrastructure work.",
    "tags": [],
    "published_at": "2026-11-17T18:56:17Z",
    "topics": [],
@@ -1176,7 +1176,7 @@
    "source": "devto_articles",
    "category": "Skip",
    "summary": "Describes a Python tool for monitoring financial market data quality, focusing on gap and delay detection.",
-   "why_it_matters": "Domain‑specific finance monitoring, not aligned with AI agent or LLM infrastructure work.",
+   "why_it_matters": "Domain\u2011specific finance monitoring, not aligned with AI agent or LLM infrastructure work.",
    "tags": [],
    "published_at": "2026-11-17T16:08:26Z",
    "topics": [
@@ -1269,7 +1269,7 @@
    "url": "https://arxiv.org/abs/2611.09827",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "An arXiv pre‑print examines the consequences of a nuclear explosion in low Earth orbit.",
+   "summary": "An arXiv pre\u2011print examines the consequences of a nuclear explosion in low Earth orbit.",
    "why_it_matters": "The topic is unrelated to software engineering, AI agents, or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T19:46:57Z",
@@ -1317,7 +1317,7 @@
    "url": "https://arxiv.org/abs/2611.22709v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Research discussing how vision‑language models lose small details when images are down‑scaled.",
+   "summary": "Research discussing how vision\u2011language models lose small details when images are down\u2011scaled.",
    "why_it_matters": "Focuses on vision scaling issues, not on agent workflows or infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T12:50:14Z",
@@ -1342,7 +1342,7 @@
    "url": "https://arxiv.org/abs/2611.22691v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Presents a closed‑loop world model aimed at improving realism in autonomous driving simulations.",
+   "summary": "Presents a closed\u2011loop world model aimed at improving realism in autonomous driving simulations.",
    "why_it_matters": "Focused on autonomous driving research; no direct relevance to AI agents or production LLM pipelines.",
    "tags": [],
    "published_at": "2026-11-17T12:39:42Z",
@@ -1367,7 +1367,7 @@
    "url": "https://arxiv.org/abs/2611.22636v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "The work presents a method to generate 0.5 m resolution canopy height models from Sentinel‑2 imagery, aiming to replace costly airborne LiDAR for forest monitoring.",
+   "summary": "The work presents a method to generate 0.5\u202fm resolution canopy height models from Sentinel\u20112 imagery, aiming to replace costly airborne LiDAR for forest monitoring.",
    "why_it_matters": "The research is unrelated to AI agents, LLM tooling, or cloud infrastructure relevant to the target profile.",
    "tags": [],
    "published_at": "2026-11-17T11:52:54Z",
@@ -1409,11 +1409,11 @@
    "rank": 52
   },
   {
-   "title": "ArXiv: Cross-cultural Adaptation of Recipes for Low-Resource Languages: A Benchmark and Multilingual Culinary Lexicon for Hausa, Yorùbá, and Igbo",
+   "title": "ArXiv: Cross-cultural Adaptation of Recipes for Low-Resource Languages: A Benchmark and Multilingual Culinary Lexicon for Hausa, Yor\u00f9b\u00e1, and Igbo",
    "url": "https://arxiv.org/abs/2611.22708v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Benchmark paper on multilingual recipe translation for low‑resource languages.",
+   "summary": "Benchmark paper on multilingual recipe translation for low\u2011resource languages.",
    "why_it_matters": "Focuses on cultural translation, not on agent tooling or infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T12:50:12Z",
@@ -1439,7 +1439,7 @@
    "source": "arxiv_ai",
    "category": "Skip",
    "summary": "Paper proposes a framework for controlling spiking neural networks to generate locomotor patterns.",
-   "why_it_matters": "Robotics‑focused research with no clear path to agent tooling or cloud infrastructure.",
+   "why_it_matters": "Robotics\u2011focused research with no clear path to agent tooling or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T11:55:19Z",
    "topics": [],
@@ -1461,7 +1461,7 @@
    "url": "https://arxiv.org/abs/2611.22648v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Introduces a multimodal framework for evidence‑grounded depression analysis, focusing on interpretability of behavioral observations.",
+   "summary": "Introduces a multimodal framework for evidence\u2011grounded depression analysis, focusing on interpretability of behavioral observations.",
    "why_it_matters": "Focuses on clinical multimodal research with no clear path to agent tooling or infrastructure work.",
    "tags": [],
    "published_at": "2026-11-17T12:04:34Z",
@@ -1484,7 +1484,7 @@
    "url": "https://arxiv.org/abs/2611.22682v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Paper introduces a federated unlearning method for vehicular ad‑hoc networks to meet data‑erasure regulations.",
+   "summary": "Paper introduces a federated unlearning method for vehicular ad\u2011hoc networks to meet data\u2011erasure regulations.",
    "why_it_matters": "Focuses on VANET privacy, not on Python AI agents or infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T12:33:22Z",
@@ -1509,7 +1509,7 @@
    "url": "https://arxiv.org/abs/2611.22704v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "A benchmark for evaluating co‑occurring social signals in video/audio, targeting affective computing research.",
+   "summary": "A benchmark for evaluating co\u2011occurring social signals in video/audio, targeting affective computing research.",
    "why_it_matters": "The work is unrelated to agent workflows, LLM serving, or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-17T12:49:04Z",
@@ -1534,8 +1534,8 @@
    "url": "https://arxiv.org/abs/2611.22673v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Introduces a neuro‑symbolic metric for evaluating generated video against specifications.",
-   "why_it_matters": "Video‑generation evaluation is outside the engineer's current focus on agents and backend infra.",
+   "summary": "Introduces a neuro\u2011symbolic metric for evaluating generated video against specifications.",
+   "why_it_matters": "Video\u2011generation evaluation is outside the engineer's current focus on agents and backend infra.",
    "tags": [],
    "published_at": "2026-11-17T12:25:33Z",
    "topics": [
@@ -1559,7 +1559,7 @@
    "url": "https://huggingface.co/papers/2611.22055",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Discusses weight‑space programming where LLMs write target weights directly without gradient descent.",
+   "summary": "Discusses weight\u2011space programming where LLMs write target weights directly without gradient descent.",
    "why_it_matters": "Conceptual research without immediate tooling impact for production agents.",
    "tags": [],
    "published_at": "2026-11-17T00:00:00.000Z",
@@ -1585,7 +1585,7 @@
    "source": "arxiv_ai",
    "category": "Skip",
    "summary": "Paper introduces a quantum SVR method to impute missing data in maritime sensor streams.",
-   "why_it_matters": "Domain‑specific quantum ML with no immediate relevance to Python AI agents or production infra.",
+   "why_it_matters": "Domain\u2011specific quantum ML with no immediate relevance to Python AI agents or production infra.",
    "tags": [],
    "published_at": "2026-11-17T11:52:18Z",
    "topics": [],
@@ -1607,7 +1607,7 @@
    "url": "https://huggingface.co/papers/2611.21412",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Paper proposes a super‑resolution method for clinical brain MRI using variational encoding.",
+   "summary": "Paper proposes a super\u2011resolution method for clinical brain MRI using variational encoding.",
    "why_it_matters": "Medical imaging research does not align with AI agent or infrastructure work.",
    "tags": [],
    "published_at": "2026-11-16T00:00:00.000Z",
@@ -1632,8 +1632,8 @@
    "url": "https://huggingface.co/papers/2611.20992",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Proposes a vision‑language model for medical imaging that reduces inference cost by avoiding free‑form text generation.",
-   "why_it_matters": "Domain‑specific medical imaging, not relevant to general AI agent or infrastructure work.",
+   "summary": "Proposes a vision\u2011language model for medical imaging that reduces inference cost by avoiding free\u2011form text generation.",
+   "why_it_matters": "Domain\u2011specific medical imaging, not relevant to general AI agent or infrastructure work.",
    "tags": [],
    "published_at": "2026-11-16T00:00:00.000Z",
    "topics": [
@@ -1657,7 +1657,7 @@
    "url": "https://huggingface.co/papers/2611.21099",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "The paper proposes adding force feedback to frozen multimodal models for zero‑shot robot manipulation.",
+   "summary": "The paper proposes adding force feedback to frozen multimodal models for zero\u2011shot robot manipulation.",
    "why_it_matters": "It focuses on robot control research with no immediate tooling for AI agents.",
    "tags": [],
    "published_at": "2026-11-16T00:00:00.000Z",
@@ -1732,7 +1732,7 @@
    "url": "https://aboard.com/lets-have-a-mouse-party/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Mouse Party is an open‑source macOS app that lets users watch videos together without a server.",
+   "summary": "Mouse Party is an open\u2011source macOS app that lets users watch videos together without a server.",
    "why_it_matters": "It is a consumer media tool with no relevance to AI agents, LLM serving, or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-14T15:38:50Z",
