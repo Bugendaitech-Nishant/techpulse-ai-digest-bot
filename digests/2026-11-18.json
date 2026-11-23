@@ -258,7 +258,7 @@
    ],
    "next_step": "Try",
    "next_step_detail": "Clone the repo and run the provided benchmark script on your own RTX 3050 or similar GPU.",
-   "story_id": "",
+   "story_id": "565a6bdff7",
    "verification": "corrected",
    "verification_note": "",
    "relevance_score": 0.75,
