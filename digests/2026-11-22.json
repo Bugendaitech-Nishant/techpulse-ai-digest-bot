@@ -7,7 +7,7 @@
    "url": "https://lists.gnupg.org/pipermail/gnupg-announce/2026q4/000517.html",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "A critical double‑free vulnerability in GPGME (all versions prior to 2.3.1) allows remote code execution via crafted OpenPGP user IDs.",
+   "summary": "A critical double\u2011free vulnerability in GPGME (all versions prior to 2.3.1) allows remote code execution via crafted OpenPGP user IDs.",
    "why_it_matters": "Any CI/CD pipeline or automation that signs artifacts with GPGME is at immediate risk and must be patched.",
    "tags": [
     "gpgme",
@@ -37,8 +37,8 @@
    "url": "https://dev.to/iammkd/i-chaos-tested-my-ai-agents-llm-provider-66-of-runs-failed-and-the-fix-was-one-argument-2e95",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "The author built RunWeave, an open‑source chaos‑testing harness for AI agents, and discovered that a single client argument eliminated a 66 % failure rate caused by provider rate‑limits and hangs.",
-   "why_it_matters": "Demonstrates a concrete, low‑effort way to harden production agents against LLM provider instability.",
+   "summary": "The author built RunWeave, an open\u2011source chaos\u2011testing harness for AI agents, and discovered that a single client argument eliminated a 66\u202f% failure rate caused by provider rate\u2011limits and hangs.",
+   "why_it_matters": "Demonstrates a concrete, low\u2011effort way to harden production agents against LLM provider instability.",
    "tags": [
     "runweave",
     "openai"
@@ -68,7 +68,7 @@
    "source": "hacker_news",
    "category": "Must Read",
    "summary": "OpenRouter reports security incidents where some inference providers mishandled user data, prompting investigations and mitigations.",
-   "why_it_matters": "Highlights supply‑chain risks when consuming hosted LLM inference services, prompting engineers to audit providers.",
+   "why_it_matters": "Highlights supply\u2011chain risks when consuming hosted LLM inference services, prompting engineers to audit providers.",
    "tags": [
     "openrouter"
    ],
@@ -96,8 +96,8 @@
    "url": "https://pwn.ai/upload2shell",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "A newly disclosed vulnerability (CVE‑2026‑125396) that allows arbitrary file upload leading to remote code execution on vulnerable web services.",
-   "why_it_matters": "Engineers running Python web stacks must patch to prevent supply‑chain compromise.",
+   "summary": "A newly disclosed vulnerability (CVE\u20112026\u2011125396) that allows arbitrary file upload leading to remote code execution on vulnerable web services.",
+   "why_it_matters": "Engineers running Python web stacks must patch to prevent supply\u2011chain compromise.",
    "tags": [
     "cve-2026-125396"
    ],
@@ -125,8 +125,8 @@
    "url": "https://dev.to/gde/beyond-aurora-sub-20ms-real-time-payment-fraud-vector-search-with-google-cloud-alloydb-scann-ani",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "Shows how to combine Google Cloud AlloyDB, SCaNN vector search, and Gemini LLM to detect payment fraud in under 20 ms.",
-   "why_it_matters": "Demonstrates a low‑latency pipeline that can be adapted for RAG‑based fraud detection or real‑time agent routing.",
+   "summary": "Shows how to combine Google Cloud AlloyDB, SCaNN vector search, and Gemini LLM to detect payment fraud in under 20\u202fms.",
+   "why_it_matters": "Demonstrates a low\u2011latency pipeline that can be adapted for RAG\u2011based fraud detection or real\u2011time agent routing.",
    "tags": [
     "alloydb",
     "scann",
@@ -140,7 +140,7 @@
     "cloud"
    ],
    "next_step": "Read",
-   "next_step_detail": "Review the article for architecture details and compare with your current vector‑search stack.",
+   "next_step_detail": "Review the article for architecture details and compare with your current vector\u2011search stack.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -153,12 +153,12 @@
    "rank": 5
   },
   {
-   "title": "Pandex – Official European Law for AI Agents, over MCP",
+   "title": "Pandex \u2013 Official European Law for AI Agents, over MCP",
    "url": "https://www.pandex.io",
    "source": "hacker_news",
    "category": "Inspiration",
    "summary": "A service exposing EU legal texts via an API and MCP server, aimed at powering AI agents with authoritative legal answers.",
-   "why_it_matters": "Shows a concrete use‑case for AI agents to query structured legal knowledge.",
+   "why_it_matters": "Shows a concrete use\u2011case for AI agents to query structured legal knowledge.",
    "tags": [
     "pandex"
    ],
@@ -186,8 +186,8 @@
    "url": "https://github.com/ShinMegamiBoson/lookatmyquant",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "A Hacker News discussion about running the Inkling‑2‑Mini model within a 5.4 GB memory budget, focusing on quantization and memory‑efficient inference.",
-   "why_it_matters": "Provides practical tips for fitting larger LLMs on modest hardware, useful for local‑LLM deployments.",
+   "summary": "A Hacker News discussion about running the Inkling\u20112\u2011Mini model within a 5.4\u202fGB memory budget, focusing on quantization and memory\u2011efficient inference.",
+   "why_it_matters": "Provides practical tips for fitting larger LLMs on modest hardware, useful for local\u2011LLM deployments.",
    "tags": [
     "inkling-2-mini"
    ],
@@ -199,7 +199,7 @@
    ],
    "next_step": "Read",
    "next_step_detail": "",
-   "story_id": "",
+   "story_id": "c6e0f6fe1d",
    "verification": "not_checked",
    "verification_note": "",
    "relevance_score": 0.5,
@@ -215,8 +215,8 @@
    "url": "https://dev.to/effessdev/a-vs-code-extension-to-turn-any-free-chatbot-website-into-an-ai-agent-kind-of-1n21",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "Describes a VS Code extension that wraps a free web‑chatbot, exposing it as a local AI agent with file‑system access.",
-   "why_it_matters": "Provides a quick way to prototype agent‑style tooling without setting up a server‑side LLM.",
+   "summary": "Describes a VS\u202fCode extension that wraps a free web\u2011chatbot, exposing it as a local AI agent with file\u2011system access.",
+   "why_it_matters": "Provides a quick way to prototype agent\u2011style tooling without setting up a server\u2011side LLM.",
    "tags": [
     "vs-code",
     "chatgpt",
@@ -229,7 +229,7 @@
     "python"
    ],
    "next_step": "Try",
-   "next_step_detail": "Install via VS Code Marketplace and test on a small script (e.g., `code --install-extension effessdev.chatbot-agent`).",
+   "next_step_detail": "Install via VS\u202fCode Marketplace and test on a small script (e.g., `code --install-extension effessdev.chatbot-agent`).",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -246,7 +246,7 @@
    "url": "https://dev.to/enjoy_kumawat/a-skill-i-never-invoked-overruled-my-claudemd-anyway-144c",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "The article discusses a conflict where a user‑defined skill overrides the behavior of CLAUDE.md and AGENTS.md, highlighting unexpected precedence rules in agent configurations.",
+   "summary": "The article discusses a conflict where a user\u2011defined skill overrides the behavior of CLAUDE.md and AGENTS.md, highlighting unexpected precedence rules in agent configurations.",
    "why_it_matters": "Shows how agent skill ordering can unintentionally change LLM behavior, a pitfall for production agents.",
    "tags": [
     "claude.md",
@@ -276,8 +276,8 @@
    "url": "https://dev.to/jon_dean-213/i-built-an-ai-safety-layer-on-a-4gb-phone-1cg2",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "The author describes deploying a lightweight AI safety filter on a low‑end Android device with only 4 GB RAM, using minimal compute and storage.",
-   "why_it_matters": "Shows feasibility of running safety checks locally on edge devices, useful for on‑device agents.",
+   "summary": "The author describes deploying a lightweight AI safety filter on a low\u2011end Android device with only 4\u202fGB RAM, using minimal compute and storage.",
+   "why_it_matters": "Shows feasibility of running safety checks locally on edge devices, useful for on\u2011device agents.",
    "tags": [],
    "published_at": "2026-11-21T21:54:23Z",
    "topics": [
@@ -303,8 +303,8 @@
    "url": "https://dev.to/hao610/can-we-stop-ai-from-writing-slop-i-built-an-8-layer-defense-matrix-git-oops-v112-5e54",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "The author presents an eight‑layer defensive framework (git‑oops) aimed at preventing AI‑generated code from introducing bugs, cyclomatic complexity spikes, or unsafe file operations.",
-   "why_it_matters": "Offers a reusable pattern for adding safety checks around AI‑generated code in CI pipelines.",
+   "summary": "The author presents an eight\u2011layer defensive framework (git\u2011oops) aimed at preventing AI\u2011generated code from introducing bugs, cyclomatic complexity spikes, or unsafe file operations.",
+   "why_it_matters": "Offers a reusable pattern for adding safety checks around AI\u2011generated code in CI pipelines.",
    "tags": [
     "git-oops"
    ],
@@ -332,7 +332,7 @@
    "url": "https://revyl.com/blog/pattern-engineering/",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "A blog post proposing two emerging engineering disciplines—verification engineering and pattern engineering—to improve large‑scale agent systems.",
+   "summary": "A blog post proposing two emerging engineering disciplines\u2014verification engineering and pattern engineering\u2014to improve large\u2011scale agent systems.",
    "why_it_matters": "Introduces conceptual frameworks that could shape future tooling for AI agent reliability.",
    "tags": [
     "revyl"
@@ -357,7 +357,7 @@
    "rank": 12
   },
   {
-   "title": "The Chairs Are Back. The Coffee Is On. ☕",
+   "title": "The Chairs Are Back. The Coffee Is On. \u2615",
    "url": "https://dev.to/thethirdcup/the-chairs-are-back-the-coffee-is-on-243p",
    "source": "devto_articles",
    "category": "Skip",
@@ -405,11 +405,11 @@
    "rank": 14
   },
   {
-   "title": "🐱 The Function Factory of Necoz! ⚙️ | Learning Python Functions 🚀",
+   "title": "\ud83d\udc31 The Function Factory of Necoz! \u2699\ufe0f | Learning Python Functions \ud83d\ude80",
    "url": "https://dev.to/necoz/the-function-factory-of-necoz-learning-python-functions-2ikd",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "A story‑driven tutorial teaching Python functions through a whimsical narrative.",
+   "summary": "A story\u2011driven tutorial teaching Python functions through a whimsical narrative.",
    "why_it_matters": "Introductory Python learning without focus on agents, LLMs, or production infrastructure.",
    "tags": [],
    "published_at": "2026-11-21T04:37:50Z",
@@ -487,7 +487,7 @@
    "url": "https://sgiannopoulos.github.io/blog/machine-code-programming/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A blog post explores the ability of LLMs to manipulate raw executable bytes directly, extending the concept of weight‑space programming to machine code.",
+   "summary": "A blog post explores the ability of LLMs to manipulate raw executable bytes directly, extending the concept of weight\u2011space programming to machine code.",
    "why_it_matters": "Interesting research but has no immediate application to agent workflows or production tooling.",
    "tags": [],
    "published_at": "2026-11-18T14:15:58Z",
@@ -559,7 +559,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "gopgext lets developers write PostgreSQL extensions in Go using TinyGo, generating the necessary C glue automatically.",
-   "why_it_matters": "Useful for Go developers but outside the Python/AI‑agent focus of the target profile.",
+   "why_it_matters": "Useful for Go developers but outside the Python/AI\u2011agent focus of the target profile.",
    "tags": [],
    "published_at": "2026-11-21T17:08:04Z",
    "topics": [],
@@ -581,8 +581,8 @@
    "url": "https://dev.to/earlgreyhot1701d/dead-keys-i-brought-back-the-typing-games-kiro-did-the-heavy-lifting-5gc2",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "Entry for a hackathon featuring a typing‑game project.",
-   "why_it_matters": "Entertainment‑oriented project without engineering relevance to AI agents or infrastructure.",
+   "summary": "Entry for a hackathon featuring a typing\u2011game project.",
+   "why_it_matters": "Entertainment\u2011oriented project without engineering relevance to AI agents or infrastructure.",
    "tags": [],
    "published_at": "2026-11-21T18:23:38Z",
    "topics": [
@@ -607,7 +607,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "A blog post offering guidance on building GUI applications in Rust, reflecting on recent ecosystem changes.",
-   "why_it_matters": "GUI development in Rust does not align with the engineer’s focus on AI agents, LLM infrastructure, or cloud automation.",
+   "why_it_matters": "GUI development in Rust does not align with the engineer\u2019s focus on AI agents, LLM infrastructure, or cloud automation.",
    "tags": [],
    "published_at": "2026-11-21T21:17:53Z",
    "topics": [],
@@ -625,12 +625,12 @@
    "rank": 23
   },
   {
-   "title": "Show HN: Zero C# – C# without a runtime or GC",
+   "title": "Show HN: Zero C# \u2013 C# without a runtime or GC",
    "url": "https://onurgumus.github.io/zero-csharp/index.html",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A project that compiles C# to native binaries without the .NET runtime, focusing on low‑level memory management.",
-   "why_it_matters": "C# runtime removal is unrelated to Python‑centric AI agent stacks and cloud infrastructure.",
+   "summary": "A project that compiles C# to native binaries without the .NET runtime, focusing on low\u2011level memory management.",
+   "why_it_matters": "C# runtime removal is unrelated to Python\u2011centric AI agent stacks and cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-21T15:39:09Z",
    "topics": [],
@@ -680,7 +680,7 @@
    "url": "https://stulle.app/",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A web‑based simulation game about making sandwiches.",
+   "summary": "A web\u2011based simulation game about making sandwiches.",
    "why_it_matters": "Pure entertainment with no technical relevance to AI engineering.",
    "tags": [],
    "published_at": "2026-11-22T00:07:59Z",
@@ -701,11 +701,11 @@
    "rank": 26
   },
   {
-   "title": "PcapAnalyzer – self-hosted pcap analyzer with 27 problem detectors",
+   "title": "PcapAnalyzer \u2013 self-hosted pcap analyzer with 27 problem detectors",
    "url": "https://github.com/sebaandrada-cell/PcapAnalyzer",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "An open‑source tool for analyzing PCAP files with built‑in detectors for common network issues.",
+   "summary": "An open\u2011source tool for analyzing PCAP files with built\u2011in detectors for common network issues.",
    "why_it_matters": "Network packet analysis is peripheral to the core focus on AI agents and cloud infra.",
    "tags": [],
    "published_at": "2026-11-21T22:09:58Z",
@@ -751,12 +751,12 @@
    "rank": 28
   },
   {
-   "title": "Leonida – PC Recompilation of the Xbox Version of GTA 6",
+   "title": "Leonida \u2013 PC Recompilation of the Xbox Version of GTA 6",
    "url": "https://github.com/ItsNotRexed/Leonida",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A project attempting to recompile the Xbox build of GTA 6 for PC.",
-   "why_it_matters": "Gaming reverse‑engineering is outside the engineer’s AI/infra scope.",
+   "summary": "A project attempting to recompile the Xbox build of GTA\u202f6 for PC.",
+   "why_it_matters": "Gaming reverse\u2011engineering is outside the engineer\u2019s AI/infra scope.",
    "tags": [],
    "published_at": "2026-11-22T00:57:26Z",
    "topics": [
@@ -780,7 +780,7 @@
    "url": "https://notnottalmud.substack.com/p/getting-the-mind-to-steer-the-body",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A discussion thread about neuro‑feedback and body‑mind integration, without technical details relevant to AI agents or infrastructure.",
+   "summary": "A discussion thread about neuro\u2011feedback and body\u2011mind integration, without technical details relevant to AI agents or infrastructure.",
    "why_it_matters": "No relevance to software engineering, AI agents, or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-20T22:11:05Z",
@@ -804,7 +804,7 @@
    "source": "github_search",
    "category": "Skip",
    "summary": "A JavaScript library that humorously claims to make AI agents think like a lazy senior developer.",
-   "why_it_matters": "The repo is JavaScript‑only and offers no concrete tooling for Python‑based agent workflows.",
+   "why_it_matters": "The repo is JavaScript\u2011only and offers no concrete tooling for Python\u2011based agent workflows.",
    "tags": [
     "ponytail"
    ],

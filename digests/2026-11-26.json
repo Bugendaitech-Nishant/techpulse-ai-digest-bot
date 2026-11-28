@@ -7,8 +7,8 @@
    "url": "https://1password.com/blog/update-on-nov-2026-security-incident",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "A 1Password employee's GitHub account was compromised, allowing an attacker to push malicious code that exfiltrated limited customer metadata. No vault contents were accessed, but the breach highlights supply‑chain risk.",
-   "why_it_matters": "Directly impacts credential‑management tooling that many engineers rely on; requires immediate security hygiene.",
+   "summary": "A 1Password employee's GitHub account was compromised, allowing an attacker to push malicious code that exfiltrated limited customer metadata. No vault contents were accessed, but the breach highlights supply\u2011chain risk.",
+   "why_it_matters": "Directly impacts credential\u2011management tooling that many engineers rely on; requires immediate security hygiene.",
    "tags": [
     "1password",
     "github",
@@ -68,7 +68,7 @@
    "url": "https://opensec.in/blog/nfs2root-cve-2026-99362",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "A pre‑authentication heap overflow in the Linux NFS server (nfsd) allows remote code execution, fixed in recent kernel releases. The advisory provides CVE‑2026‑99362 details and upgrade instructions.",
+   "summary": "A pre\u2011authentication heap overflow in the Linux NFS server (nfsd) allows remote code execution, fixed in recent kernel releases. The advisory provides CVE\u20112026\u201199362 details and upgrade instructions.",
    "why_it_matters": "If you run NFS services or Kubernetes storage nodes, the vulnerability can give attackers root access.",
    "tags": [
     "cve-2026-99362",
@@ -98,7 +98,7 @@
    "url": "https://dev.to/alexr/tracekit-a-tamper-evident-flight-recorder-for-coding-agents-4em",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "Introduces Tracekit, a signed hash‑chain logger that records every tool call of a coding agent, making logs tamper‑evident and verifiable.",
+   "summary": "Introduces Tracekit, a signed hash\u2011chain logger that records every tool call of a coding agent, making logs tamper\u2011evident and verifiable.",
    "why_it_matters": "Provides essential security and auditability for autonomous agents operating in production environments.",
    "tags": [
     "tracekit"
@@ -127,8 +127,8 @@
    "url": "https://github.com/Significant-Gravitas/AutoGPT",
    "source": "github_search",
    "category": "Must Read",
-   "summary": "AutoGPT is an open‑source Python framework that lets developers create autonomous AI agents capable of planning, executing, and iterating on tasks without human intervention.",
-   "why_it_matters": "Core building block for production‑grade autonomous workflows; widely adopted and actively maintained.",
+   "summary": "AutoGPT is an open\u2011source Python framework that lets developers create autonomous AI agents capable of planning, executing, and iterating on tasks without human intervention.",
+   "why_it_matters": "Core building block for production\u2011grade autonomous workflows; widely adopted and actively maintained.",
    "tags": [
     "autogpt",
     "openai",
@@ -158,8 +158,8 @@
    "url": "https://github.com/mvanhorn/last30days-skill",
    "source": "github_trending",
    "category": "Must Read",
-   "summary": "A Python skill for AI agents that crawls Reddit, X, YouTube, Hacker News, Polymarket, and the web to produce a grounded summary of a topic. It can be plugged into multi‑agent workflows.",
-   "why_it_matters": "Provides a ready‑to‑use research skill that accelerates building autonomous agents with up‑to‑date web knowledge.",
+   "summary": "A Python skill for AI agents that crawls Reddit, X, YouTube, Hacker News, Polymarket, and the web to produce a grounded summary of a topic. It can be plugged into multi\u2011agent workflows.",
+   "why_it_matters": "Provides a ready\u2011to\u2011use research skill that accelerates building autonomous agents with up\u2011to\u2011date web knowledge.",
    "tags": [
     "last30days-skill",
     "openai",
@@ -218,8 +218,8 @@
    "url": "https://dev.to/aws/can-your-agent-review-your-cloud-architecture-4coh",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "Describes the AWS Agent Toolkit that runs a Well‑Architected review skill, reading code and AWS docs to generate an evidence‑backed architecture report.",
-   "why_it_matters": "Shows a concrete multi‑agent workflow that can automate cloud‑architecture compliance checks for staff engineers.",
+   "summary": "Describes the AWS Agent Toolkit that runs a Well\u2011Architected review skill, reading code and AWS docs to generate an evidence\u2011backed architecture report.",
+   "why_it_matters": "Shows a concrete multi\u2011agent workflow that can automate cloud\u2011architecture compliance checks for staff engineers.",
    "tags": [
     "aws",
     "agent-toolkit"
@@ -248,7 +248,7 @@
    "url": "https://dev.to/iam-tech/ai-model-failover-that-never-failed-back-17-days-on-a-local-model-428p",
    "source": "devto_articles",
    "category": "Must Read",
-   "summary": "A post‑mortem of an OpenRouter outage where four AI agents were switched to a local LLM and operated uninterrupted for 17 days.",
+   "summary": "A post\u2011mortem of an OpenRouter outage where four AI agents were switched to a local LLM and operated uninterrupted for 17 days.",
    "why_it_matters": "Demonstrates a practical failover pattern for resilient agent deployments using local models.",
    "tags": [
     "openrouter",
@@ -261,7 +261,7 @@
     "security"
    ],
    "next_step": "Read",
-   "next_step_detail": "Read the article to understand the switch‑over script and replication setup.",
+   "next_step_detail": "Read the article to understand the switch\u2011over script and replication setup.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -279,7 +279,7 @@
    "source": "devto_articles",
    "category": "Must Read",
    "summary": "The author evaluates Strands Decider 2B as a gate for AI agents on 16 refund cases, measuring accuracy, latency, cost and robustness to prompt injection.",
-   "why_it_matters": "Provides a concrete assessment of a tool‑gate that can protect production agents from malicious or noisy inputs.",
+   "why_it_matters": "Provides a concrete assessment of a tool\u2011gate that can protect production agents from malicious or noisy inputs.",
    "tags": [
     "strands-decider-2b",
     "aws-builders"
@@ -338,8 +338,8 @@
    "url": "https://engram.com/blog/lora-size",
    "source": "hacker_news",
    "category": "Must Read",
-   "summary": "The blog post proposes a method to estimate the optimal LoRA rank for a given dataset, balancing performance and parameter efficiency. It includes empirical formulas and guidance for large‑scale fine‑tuning.",
-   "why_it_matters": "Provides a practical way to size LoRA adapters, reducing trial‑and‑error when customizing open‑source LLMs.",
+   "summary": "The blog post proposes a method to estimate the optimal LoRA rank for a given dataset, balancing performance and parameter efficiency. It includes empirical formulas and guidance for large\u2011scale fine\u2011tuning.",
+   "why_it_matters": "Provides a practical way to size LoRA adapters, reducing trial\u2011and\u2011error when customizing open\u2011source LLMs.",
    "tags": [
     "lora",
     "engram",
@@ -352,7 +352,7 @@
     "python"
    ],
    "next_step": "Try",
-   "next_step_detail": "Apply the suggested formula to your next LoRA fine‑tuning run and compare results.",
+   "next_step_detail": "Apply the suggested formula to your next LoRA fine\u2011tuning run and compare results.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -369,8 +369,8 @@
    "url": "https://huggingface.co/papers/2611.30017",
    "source": "huggingface_papers",
    "category": "Must Read",
-   "summary": "Introduces OWE‑Bench, a 26‑task benchmark covering software, physical, ML, and scientific engineering challenges for long‑horizon agents.",
-   "why_it_matters": "Provides a concrete evaluation suite for the multi‑step agent workflows you build.",
+   "summary": "Introduces OWE\u2011Bench, a 26\u2011task benchmark covering software, physical, ML, and scientific engineering challenges for long\u2011horizon agents.",
+   "why_it_matters": "Provides a concrete evaluation suite for the multi\u2011step agent workflows you build.",
    "tags": [
     "huggingface",
     "owe-bench"
@@ -382,7 +382,7 @@
     "llm-models"
    ],
    "next_step": "Evaluate",
-   "next_step_detail": "Compare OWE‑Bench to any internal benchmarks you use for agent performance.",
+   "next_step_detail": "Compare OWE\u2011Bench to any internal benchmarks you use for agent performance.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -399,7 +399,7 @@
    "url": "https://modaic.dev/blog/latency-doesnt-lie",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Discussion analyzing latency measurements to infer that the Jev model is likely Qwen3.5‑35B‑A3B.",
+   "summary": "Discussion analyzing latency measurements to infer that the Jev model is likely Qwen3.5\u201135B\u2011A3B.",
    "why_it_matters": "Shows a practical method for identifying hidden model versions, useful when selecting local LLMs for agents.",
    "tags": [
     "qwen3.5",
@@ -411,8 +411,8 @@
     "evaluation"
    ],
    "next_step": "Read",
-   "next_step_detail": "Read the blog post to learn the latency‑profiling technique.",
-   "story_id": "",
+   "next_step_detail": "Read the blog post to learn the latency\u2011profiling technique.",
+   "story_id": "0452d68d88",
    "verification": "not_checked",
    "verification_note": "",
    "relevance_score": 0.5,
@@ -428,8 +428,8 @@
    "url": "https://dev.to/akhouri-systems/inside-apic-the-full-engineering-teardown-of-a-free-photo-editor-background-remover-that-runs-5h33",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "A deep dive into APIC, a browser‑based photo editor that runs AI models locally after a one‑time download, avoiding server uploads.",
-   "why_it_matters": "Demonstrates techniques for local model loading and privacy‑preserving inference that can be applied to on‑device LLM workflows.",
+   "summary": "A deep dive into APIC, a browser\u2011based photo editor that runs AI models locally after a one\u2011time download, avoiding server uploads.",
+   "why_it_matters": "Demonstrates techniques for local model loading and privacy\u2011preserving inference that can be applied to on\u2011device LLM workflows.",
    "tags": [
     "apic",
     "webassembly",
@@ -460,7 +460,7 @@
    "source": "hacker_news",
    "category": "Inspiration",
    "summary": "The author used Lean 4 to formally verify parts of Clojure's core libraries and discovered several bugs that were not previously reported.",
-   "why_it_matters": "Shows a practical method for finding supply‑chain vulnerabilities in language runtimes that could affect Python or other stacks.",
+   "why_it_matters": "Shows a practical method for finding supply\u2011chain vulnerabilities in language runtimes that could affect Python or other stacks.",
    "tags": [
     "lean-4",
     "clojure"
@@ -489,8 +489,8 @@
    "url": "https://github.com/alesha-pro/llm.asm/tree/main/02-baremetal-os",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "A GitHub repository demonstrating how to run the Qwen LLM directly on bare‑metal hardware using assembly and minimal OS components. It showcases low‑level model execution techniques.",
-   "why_it_matters": "Shows possibilities for ultra‑lightweight LLM deployment on constrained devices.",
+   "summary": "A GitHub repository demonstrating how to run the Qwen LLM directly on bare\u2011metal hardware using assembly and minimal OS components. It showcases low\u2011level model execution techniques.",
+   "why_it_matters": "Shows possibilities for ultra\u2011lightweight LLM deployment on constrained devices.",
    "tags": [
     "qwen",
     "bare-metal",
@@ -520,7 +520,7 @@
    "url": "https://dev.to/samuelmbabhazi/a-security-audit-found-11-issues-five-of-my-fixes-had-bugs-of-their-own-3anj",
    "source": "devto_articles",
    "category": "Inspiration",
-   "summary": "The author recounts a security audit of the open‑source Shipkeep platform, noting that several attempted fixes introduced new bugs.",
+   "summary": "The author recounts a security audit of the open\u2011source Shipkeep platform, noting that several attempted fixes introduced new bugs.",
    "why_it_matters": "Highlights the importance of thorough testing after security patches, relevant for maintaining AI agent deployment pipelines.",
    "tags": [
     "shipkeep"
@@ -574,12 +574,12 @@
    "rank": 19
   },
   {
-   "title": "ArXiv: μ-Bench: Benchmarking Multi-User Task Completion in Shared Interaction Voice Agents",
+   "title": "ArXiv: \u03bc-Bench: Benchmarking Multi-User Task Completion in Shared Interaction Voice Agents",
    "url": "https://arxiv.org/abs/2611.34920v1",
    "source": "arxiv_ai",
    "category": "Inspiration",
-   "summary": "Presents μ‑Bench, a benchmark for evaluating voice agents that must handle concurrent multi‑user requests while respecting privacy and authority constraints.",
-   "why_it_matters": "Offers a testing framework that could be adapted to evaluate multi‑agent coordination in text‑based AI assistants.",
+   "summary": "Presents \u03bc\u2011Bench, a benchmark for evaluating voice agents that must handle concurrent multi\u2011user requests while respecting privacy and authority constraints.",
+   "why_it_matters": "Offers a testing framework that could be adapted to evaluate multi\u2011agent coordination in text\u2011based AI assistants.",
    "tags": [],
    "published_at": "2026-11-25T18:58:42Z",
    "topics": [
@@ -604,8 +604,8 @@
    "url": "https://github.com/affaan-m/ECC",
    "source": "github_search",
    "category": "Inspiration",
-   "summary": "ECC is a JavaScript framework that adds performance‑optimizing agents with skills, memory, and security layers for LLMs like Claude and Codex. It targets code‑centric workflows and browser‑based agents.",
-   "why_it_matters": "Shows a novel way to embed security and memory into LLM‑driven agents, which can inspire similar Python implementations.",
+   "summary": "ECC is a JavaScript framework that adds performance\u2011optimizing agents with skills, memory, and security layers for LLMs like Claude and Codex. It targets code\u2011centric workflows and browser\u2011based agents.",
+   "why_it_matters": "Shows a novel way to embed security and memory into LLM\u2011driven agents, which can inspire similar Python implementations.",
    "tags": [
     "ecc",
     "claude",
@@ -635,8 +635,8 @@
    "url": "https://zydra.sh/articles/ssh-is-a-gui-framework/",
    "source": "hacker_news",
    "category": "Inspiration",
-   "summary": "Article demonstrates using SSH’s extended terminal capabilities to render graphical interfaces, including a microVM desktop over SSH.",
-   "why_it_matters": "Shows a low‑overhead way to expose UI for remote agents without additional tooling.",
+   "summary": "Article demonstrates using SSH\u2019s extended terminal capabilities to render graphical interfaces, including a microVM desktop over SSH.",
+   "why_it_matters": "Shows a low\u2011overhead way to expose UI for remote agents without additional tooling.",
    "tags": [
     "ssh"
    ],
@@ -647,7 +647,7 @@
     "python"
    ],
    "next_step": "Read",
-   "next_step_detail": "Review the implementation details to see if it fits your remote‑agent UI needs.",
+   "next_step_detail": "Review the implementation details to see if it fits your remote\u2011agent UI needs.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -664,8 +664,8 @@
    "url": "https://huggingface.co/papers/2611.32199",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "Proposes a conditional pretraining approach that builds steerability into language models from the ground up, reducing reliance on post‑hoc alignment.",
-   "why_it_matters": "Relevant for building agents whose behavior can be safely constrained via built‑in conditioning.",
+   "summary": "Proposes a conditional pretraining approach that builds steerability into language models from the ground up, reducing reliance on post\u2011hoc alignment.",
+   "why_it_matters": "Relevant for building agents whose behavior can be safely constrained via built\u2011in conditioning.",
    "tags": [],
    "published_at": "2026-11-24T00:00:00.000Z",
    "topics": [
@@ -692,7 +692,7 @@
    "source": "arxiv_ai",
    "category": "Inspiration",
    "summary": "The paper surveys privacy, security, and ethical challenges when deploying LLMs in telecommunications services. It outlines threat vectors, data leakage risks, and regulatory considerations.",
-   "why_it_matters": "Helps engineers anticipate compliance and safety issues when integrating LLMs into telecom‑related workflows.",
+   "why_it_matters": "Helps engineers anticipate compliance and safety issues when integrating LLMs into telecom\u2011related workflows.",
    "tags": [
     "llms",
     "telecom",
@@ -722,7 +722,7 @@
    "url": "https://huggingface.co/papers/2611.33143",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "Introduces ROAM‑Bench, a benchmark for assessing embodied agents’ ability to gather evidence and verify spatial tasks.",
+   "summary": "Introduces ROAM\u2011Bench, a benchmark for assessing embodied agents\u2019 ability to gather evidence and verify spatial tasks.",
    "why_it_matters": "Could serve as a reference for building evaluation suites for your own autonomous agents.",
    "tags": [
     "roam-bench",
@@ -752,8 +752,8 @@
    "url": "https://huggingface.co/papers/2611.33915",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "Paper proposes a multimodal foundation model that lets robots adapt during deployment using execution feedback, without task‑specific demos.",
-   "why_it_matters": "Shows emerging techniques for self‑evolving agents that could inspire future autonomous workflow designs.",
+   "summary": "Paper proposes a multimodal foundation model that lets robots adapt during deployment using execution feedback, without task\u2011specific demos.",
+   "why_it_matters": "Shows emerging techniques for self\u2011evolving agents that could inspire future autonomous workflow designs.",
    "tags": [
     "seek",
     "huggingface"
@@ -782,7 +782,7 @@
    "url": "https://huggingface.co/papers/2611.27404",
    "source": "huggingface_papers",
    "category": "Inspiration",
-   "summary": "Paper analyzing how LLM performance drops under heavy load, identifying synchronization and rule‑execution errors.",
+   "summary": "Paper analyzing how LLM performance drops under heavy load, identifying synchronization and rule\u2011execution errors.",
    "why_it_matters": "Helps engineers anticipate reliability issues when scaling inference services for agents.",
    "tags": [
     "huggingface"
@@ -794,7 +794,7 @@
     "ai-safety"
    ],
    "next_step": "Read",
-   "next_step_detail": "Skim the abstract and conclusions to understand load‑related failure modes.",
+   "next_step_detail": "Skim the abstract and conclusions to understand load\u2011related failure modes.",
    "story_id": "",
    "verification": "not_checked",
    "verification_note": "",
@@ -811,8 +811,8 @@
    "url": "https://dev.to/necoz/lazy-senior-dev-mode-made-my-app-smaller-was-it-better-90i",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "A dev.to post discussing Ponytail, a model‑prompting experiment, with limited technical depth.",
-   "why_it_matters": "The article offers no actionable insight for production‑grade agent or infrastructure work.",
+   "summary": "A dev.to post discussing Ponytail, a model\u2011prompting experiment, with limited technical depth.",
+   "why_it_matters": "The article offers no actionable insight for production\u2011grade agent or infrastructure work.",
    "tags": [
     "ponytail"
    ],
@@ -859,7 +859,7 @@
    "rank": 29
   },
   {
-   "title": "Holy shit holy shit holy shit holy shit: The magnitude of what’s now happening",
+   "title": "Holy shit holy shit holy shit holy shit: The magnitude of what\u2019s now happening",
    "url": "https://scottaaronson.blog/?p=10379",
    "source": "hacker_news",
    "category": "Skip",
@@ -913,7 +913,7 @@
    "url": "https://www.vox.com/down-to-earth/511999/home-depot-retention-pond-snorkel-joseph-ricketts",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Human‑interest story about a YouTuber snorkeling in a Home Depot retention pond.",
+   "summary": "Human\u2011interest story about a YouTuber snorkeling in a Home Depot retention pond.",
    "why_it_matters": "Entertainment content with no technical relevance to AI engineering.",
    "tags": [],
    "published_at": "2026-11-25T15:14:32Z",
@@ -987,7 +987,7 @@
    "url": "https://github.com/xoxorwr/pw-loudness-eq",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "A GitHub project that reverse‑engineers Windows loudness equalization and implements it for PipeWire on Linux.",
+   "summary": "A GitHub project that reverse\u2011engineers Windows loudness equalization and implements it for PipeWire on Linux.",
    "why_it_matters": "Audio processing is unrelated to AI agents, LLMs, or cloud infrastructure.",
    "tags": [],
    "published_at": "2026-11-25T11:34:25Z",
@@ -1012,7 +1012,7 @@
    "url": "https://dev.to/ndcodes/part-7-what-reading-the-code-could-never-find-8c1",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "Final part of a series describing the build of an HL7 v2‑to‑FHIR R4 interoperability service.",
+   "summary": "Final part of a series describing the build of an HL7 v2\u2011to\u2011FHIR R4 interoperability service.",
    "why_it_matters": "Focus is healthcare data conversion, not AI agent workflows or infrastructure.",
    "tags": [],
    "published_at": "2026-11-25T06:38:30Z",
@@ -1036,7 +1036,7 @@
    "source": "hacker_news",
    "category": "Skip",
    "summary": "A Hacker News discussion thread about the frequency of Ask HN posts.",
-   "why_it_matters": "No technical content relevant to the target engineer’s focus areas.",
+   "why_it_matters": "No technical content relevant to the target engineer\u2019s focus areas.",
    "tags": [],
    "published_at": "2026-11-26T00:43:34Z",
    "topics": [],
@@ -1177,8 +1177,8 @@
    "url": "https://jayd.ml/2026/11/14/rockbox-on-yp3.html",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Describes reverse‑engineering a cheap MP3 player to run the Rockbox firmware, aided by LLMs.",
-   "why_it_matters": "Embedded firmware hacking is peripheral to cloud‑based AI agent workflows and production infrastructure.",
+   "summary": "Describes reverse\u2011engineering a cheap MP3 player to run the Rockbox firmware, aided by LLMs.",
+   "why_it_matters": "Embedded firmware hacking is peripheral to cloud\u2011based AI agent workflows and production infrastructure.",
    "tags": [
     "rockbox"
    ],
@@ -1205,7 +1205,7 @@
    "source": "arxiv_ai",
    "category": "Skip",
    "summary": "Research on visual context failures where models rely on typical neighboring objects.",
-   "why_it_matters": "Focus is on computer‑vision context bias, not on agent workflows or Python tooling.",
+   "why_it_matters": "Focus is on computer\u2011vision context bias, not on agent workflows or Python tooling.",
    "tags": [],
    "published_at": "2026-11-25T18:39:28Z",
    "topics": [
@@ -1282,7 +1282,7 @@
    "url": "https://arxiv.org/abs/2611.34942v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Research on using autoencoders for physical‑layer communications, replacing traditional modulation and coding.",
+   "summary": "Research on using autoencoders for physical\u2011layer communications, replacing traditional modulation and coding.",
    "why_it_matters": "Focuses on communications theory with no clear path to agent tooling or Python infrastructure.",
    "tags": [
     "autoencoder",
@@ -1310,8 +1310,8 @@
    "url": "https://arxiv.org/abs/2611.34870v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Paper proposes a schema‑driven three‑way merge algorithm for RDF knowledge graphs.",
-   "why_it_matters": "Focuses on RDF merging, which is outside the engineer’s primary concerns with LLM agents and infrastructure.",
+   "summary": "Paper proposes a schema\u2011driven three\u2011way merge algorithm for RDF knowledge graphs.",
+   "why_it_matters": "Focuses on RDF merging, which is outside the engineer\u2019s primary concerns with LLM agents and infrastructure.",
    "tags": [],
    "published_at": "2026-11-25T18:34:46Z",
    "topics": [
@@ -1358,7 +1358,7 @@
    "url": "https://dev.to/alexmercedcoder/apache-data-lakehouse-weekly-november-18-to-25-2026-5dd9",
    "source": "devto_articles",
    "category": "Skip",
-   "summary": "Newsletter roundup of Apache data‑lakehouse projects and announcements.",
+   "summary": "Newsletter roundup of Apache data\u2011lakehouse projects and announcements.",
    "why_it_matters": "Contains no specific technical content relevant to AI agents or infrastructure tooling.",
    "tags": [],
    "published_at": "2026-11-25T16:09:31Z",
@@ -1383,7 +1383,7 @@
    "url": "https://arxiv.org/abs/2611.34887v1",
    "source": "arxiv_ai",
    "category": "Skip",
-   "summary": "Proposes a hybrid decision‑tree model that combines case‑based splits for better interpretability and accuracy.",
+   "summary": "Proposes a hybrid decision\u2011tree model that combines case\u2011based splits for better interpretability and accuracy.",
    "why_it_matters": "Pure model research without direct implications for agent orchestration or production serving.",
    "tags": [],
    "published_at": "2026-11-25T18:45:35Z",
@@ -1409,7 +1409,7 @@
    "source": "devto_articles",
    "category": "Skip",
    "summary": "A beginner tutorial on linked lists in Python with code examples.",
-   "why_it_matters": "Basic data‑structure intro not needed for senior engineers building AI agents or infrastructure.",
+   "why_it_matters": "Basic data\u2011structure intro not needed for senior engineers building AI agents or infrastructure.",
    "tags": [],
    "published_at": "2026-11-25T06:13:51Z",
    "topics": [
@@ -1459,7 +1459,7 @@
    "source": "arxiv_ai",
    "category": "Skip",
    "summary": "Introduces BioScore, a benchmark linking pathology model performance to underlying biological relevance.",
-   "why_it_matters": "Domain‑specific benchmark for medical imaging, not pertinent to AI agent infrastructure.",
+   "why_it_matters": "Domain\u2011specific benchmark for medical imaging, not pertinent to AI agent infrastructure.",
    "tags": [],
    "published_at": "2026-11-25T18:59:13Z",
    "topics": [],
@@ -1506,8 +1506,8 @@
    "url": "https://bjin.github.io/go-codegolf-benchmark/#leaderboard",
    "source": "hacker_news",
    "category": "Skip",
-   "summary": "Benchmark comparing frontier LLMs on a 2015 Google code‑golf contest, ranking models by byte count of generated solutions.",
-   "why_it_matters": "Code‑golf performance is a novelty metric and not actionable for production agent pipelines.",
+   "summary": "Benchmark comparing frontier LLMs on a 2015 Google code\u2011golf contest, ranking models by byte count of generated solutions.",
+   "why_it_matters": "Code\u2011golf performance is a novelty metric and not actionable for production agent pipelines.",
    "tags": [],
    "published_at": "2026-11-22T16:44:48Z",
    "topics": [
@@ -1580,7 +1580,7 @@
    "source": "github_trending",
    "category": "Skip",
    "summary": "Python server that integrates with DaVinci Resolve Studio for media control.",
-   "why_it_matters": "Media‑production integration unrelated to AI agents, LLM serving, or cloud infrastructure.",
+   "why_it_matters": "Media\u2011production integration unrelated to AI agents, LLM serving, or cloud infrastructure.",
    "tags": [
     "davinciresolve",
     "mcp"
@@ -1682,7 +1682,7 @@
    "source": "huggingface_papers",
    "category": "Skip",
    "summary": "Introduces a method to generate neural network weights procedurally, reducing storage requirements for edge devices.",
-   "why_it_matters": "While interesting for microcontroller deployment, it does not impact cloud‑scale AI agent workflows.",
+   "why_it_matters": "While interesting for microcontroller deployment, it does not impact cloud\u2011scale AI agent workflows.",
    "tags": [],
    "published_at": "2026-11-24T00:00:00.000Z",
    "topics": [
@@ -1707,7 +1707,7 @@
    "source": "huggingface_papers",
    "category": "Skip",
    "summary": "Paper presents PyRUA-Dex, a framework for learning policies for bimanual robot manipulation via coding agents.",
-   "why_it_matters": "Focused on robotic dexterity research; limited immediate relevance to software‑centric AI agent workflows.",
+   "why_it_matters": "Focused on robotic dexterity research; limited immediate relevance to software\u2011centric AI agent workflows.",
    "tags": [],
    "published_at": "2026-11-24T00:00:00.000Z",
    "topics": [],
@@ -1802,7 +1802,7 @@
    "url": "https://huggingface.co/papers/2611.30472",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Paper on fine‑tuning 3D generative models for better part separation using preference optimization.",
+   "summary": "Paper on fine\u2011tuning 3D generative models for better part separation using preference optimization.",
    "why_it_matters": "Focuses on 3D generation, not on agent workflows, LLM serving, or Python infrastructure.",
    "tags": [
     "3d-generation",
@@ -1830,7 +1830,7 @@
    "url": "https://huggingface.co/papers/2611.30564",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Analyzes geographic bias in decision‑language models that output probability distributions over labels.",
+   "summary": "Analyzes geographic bias in decision\u2011language models that output probability distributions over labels.",
    "why_it_matters": "Bias analysis is interesting research but not directly actionable for building production AI agents.",
    "tags": [],
    "published_at": "2026-11-23T00:00:00.000Z",
@@ -1855,7 +1855,7 @@
    "url": "https://huggingface.co/papers/2611.30844",
    "source": "huggingface_papers",
    "category": "Skip",
-   "summary": "Paper introduces a diffusion transformer architecture that uses dynamic mixture‑of‑experts to scale capacity while keeping per‑token compute fixed.",
+   "summary": "Paper introduces a diffusion transformer architecture that uses dynamic mixture\u2011of\u2011experts to scale capacity while keeping per\u2011token compute fixed.",
    "why_it_matters": "Diffusion models are outside the engineer's focus on LLM agents and production inference serving.",
    "tags": [],
    "published_at": "2026-11-23T00:00:00.000Z",
